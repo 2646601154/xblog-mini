@@ -706,7 +706,7 @@ Xblog-mini/
 │   ├── src/
 │   │   └── main/
 │   │       ├── java/com/xblog/
-│   │       │   ├── XblogApplication.java
+│   │       │   ├── Main.java
 │   │       │   ├── config/         # 配置类
 │   │       │   ├── controller/    # 控制器
 │   │       │   ├── service/       # 服务层
