@@ -588,7 +588,10 @@ CREATE TABLE config (
 | CRUD | /api/v1/admin/articles | 文章管理 |
 | PUT | /api/v1/admin/articles/{id}/publish | 发布文章 |
 | PUT | /api/v1/admin/articles/{id}/recycle | 移入回收站 |
+| PUT | /api/v1/admin/articles/{id}/restore | 恢复文章 |
 | DELETE | /api/v1/admin/articles/{id} | 彻底删除 |
+| GET | /api/v1/admin/articles/{id}/tags | 获取文章标签 |
+| POST | /api/v1/admin/articles/{id}/tags | 绑定文章标签 |
 | CRUD | /api/v1/admin/categories | 分类管理 |
 | CRUD | /api/v1/admin/tags | 标签管理 |
 | GET | /api/v1/admin/comments | 评论管理（全部） |
