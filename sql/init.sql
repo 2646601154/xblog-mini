@@ -93,9 +93,11 @@ CREATE INDEX `idx_author_id` ON `article` (`author_id`);
 -- 文章标签关联表
 -- ============================================================
 CREATE TABLE `article_tag` (
+    `id`            BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `article_id`    BIGINT NOT NULL COMMENT '文章 ID',
     `tag_id`        BIGINT NOT NULL COMMENT '标签 ID',
-    PRIMARY KEY (`article_id`, `tag_id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_article_tag` (`article_id`, `tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文章标签关联表';
 
 CREATE INDEX `idx_tag_id` ON `article_tag` (`tag_id`);

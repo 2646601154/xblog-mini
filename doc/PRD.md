@@ -406,18 +406,21 @@ CREATE TABLE tag (
 
 | 字段 | 类型 | 约束 | 说明 |
 |------|------|------|------|
-| article_id | BIGINT | NOT NULL, PK | 文章 ID |
-| tag_id | BIGINT | NOT NULL, PK | 标签 ID |
+| id | BIGINT | PK, AUTO_INCREMENT | 主键ID |
+| article_id | BIGINT | NOT NULL | 文章 ID |
+| tag_id | BIGINT | NOT NULL | 标签 ID |
 
 ```sql
 CREATE TABLE article_tag (
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
     article_id    BIGINT NOT NULL,
     tag_id        BIGINT NOT NULL,
-    PRIMARY KEY (article_id, tag_id)
+    UNIQUE KEY uk_article_tag (article_id, tag_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文章标签关联表';
 ```
 
 **索引：**
+- `uk_article_tag` (article_id, tag_id) — 唯一索引，防止重复关联
 - `idx_tag_id` (tag_id) — 按标签查询文章
 
 ---
