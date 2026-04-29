@@ -3,8 +3,8 @@ package com.xblog.controller;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.Result;
+import com.xblog.entity.User;
 import com.xblog.service.UserService;
-import com.xblog.vo.UserVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,8 +19,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public Result<PageResult<UserVo>> queryUserList(@ModelAttribute QueryUserDto queryUserDto) {
-        PageResult<UserVo> pageResult = userService.getUserPage(queryUserDto);
-        return Result.success(pageResult);
+    public Result<PageResult<User>> queryUserList(@ModelAttribute QueryUserDto queryUserDto) {
+        PageResult<User> pageresult = userService.getUserPage(queryUserDto);
+        return Result.success(pageresult);
     }
 }
