@@ -13,6 +13,10 @@ Xblog-mini 是一个轻量级个人博客系统，目前处于 **MVP 早期阶�
 接口文档目录：`doc/api/`（auth.md / article.md / comment.md / category.md / tag.md / user.md / config.md）  
 SQL 脚本：`sql/init.sql`（表结构）、`sql/test-data.sql`（测试数据）
 
+**当前开发分支：`api`**（不是 `main`）
+
+后端开发分支：api
+
 ---
 
 ## 技术栈与版本
@@ -39,48 +43,6 @@ SQL 脚本：`sql/init.sql`（表结构）、`sql/test-data.sql`（测试数据�
 ## 项目结构
 
 ```
-Xblog-mini/
-├── blog-api/                      # 后端服务
-│   ├── src/main/java/com/xblog/   # 主代码（包名固定为 com.xblog）
-│   │   ├── Main.java              # Spring Boot 入口
-│   │   ├── common/                # 公共枚举/工具（如 ResultCode）
-│   │   ├── config/                # 配置类（当前为空，按 PRD 规划）
-│   │   ├── controller/            # 控制器（当前为空）
-│   │   ├── service/               # 服务层（当前为空）
-│   │   ├── mapper/                # 数据访问层（当前为空）
-│   │   ├── entity/                # 实体类（如 Result）
-│   │   ├── dto/                   # 数据传输对象（如 QueryArticleDto）
-│   │   ├── vo/                    # 视图对象（如 ArticleVo）
-│   │   └── security/              # JWT/权限相关（当前为空）
-│   ├── src/main/resources/
-│   │   ├── application.yml        # 主配置文件
-│   │   └── mapper/                # MyBatis XML 映射文件（当前为空）
-│   ├── src/test/java/com/xblog/   # 测试代码
-│   ├── pom.xml                    # Maven 构建配置
-│   └── mvnw / mvnw.cmd            # Maven 包装器脚本
-│
-├── blog-web/                      # 前端展示端
-│   ├── src/                       # Vue 源码
-│   ├── package.json               # Node 依赖与脚本
-│   ├── vite.config.ts
-│   └── pnpm-lock.yaml
-│
-├── blog-admin/                    # 前端管理后台
-│   ├── src/
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── pnpm-lock.yaml
-│
-├── doc/                           # 项目文档
-│   ├── PRD.md                     # 产品需求文档（权威来源）
-│   └── api/                       # 接口详细文档
-│
-└── sql/                           # 数据库脚本
-    ├── init.sql                   # 建表语句
-    └── test-data.sql              # 测试数据（含默认账号）
-```
-
-**当前代码状态（backend）**：backend 目前仅有骨架代码，包含统一的响应包装类 `Result<T>`、业务错误码枚举 `ResultCode`、以及空的 DTO/VO 示例。`controller`、`service`、`mapper`、`security`、`config` 等包已按 PRD 规划预留，但尚未填充实现。
 
 ---
 
@@ -91,6 +53,9 @@ Xblog-mini/
 ```bash
 # 进入后端目录
 cd blog-api
+
+# 启动前必须设置数据库密码（PowerShell）
+$env:DB_PASSWORD = "123456"
 
 # 开发运行
 ./mvnw spring-boot:run
@@ -105,6 +70,7 @@ cd blog-api
 - 入口类：`com.xblog.Main`
 - 默认端口：`8080`
 - 上下文路径：`/`
+- **启动前必须设置环境变量 `DB_PASSWORD`**，否则应用无法连接数据库
 
 ### 前端
 
@@ -154,7 +120,7 @@ mysql -u root -p < sql/test-data.sql
 
 - **MySQL**：`jdbc:mysql://localhost:3306/xblog`
 - **Redis**：`localhost:6379`，数据库 `0`
-- **JWT**：算法为 **HS256**（注意：PRD 中写的是 RS256，实际代码配置为 HS256），有效期 **7 天**（`604800000` 毫秒）
+- **JWT**：算法为 **RS256**，有效期 **7 天**（`604800000` 毫秒）
 - **文件上传限制**：单文件最大 `5MB`，单次请求最大 `20MB`
 - **MyBatis-Plus**：
   - 逻辑删除字段：`deleted`
@@ -174,15 +140,17 @@ mysql -u root -p < sql/test-data.sql
 
 | 包名 | 职责 |
 |------|------|
-| `config` | Spring 配置类（CORS、拦截器、MyBatis-Plus 配置等） |
+| `config` | Spring 配置类（MyBatis-Plus 分页插件等） |
 | `controller` | REST API 控制器 |
 | `service` | 业务逻辑层 |
 | `mapper` | MyBatis-Plus Mapper 接口 |
 | `entity` | 数据库实体类 |
 | `dto` | 请求/查询参数对象（Data Transfer Object） |
 | `vo` | 响应视图对象（View Object） |
-| `common` | 公共枚举、常量、工具类 |
-| `security` | JWT 工具、认证过滤器、权限注解处理 |
+| `common` | 公共枚举、常量、工具类（含 `enums/` 子包） |
+| `handler` | MyBatis 字段自动填充、全局异常处理器 |
+| `exception` | 自定义 `BusinessException` |
+| `security` | JWT 工具、认证过滤器、权限注解处理（待实现） |
 
 ### 响应格式
 
@@ -262,7 +230,7 @@ mysql -u root -p < sql/test-data.sql
 ## 安全与认证
 
 - **认证方式**：JWT Bearer Token，请求头 `Authorization: Bearer <token>`
-- **Token 算法**：HS256
+- **Token 算法**：RS256
 - **Token 有效期**：7 天
 - **权限角色**：
   - `guest`（未登录访客）：浏览已发布文章、已审核评论
@@ -278,19 +246,10 @@ mysql -u root -p < sql/test-data.sql
 
 ### 当前状态
 - 测试依赖已引入：`spring-boot-starter-test`、`mybatis-spring-boot-starter-test:3.0.5`
-- 现有测试仅包含基础的上下文加载测试 `MainTests.java`
+- 测试文件直接放在 `src/test/java/com/xblog/` 目录下（未按子包分层）
+- 现有测试：`MainTests.java`（上下文加载）、`TestUserServiceImpl.java`（用户列表打印）
 - **尚未编写业务单元测试和集成测试**
-
-### 推荐测试结构（按 PRD 规划）
-
-```
-src/test/java/com/xblog/
-├── MainTests.java           # 上下文加载
-├── controller/              # Controller 层单元测试（MockMvc）
-├── service/                 # Service 层单元测试（Mockito）
-├── mapper/                  # Mapper 层测试（@MybatisTest）
-└── integration/             # 集成测试
-```
+- 测试需连接数据库才能通过（`@SpringBootTest` 会启动完整上下文）
 
 ### 运行测试
 
@@ -298,6 +257,46 @@ src/test/java/com/xblog/
 cd blog-api
 ./mvnw test
 ```
+
+---
+
+## 关键踩坑点
+
+### MyBatis-Plus 分页参数 null 安全
+
+**MyBatis-Plus 的 `Page` 构造函数不做 null 兜底**。当使用 `@ModelAttribute` 绑定 DTO 时，Spring DataBinder 会把空字符串参数（如 `page=`）映射为 `null`，覆盖 DTO 字段的默认值。`null` 的 `Integer` 自动拆箱为 `long` 时会抛 `NullPointerException`。
+
+**每个使用 `new Page<>(page, size)` 的 Service 方法必须做防御**：
+
+```java
+int pageNum = dto.getPage() != null ? dto.getPage() : 1;
+int pageSize = dto.getSize() != null ? dto.getSize() : 10;
+Page<User> page = new Page<>(pageNum, pageSize);
+```
+
+> 注意：PageHelper 库内部已处理 null，不会出现此问题。但本项目用的是 MyBatis-Plus 原生 `Page`。
+
+### API 前缀：文档 vs 代码
+
+- **PRD/文档** 规定使用 `/api/v1/` 前缀（如 `/api/v1/admin/users`）
+- **实际 Controller** 使用 `/v1/` 前缀（如 `@RequestMapping("/v1/admin/users")`）
+- 新增接口时统一按 **代码既有风格 `/v1/`** 编写（或修正为 `/api/v1/` 并同步全局）
+
+### @Resource 注入
+
+Controller 和测试类使用 `@Resource`（非 `@Autowired`）进行依赖注入，保持风格一致。
+
+### 异常日志
+
+`GlobalExceptionHandler` 已配置 `log.error("系统异常", e)`，500 错误时完整堆栈打印到控制台（`logging.level.com.xblog: debug`）。
+
+### 数据库连接
+
+`application.yml` 中 DB 密码使用环境变量 `${DB_PASSWORD}`，启动前必须设置，否则无法连接数据库。
+
+### 时间字段自动填充
+
+`MybatisPlusFillMetaObjectHandler` 会在 insert/update 时自动填充 `createdAt` 和 `updatedAt`，无需手动设置。
 
 ---
 
@@ -343,6 +342,5 @@ PRD 中设计了基于 Docker Compose 的部署方案，包含：
 3. **逻辑删除**：仅 `article` 表使用 MyBatis-Plus 逻辑删除，其他表物理删除。
 4. **缓存一致性**：任何修改文章、分类、标签、配置的接口，完成后需清理对应 Redis 缓存。
 5. **文件上传**：当前 OSS 配置为占位符，本地开发可先使用本地存储或 Mock。
-6. **PRD 与实际代码的差异**：PRD 中 JWT 写为 RS256，但 `application.yml` 实际使用 HS256，以代码配置为准。
-7. **接口版本**：所有 API 以 `/api/v1` 为前缀。
-8. **AGENTS.md 语言**：本项目使用中文编写注释与文档，AI 编码时请保持中文。
+6. **接口版本**：所有 API 以 `/api/v1` 为前缀。
+7. **AGENTS.md 语言**：本项目使用中文编写注释与文档，AI 编码时请保持中文。
