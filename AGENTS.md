@@ -230,7 +230,7 @@ mysql -u root -p < sql/test-data.sql
 ## 安全与认证
 
 - **认证方式**：JWT Bearer Token，请求头 `Authorization: Bearer <token>`
-- **Token 算法**：RS256
+- **Token 算法**：HS256 (HMAC-SHA256)
 - **Token 有效期**：7 天
 - **权限角色**：
   - `guest`（未登录访客）：浏览已发布文章、已审核评论
@@ -280,7 +280,17 @@ Page<User> page = new Page<>(pageNum, pageSize);
 
 - **PRD/文档** 规定使用 `/api/v1/` 前缀（如 `/api/v1/admin/users`）
 - **实际 Controller** 使用 `/v1/` 前缀（如 `@RequestMapping("/v1/admin/users")`）
-- 新增接口时统一按 **代码既有风格 `/v1/`** 编写（或修正为 `/api/v1/` 并同步全局）
+- **前端请求** 统一使用 `/api/v1/` 前缀
+- **Nginx 反向代理** 将 `/api/v1/*` 重写为 `/v1/*` 后转发给后端
+- 新增接口时统一按 **代码既有风格 `/v1/`** 编写
+
+```
+前端请求: GET /api/v1/admin/users
+        ↓ Nginx location /api/
+重写后:   GET /v1/admin/users
+        ↓ 转发
+后端处理: UserController (@RequestMapping("/v1/admin/users"))
+```
 
 ### @Resource 注入
 
@@ -325,6 +335,9 @@ Controller 和测试类使用 `@Resource`（非 `@Autowired`）进行依赖注�
 
 PRD 中设计了基于 Docker Compose 的部署方案，包含：
 - `nginx:alpine` — 反向代理 + 静态资源（80/443）
+  - `location /api/` → 重写去掉 `/api` 前缀，转发至 `blog-api:8080`
+  - `location /` → 静态资源（blog-web）
+  - `location /admin/` → 静态资源（blog-admin）
 - `blog-api` — 后端服务（8080）
 - `blog-web` — 前端展示端（3000）
 - `blog-admin` — 前端管理端（3001）
@@ -342,5 +355,5 @@ PRD 中设计了基于 Docker Compose 的部署方案，包含：
 3. **逻辑删除**：仅 `article` 表使用 MyBatis-Plus 逻辑删除，其他表物理删除。
 4. **缓存一致性**：任何修改文章、分类、标签、配置的接口，完成后需清理对应 Redis 缓存。
 5. **文件上传**：当前 OSS 配置为占位符，本地开发可先使用本地存储或 Mock。
-6. **接口版本**：所有 API 以 `/api/v1` 为前缀。
+6. **接口版本**：所有 API 以 `/v1` 为前缀，前端通过 `/api/v1` 访问，Nginx 反向代理重写去掉 `/api` 前缀。
 7. **AGENTS.md 语言**：本项目使用中文编写注释与文档，AI 编码时请保持中文。

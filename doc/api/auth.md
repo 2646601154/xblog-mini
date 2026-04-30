@@ -18,6 +18,23 @@
 
 ---
 
+## Token 说明
+
+- **算法**：HS256 (HMAC-SHA256)
+- **有效期**：7 天
+- **密钥来源**：`jwt.secret` 配置项
+- **Claims 结构**：
+
+| Claim | 类型 | 说明 |
+|-------|------|------|
+| `sub` | String | 用户名 |
+| `userId` | Long | 用户 ID |
+| `role` | String | 角色（admin/user） |
+| `iat` | Date | 签发时间 |
+| `exp` | Date | 过期时间 |
+
+---
+
 ## 登录
 
 ### 请求
@@ -61,13 +78,35 @@ POST /api/v1/auth/login
 }
 ```
 
-### 响应 (失败)
+### 响应 (失败 - 用户名或密码错误)
 
 ```json
 {
-  "code": 401,
+  "code": 1000,
   "message": "用户名或密码错误",
   "data": null
+}
+```
+
+### 响应 (失败 - 用户已禁用)
+
+```json
+{
+  "code": 2002,
+  "message": "用户已被禁用",
+  "data": null
+}
+```
+
+### 响应 (失败 - 参数校验)
+
+```json
+{
+  "code": 400,
+  "message": "请求参数错误",
+  "errors": {
+    "username": "用户名不能为空"
+  }
 }
 ```
 

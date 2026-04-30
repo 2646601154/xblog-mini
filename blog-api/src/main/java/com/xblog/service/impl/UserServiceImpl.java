@@ -4,19 +4,68 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xblog.common.ResultCode;
+import com.xblog.common.util.JwtUtil;
 import com.xblog.common.util.PageUtil;
+import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.User;
 import com.xblog.exception.BusinessException;
 import com.xblog.mapper.UserMapper;
 import com.xblog.service.UserService;
+import com.xblog.vo.LoginUserVo;
+import com.xblog.vo.LoginVo;
 import com.xblog.vo.UserStatusVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtUtil jwtUtil;
+
+    public UserServiceImpl(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Override
+    public LoginVo login(LoginParam loginParam) {
+        // 1. 根据用户名查询用户
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, loginParam.getUsername());
+        User user = this.getOne(wrapper);
+
+        // 2. 用户不存在
+        if (user == null) {
+            throw new BusinessException(ResultCode.AUTH_LOGIN_FAILED, "用户名或密码错误");
+        }
+
+        // 3. 用户已禁用
+        if ("disabled".equals(user.getStatus())) {
+            throw new BusinessException(ResultCode.USER_DISABLED);
+        }
+
+        // 4. 密码校验
+        if (!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
+            throw new BusinessException(ResultCode.AUTH_LOGIN_FAILED, "用户名或密码错误");
+        }
+
+        // 5. 生成 JWT Token
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+
+        // 6. 组装响应
+        LoginUserVo loginUserVo = new LoginUserVo();
+        BeanUtils.copyProperties(user, loginUserVo);
+
+        LoginVo loginVo = new LoginVo();
+        loginVo.setToken(token);
+        loginVo.setUser(loginUserVo);
+        return loginVo;
+    }
+
     @Override
     public PageResult<User> getUserPage(QueryUserDto dto) {
         int pageNum = dto.getPage() != null ? dto.getPage() : 1;

@@ -1,4 +1,4 @@
-package com.xblog.config;
+package com.xblog.common.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
