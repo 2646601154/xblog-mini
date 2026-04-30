@@ -3,6 +3,7 @@ package com.xblog.handler;
 import com.xblog.common.ResultCode;
 import com.xblog.entity.Result;
 import com.xblog.exception.BusinessException;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +24,15 @@ public class GlobalExceptionHandler {
         result.setCode(e.getResultCode().getCode());
         result.setMessage(e.getMessage());
         result.setErrors(e.getErrors());
+        return result;
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public Result<Void> handleJwtException(JwtException e) {
+        log.warn("JWT 异常: {}", e.getMessage());
+        Result<Void> result = new Result<>();
+        result.setCode(ResultCode.AUTH_TOKEN_INVALID.getCode());
+        result.setMessage("Token 无效");
         return result;
     }
 

@@ -19,6 +19,7 @@ public enum ResultCode {
     USER_NOT_FOUND(2000, "用户不存在"),
     USERNAME_EXISTS(2001, "用户名已存在"),
     USER_DISABLED(2002, "用户已被禁用"),
+    EMAIL_EXISTS(2003, "邮箱已存在"),
     USER_DISABLE_FORBIDDEN(2009, "无法禁用管理员账号"),
     USER_DELETE_FORBIDDEN(2010, "无法删除管理员账号"),
 
