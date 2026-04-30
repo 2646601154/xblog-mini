@@ -178,7 +178,9 @@ POST /api/v1/auth/register
   "code": 400,
   "message": "请求参数错误",
   "errors": {
-    "username": "用户名需3-20位，字母开头"
+    "username": "用户名需3-20位，字母开头",
+    "password": "密码最少6位",
+    "nickname": "昵称不能为空"
   }
 }
 ```
@@ -215,12 +217,12 @@ GET /api/v1/auth/me
 }
 ```
 
-### 响应 (失败)
+### 响应 (失败 - Token 无效/过期)
 
 ```json
 {
-  "code": 401,
-  "message": "Token 已过期",
+  "code": 1002,
+  "message": "Token 无效",
   "data": null
 }
 ```

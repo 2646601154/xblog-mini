@@ -1,5 +1,6 @@
 package com.xblog.controller;
 
+import com.xblog.common.UserContext;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.RegisterParam;
 import com.xblog.entity.Result;
@@ -9,12 +10,14 @@ import com.xblog.vo.LoginVo;
 import com.xblog.vo.RegisterUserVo;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/auth")
 public class AuthController {
@@ -30,6 +33,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<LoginVo> login(@Valid @RequestBody LoginParam loginParam) {
+        log.info("用户登录: {}", loginParam.getUsername());
         return Result.success(userService.login(loginParam));
     }
 
@@ -41,6 +45,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     public Result<RegisterUserVo> register(@Valid @RequestBody RegisterParam registerParam) {
+        log.info("用户注册: {}", registerParam.getUsername());
         return Result.success(userService.register(registerParam));
     }
 
@@ -51,6 +56,7 @@ public class AuthController {
      */
     @GetMapping("/me")
     public Result<User> me() {
+        log.info("获取当前用户信息, userId: {}", UserContext.getUserId());
         return Result.success(userService.getLoginUser());
     }
 }
