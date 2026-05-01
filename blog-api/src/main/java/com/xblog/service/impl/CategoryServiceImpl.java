@@ -1,7 +1,7 @@
 package com.xblog.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xblog.common.ResultCode;
+import com.xblog.common.enums.ResultCode;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.dto.CategoryCreateParam;
 import com.xblog.dto.CategoryUpdateParam;

@@ -1,6 +1,6 @@
 package com.xblog.common.config;
 
-import com.xblog.common.JwtInterceptor;
+import com.xblog.common.intercepter.JwtInterceptor;
 import com.xblog.common.util.JwtUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

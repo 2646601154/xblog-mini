@@ -1,6 +1,6 @@
 package com.xblog.common.exception;
 
-import com.xblog.common.ResultCode;
+import com.xblog.common.enums.ResultCode;
 import lombok.Getter;
 
 import java.util.Map;

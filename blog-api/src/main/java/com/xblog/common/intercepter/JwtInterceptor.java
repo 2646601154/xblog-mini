@@ -1,7 +1,9 @@
-package com.xblog.common;
+package com.xblog.common.intercepter;
 
 import com.alibaba.fastjson2.JSON;
+import com.xblog.common.enums.ResultCode;
 import com.xblog.common.util.JwtUtil;
+import com.xblog.common.util.UserContext;
 import com.xblog.entity.Result;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

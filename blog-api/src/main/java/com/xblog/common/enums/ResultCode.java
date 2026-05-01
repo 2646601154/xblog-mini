@@ -1,4 +1,4 @@
-package com.xblog.common;
+package com.xblog.common.enums;
 
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package com.xblog.controller;
 
-import com.xblog.common.UserContext;
+import com.xblog.common.util.UserContext;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.RegisterParam;
 import com.xblog.entity.Result;
