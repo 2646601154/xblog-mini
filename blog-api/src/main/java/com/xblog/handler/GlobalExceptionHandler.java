@@ -2,7 +2,7 @@ package com.xblog.handler;
 
 import com.xblog.common.ResultCode;
 import com.xblog.entity.Result;
-import com.xblog.exception.BusinessException;
+import com.xblog.common.exception.BusinessException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
