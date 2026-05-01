@@ -29,6 +29,11 @@ public enum ResultCode {
 
     CATEGORY_NOT_FOUND(5000, "分类不存在"),
     CATEGORY_HAS_ARTICLES(5001, "分类下存在文章，无法删除"),
+    CATEGORY_NAME_EMPTY(5002, "分类名称不能为空"),
+    CATEGORY_NAME_EXISTS(5003, "分类名称已存在"),
+    CATEGORY_SLUG_EXISTS(5004, "分类slug已存在"),
+    CATEGORY_NAME_FORMAT_ERROR(5005, "分类名称格式错误"),
+    CATEGORY_SLUG_FORMAT_ERROR(5006, "分类slug格式错误"),
 
     TAG_NOT_FOUND(6000, "标签不存在"),
 
