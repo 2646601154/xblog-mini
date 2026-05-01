@@ -1,4 +1,4 @@
-package com.xblog.controller;
+package com.xblog.controller.admin;
 
 import com.xblog.dto.QueryUserDto;
 import com.xblog.entity.PageResult;

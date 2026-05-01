@@ -15,8 +15,6 @@ SQL 脚本：`sql/init.sql`（表结构）、`sql/test-data.sql`（测试数据�
 
 **当前开发分支：`api`**（不是 `main`）
 
-后端开发分支：api
-
 ---
 
 ## 技术栈与版本
@@ -30,6 +28,9 @@ SQL 脚本：`sql/init.sql`（表结构）、`sql/test-data.sql`（测试数据�
 | 后端 | Redis | 7.x（通过 Lettuce 连接池） |
 | 后端 | Lombok | 最新（optional） |
 | 后端 | Validation | Spring Boot Starter |
+| 后端 | JWT | jjwt 0.12.6 (HS256) |
+| 后端 | BCrypt | spring-security-crypto（轻量，不含完整 Security） |
+| 后端 | JSON | fastjson2 2.0.52 |
 | 前端 | Vue | 3.5.32 |
 | 前端 | TypeScript | ~6.0.0 |
 | 前端 | Vite | ^8.0.8 |
@@ -40,18 +41,11 @@ SQL 脚本：`sql/init.sql`（表结构）、`sql/test-data.sql`（测试数据�
 
 ---
 
-## 项目结构
-
-```
-
----
-
 ## 构建与运行命令
 
 ### 后端（blog-api）
 
 ```bash
-# 进入后端目录
 cd blog-api
 
 # 启动前必须设置数据库密码（PowerShell）
@@ -75,27 +69,21 @@ $env:DB_PASSWORD = "123456"
 ### 前端
 
 ```bash
-# blog-web 或 blog-admin
 cd blog-web    # 或 cd blog-admin
-pnpm install   # 或 npm install
+pnpm install
 pnpm dev       # 开发服务器
 pnpm build     # 生产构建
 ```
 
-- blog-web 开发端口：按 Vite 默认（通常是 `5173`）
-- blog-admin 开发端口：按 Vite 默认（通常是 `5173`）
-
 ### 数据库初始化
 
 ```bash
-# 在项目根目录执行
 mysql -u root -p < sql/init.sql
 mysql -u root -p < sql/test-data.sql
 ```
 
 - 数据库名：`xblog`
-- 字符集：`utf8mb4`
-- 排序规则：`utf8mb4_unicode_ci`
+- 字符集：`utf8mb4`，排序规则：`utf8mb4_unicode_ci`
 
 ---
 
@@ -110,24 +98,64 @@ mysql -u root -p < sql/test-data.sql
 | `DB_PASSWORD` | MySQL root 密码 | **必填** |
 | `REDIS_PASSWORD` | Redis 密码 | 空字符串 |
 | `JWT_SECRET` | JWT 签名密钥 | `your-secret-key-change-in-production` |
-| `OSS_ENDPOINT` | 阿里云 OSS Endpoint | 空 |
-| `OSS_ACCESS_KEY_ID` | OSS AccessKeyId | 空 |
-| `OSS_ACCESS_KEY_SECRET` | OSS AccessKeySecret | 空 |
-| `OSS_BUCKET_NAME` | OSS Bucket 名称 | 空 |
-| `OSS_URL_PREFIX` | OSS 访问 URL 前缀 | 空 |
 
 **关键配置项**：
 
 - **MySQL**：`jdbc:mysql://localhost:3306/xblog`
 - **Redis**：`localhost:6379`，数据库 `0`
-- **JWT**：算法为 **RS256**，有效期 **7 天**（`604800000` 毫秒）
+- **JWT**：算法 **HS256 (HMAC-SHA256)**，有效期 **7 天**（`604800000` 毫秒）
 - **文件上传限制**：单文件最大 `5MB`，单次请求最大 `20MB`
-- **MyBatis-Plus**：
-  - 逻辑删除字段：`deleted`
-  - 逻辑删除值：`1`
-  - 未删除值：`0`
-  - 自动驼峰映射：`map-underscore-to-camel-case: true`
-  - SQL 日志输出到控制台：`StdOutImpl`
+- **MyBatis-Plus**：逻辑删除字段 `deleted`（`1`=已删除，`0`=未删除），自动驼峰映射
+
+---
+
+## 项目结构
+
+```
+blog-api/src/main/java/com/xblog/
+├── Main.java                    # Spring Boot 入口
+├── config/                      # (空，配置类放在 common/config)
+├── controller/                  # REST API 控制器
+│   ├── AuthController.java      # 登录/注册/me
+│   ├── UserController.java      # 用户管理 (Admin)
+│   ├── ArticleController.java   # 文章（待实现）
+│   └── CategoryController.java  # 分类（待实现）
+├── dto/                         # 请求参数对象
+│   ├── LoginParam.java
+│   ├── RegisterParam.java
+│   ├── QueryUserDto.java
+│   └── QueryArticleDto.java
+├── entity/                      # 数据库实体 + 通用响应
+│   ├── User.java / Article.java / Category.java / Tag.java / ...
+│   ├── Result.java              # 统一响应包装
+│   └── PageResult.java          # 分页响应
+├── exception/
+│   └── BusinessException.java   # 业务异常（携带 ResultCode）
+├── handler/
+│   ├── GlobalExceptionHandler.java  # 全局异常处理
+│   └── MybatisPlusFillMetaObjectHandler.java  # 自动填充 createdAt/updatedAt
+├── mapper/                      # MyBatis-Plus Mapper 接口
+├── service/                     # 业务逻辑层
+│   ├── UserService.java
+│   └── impl/UserServiceImpl.java
+├── vo/                          # 响应视图对象
+│   ├── LoginVo.java / LoginUserVo.java / RegisterUserVo.java
+│   └── UserStatusVo.java / ArticleVo.java
+└── common/                      # 公共组件
+    ├── ResultCode.java          # 业务错误码枚举
+    ├── UserContext.java         # ThreadLocal 存储当前登录用户
+    ├── JwtInterceptor.java      # JWT 认证拦截器
+    ├── config/
+    │   ├── WebMvcConfig.java    # 注册拦截器，配置白名单
+    │   └── MybatisPlusConfig.java
+    ├── properties/
+    │   └── JwtProperties.java   # JWT 配置属性类
+    ├── util/
+    │   ├── JwtUtil.java         # JWT 生成/解析
+    │   └── PageUtil.java        # 分页工具
+    └── enums/                   # 业务枚举
+        ├── ArticleStatus.java / UserRole.java / UserStatus.java / ...
+```
 
 ---
 
@@ -136,21 +164,19 @@ mysql -u root -p < sql/test-data.sql
 ### 包名
 - 统一根包名：**`com.xblog`**（不是 `com.xblog.xblog`）
 
-### 分层目录（按 PRD 规划）
+### 分层职责
 
 | 包名 | 职责 |
 |------|------|
-| `config` | Spring 配置类（MyBatis-Plus 分页插件等） |
-| `controller` | REST API 控制器 |
-| `service` | 业务逻辑层 |
+| `controller` | REST API 控制器，调用 service，不做业务逻辑 |
+| `service` / `service.impl` | 业务逻辑层，操作 mapper |
 | `mapper` | MyBatis-Plus Mapper 接口 |
 | `entity` | 数据库实体类 |
-| `dto` | 请求/查询参数对象（Data Transfer Object） |
-| `vo` | 响应视图对象（View Object） |
-| `common` | 公共枚举、常量、工具类（含 `enums/` 子包） |
-| `handler` | MyBatis 字段自动填充、全局异常处理器 |
+| `dto` | 请求/查询参数对象 |
+| `vo` | 响应视图对象（Controller 返回给前端） |
+| `common` | 公共枚举、常量、工具类、拦截器 |
+| `handler` | 全局异常处理器、MyBatis 字段自动填充 |
 | `exception` | 自定义 `BusinessException` |
-| `security` | JWT 工具、认证过滤器、权限注解处理（待实现） |
 
 ### 响应格式
 
@@ -215,30 +241,36 @@ mysql -u root -p < sql/test-data.sql
 
 ---
 
-## 文件上传限制
-
-| 类型 | 限制 |
-|------|------|
-| 单张图片 | 最大 5MB |
-| 单次请求 | 最大 20MB |
-| 允许的图片格式 | jpg、png、gif、webp |
-
-生产环境图片/文件计划存储至 **阿里云 OSS**（当前配置项为占位符 TODO）。
-
----
-
 ## 安全与认证
 
-- **认证方式**：JWT Bearer Token，请求头 `Authorization: Bearer <token>`
-- **Token 算法**：HS256 (HMAC-SHA256)
-- **Token 有效期**：7 天
-- **权限角色**：
-  - `guest`（未登录访客）：浏览已发布文章、已审核评论
-  - `user`（普通用户）：访客权限 + 注册/登录 + 发表/管理自己的评论
-  - `admin`（管理员）：所有权限 + 后台完整管理
-- **密码加密**：BCrypt
-- **SQL 注入防护**：MyBatis-Plus 参数化查询
-- **XSS 防护**：文章正文为富文本 HTML，前端/后端需做对应过滤（待实现）
+### JWT 认证机制
+
+- **算法**：HS256 (HMAC-SHA256)
+- **有效期**：7 天
+- **密钥来源**：`jwt.secret` 配置项
+- **Claims 结构**：`sub`(username)、`userId`(Long)、`role`(String)、`iat`、`exp`
+
+### 认证流程
+
+```
+请求 /v1/** → JwtInterceptor
+  → 白名单 (/v1/auth/login, /v1/auth/register) → 放行
+  → 提取 Authorization: Bearer <token> → 解析
+  → 成功 → UserContext.set(userId, username, role) → 放行
+  → 失败 → 返回 401 { code: 1002, message: "Token 无效" }
+```
+
+### 权限角色
+
+| 角色 | 权限 |
+|------|------|
+| `guest`（未登录） | 浏览已发布文章、已审核评论 |
+| `user`（普通用户） | 访客权限 + 注册/登录 + 发表/管理自己的评论 |
+| `admin`（管理员） | 所有权限 + 后台完整管理 |
+
+### 密码加密
+
+BCrypt（通过 `spring-security-crypto`，不含完整 Spring Security）
 
 ---
 

@@ -1,4 +1,4 @@
-package com.xblog.exception;
+package com.xblog.common.exception;
 
 import com.xblog.common.ResultCode;
 import lombok.Getter;

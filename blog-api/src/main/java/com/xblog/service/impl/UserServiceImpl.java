@@ -12,7 +12,7 @@ import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.User;
-import com.xblog.exception.BusinessException;
+import com.xblog.common.exception.BusinessException;
 import com.xblog.mapper.UserMapper;
 import com.xblog.service.UserService;
 import com.xblog.vo.LoginUserVo;
