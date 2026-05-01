@@ -6,6 +6,8 @@ import com.xblog.entity.Result;
 import com.xblog.service.CategoryService;
 import com.xblog.vo.CategoryAdminVo;
 import com.xblog.vo.CategoryPublicVo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -16,51 +18,34 @@ import java.util.List;
 @Slf4j
 @RestController("adminCategoryController")
 @RequestMapping("/v1/admin/categories")
+@Tag(name = "管理-分类接口", description = "管理员分类管理接口")
 public class CategoryController {
 
     @Resource
     private CategoryService categoryService;
 
-    /**
-     * 获取管理分类列表
-     *
-     * @return
-     */
+    @Operation(summary = "获取管理分类列表")
     @GetMapping
     public Result<List<CategoryAdminVo>> getCategoryList() {
         log.info("获取管理分类列表");
         return Result.success(categoryService.getAdminCategoryList());
     }
 
-    /**
-     * 创建分类
-     *
-     * @param param
-     * @return
-     */
+    @Operation(summary = "创建分类")
     @PostMapping
     public Result<CategoryPublicVo> createCategory(@Valid @RequestBody CategoryCreateParam param) {
         log.info("创建分类: {}", param.getName());
         return Result.success(categoryService.createCategory(param));
     }
 
-    /**
-     * 更新分类
-     * @param id
-     * @param param
-     * @return
-     */
+    @Operation(summary = "更新分类")
     @PutMapping("/{id}")
     public Result<CategoryPublicVo> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateParam param) {
         log.info("更新分类: id={}, name={}", id, param.getName());
         return Result.success(categoryService.updateCategory(id, param));
     }
 
-    /**
-     * 删除分类
-     * @param id
-     * @return
-     */
+    @Operation(summary = "删除分类")
     @DeleteMapping("/{id}")
     public Result<Void> deleteCategory(@PathVariable Long id) {
         log.info("删除分类: id={}", id);

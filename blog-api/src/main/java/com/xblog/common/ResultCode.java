@@ -24,6 +24,14 @@ public enum ResultCode {
     USER_DELETE_FORBIDDEN(2010, "无法删除管理员账号"),
 
     ARTICLE_NOT_FOUND(3000, "文章不存在"),
+    ARTICLE_ALREADY_RECYCLED(3009, "文章已在回收站"),
+    ARTICLE_TITLE_EMPTY(3002, "文章标题不能为空"),
+    ARTICLE_CONTENT_EMPTY(3003, "文章内容不能为空"),
+    ARTICLE_STATUS_INVALID(3005, "文章状态无效"),
+    ARTICLE_CANNOT_EDIT_OTHERS(3006, "不能编辑他人的文章"),
+    ARTICLE_CANNOT_DELETE_OTHERS(3007, "不能删除他人的文章"),
+    ARTICLE_IN_RECYCLE_CANNOT_PUBLISH(3010, "文章在回收站，无法发布"),
+    ARTICLE_NOT_IN_RECYCLE_CANNOT_RESTORE(3011, "文章不在回收站，无法恢复"),
 
     COMMENT_NOT_FOUND(4000, "评论不存在"),
 
