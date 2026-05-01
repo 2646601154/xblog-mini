@@ -8,4 +8,6 @@ import com.xblog.vo.ArticleVo;
 
 public interface ArticleService extends IService<Article> {
     PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto);
+
+    ArticleVo getArticleDetail(Long id);
 }

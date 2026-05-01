@@ -3,6 +3,8 @@ package com.xblog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xblog.common.ResultCode;
+import com.xblog.common.exception.BusinessException;
 import com.xblog.dto.QueryArticleDto;
 import com.xblog.entity.*;
 import com.xblog.mapper.*;
@@ -37,7 +39,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto) {
         // 1. 构建分页对象
-        Page<Article> page = new Page<>(queryDto.getPage(), queryDto.getSize());
+        int pageNum = queryDto.getPage() != null ? queryDto.getPage() : 1;
+        int pageSize = queryDto.getSize() != null ? queryDto.getSize() : 10;
+        Page<Article> page = new Page<>(pageNum, pageSize);
 
         // 2. 构建查询条件
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
@@ -76,6 +80,39 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         pageResult.setRecords(convertToArticleVoList(resultPage.getRecords()));
 
         return pageResult;
+    }
+
+    @Override
+    public ArticleVo getArticleDetail(Long id) {
+        // 查询文章
+        Article article = getById(id);
+        if (article == null) {
+            throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
+        }
+
+        // 公开接口：只返回已发布文章
+        if (!"published".equals(article.getStatus())) {
+            throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
+        }
+
+        // TODO: 后续优化 - 可根据 IP 或用户 ID 防止重复计数
+        // 浏览量原子 +1
+        lambdaUpdate()
+                .eq(Article::getId, id)
+                .setSql("view_count = view_count + 1")
+                .update();
+
+        // 复用列表查询逻辑组装 VO（分类、作者、标签）
+        List<ArticleVo> voList = convertToArticleVoList(Collections.singletonList(article));
+        ArticleVo vo = voList.get(0);
+
+        // 设置详情专属字段
+        vo.setContent(article.getContent());
+        vo.setStatus(article.getStatus());
+        vo.setUpdatedAt(article.getUpdatedAt());
+        vo.setViewCount(article.getViewCount() + 1);
+
+        return vo;
     }
 
     private List<ArticleVo> convertToArticleVoList(List<Article> articles) {
