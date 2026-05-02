@@ -44,6 +44,11 @@ public enum ResultCode {
     CATEGORY_SLUG_FORMAT_ERROR(5006, "分类slug格式错误"),
 
     TAG_NOT_FOUND(6000, "标签不存在"),
+    TAG_NAME_EMPTY(6001, "标签名称不能为空"),
+    TAG_NAME_EXISTS(6002, "标签名称已存在"),
+    TAG_SLUG_EXISTS(6003, "标签slug已存在"),
+    TAG_NAME_FORMAT_ERROR(6004, "标签名称格式错误"),
+    TAG_SLUG_FORMAT_ERROR(6005, "标签slug格式错误"),
 
     SYSTEM_ERROR(9000, "系统错误");
 
