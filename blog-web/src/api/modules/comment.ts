@@ -1,5 +1,6 @@
 import request from '../request'
-import type { ApiResponse, PageResult } from '@/types'
+import type { PageResult } from '@/types'
+import type { AxiosResponse } from 'axios'
 
 export interface CommentDTO {
   articleId: number
@@ -20,17 +21,18 @@ export interface CommentVO {
   createdAt: string
 }
 
-export interface CommentListVO extends PageResult<CommentVO> {}
+export type CommentListVO = PageResult<CommentVO>
 
-// 发表评论
-export function postComment(data: CommentDTO): Promise<ApiResponse<CommentVO>> {
+export type CommentListResponse = Promise<AxiosResponse<{ code: number; message: string; data: CommentListVO }>>
+export type CommentResponse = Promise<AxiosResponse<{ code: number; message: string; data: CommentVO }>>
+
+export function postComment(data: CommentDTO): CommentResponse {
   return request.post('/api/v1/comments', data)
 }
 
-// 文章评论列表
 export function getArticleComments(
   articleId: number,
   params?: { page?: number; size?: number }
-): Promise<ApiResponse<CommentListVO>> {
+): CommentListResponse {
   return request.get(`/api/v1/articles/${articleId}/comments`, { params })
 }

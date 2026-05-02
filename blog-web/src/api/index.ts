@@ -1,5 +1,6 @@
 export * from './modules/auth'
 export * from './modules/article'
-export * from './modules/category'
-export * from './modules/tag'
+export { getCategoryList, getCategoryBySlug } from './modules/category'
+export type { CategoryDetailVO } from './modules/category'
+export { getTagList } from './modules/tag'
 export * from './modules/comment'

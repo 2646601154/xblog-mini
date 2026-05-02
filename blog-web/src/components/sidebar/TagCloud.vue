@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
 import type { TagVO } from '@/api'
 
-const props = defineProps<{
+defineProps<{
   tags: TagVO[]
 }>()
 
+const emit = defineEmits<{
+  select: [slug: string]
+}>()
+
 const handleClick = (slug: string) => {
-  // TODO: 实现标签页面跳转
-  ElMessage.info('标签页面开发中')
-  console.log('跳转至标签页面:', slug)
+  emit('select', slug)
 }
 </script>
 

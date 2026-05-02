@@ -41,6 +41,50 @@ GET /api/v1/categories
 
 ---
 
+## 获取分类详情 (公开)
+
+### 请求
+
+```
+GET /api/v1/categories/{slug}
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| slug | String | Path | 是 | 分类 URL 标识 |
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "技术",
+    "slug": "tech",
+    "description": "技术分享与教程",
+    "sortOrder": 1,
+    "articleCount": 10,
+    "createdAt": "2026-04-01T09:00:00"
+  }
+}
+```
+
+### 响应 (失败)
+
+```json
+{
+  "code": 5000,
+  "message": "分类不存在",
+  "data": null
+}
+```
+
+---
+
 ## 【管理】分类管理列表
 
 ### 请求

@@ -7,11 +7,11 @@ import * as ElementPlusIcons from '@element-plus/icons-vue'
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 import '@/styles/main.css'
 
 const app = createApp(App)
 
-// 注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIcons)) {
   app.component(key, component)
 }
@@ -19,5 +19,8 @@ for (const [key, component] of Object.entries(ElementPlusIcons)) {
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+
+const authStore = useAuthStore()
+authStore.initAuth()
 
 app.mount('#app')

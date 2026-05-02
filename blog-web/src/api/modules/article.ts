@@ -1,5 +1,6 @@
 import request from '../request'
-import type { ApiResponse, PageResult } from '@/types'
+import type { PageResult } from '@/types'
+import type { AxiosResponse } from 'axios'
 
 export interface CategoryVO {
   id: number
@@ -41,7 +42,7 @@ export interface ArticleListItemVO {
   createdAt: string
 }
 
-export interface ArticleListVO extends PageResult<ArticleListItemVO> {}
+export type ArticleListVO = PageResult<ArticleListItemVO>
 
 export interface ArticleDetailVO {
   id: number
@@ -59,12 +60,15 @@ export interface ArticleDetailVO {
   updatedAt: string
 }
 
-// 文章列表
-export function getArticleList(params: ArticleListDTO): Promise<ApiResponse<ArticleListVO>> {
+export type ArticleListResponse = Promise<AxiosResponse<{ code: number; message: string; data: ArticleListVO }>>
+export type ArticleDetailResponse = Promise<AxiosResponse<{ code: number; message: string; data: ArticleDetailVO }>>
+export type CategoryListResponse = Promise<AxiosResponse<{ code: number; message: string; data: CategoryVO[] }>>
+export type TagListResponse = Promise<AxiosResponse<{ code: number; message: string; data: TagVO[] }>>
+
+export function getArticleList(params: ArticleListDTO): ArticleListResponse {
   return request.get('/api/v1/articles', { params })
 }
 
-// 文章详情
-export function getArticleDetail(id: number): Promise<ApiResponse<ArticleDetailVO>> {
+export function getArticleDetail(id: number): ArticleDetailResponse {
   return request.get(`/api/v1/articles/${id}`)
 }

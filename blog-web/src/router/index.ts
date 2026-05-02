@@ -14,9 +14,14 @@ const router = createRouter({
       component: () => import('@/pages/article/detail.vue'),
     },
     {
-      path: '/category/:slug',
+      path: '/categories',
+      name: 'categories',
+      component: () => import('@/pages/categories/index.vue'),
+    },
+    {
+      path: '/categories/:slug',
       name: 'category',
-      component: () => import('@/pages/category/index.vue'),
+      component: () => import('@/pages/categories/index.vue'),
     },
     {
       path: '/tag/:slug',
@@ -32,6 +37,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('@/pages/register/index.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/pages/profile/index.vue'),
     },
   ],
 })

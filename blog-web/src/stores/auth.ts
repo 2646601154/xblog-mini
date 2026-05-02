@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials: LoginDTO): Promise<boolean> {
     try {
       const res = await apiLogin(credentials)
-      const { token: newToken, user } = res.data
+      const { token: newToken, user } = res.data.data
       token.value = newToken
       userInfo.value = user
       storage.setToken(newToken)
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return false
     try {
       const res = await getCurrentUser()
-      userInfo.value = res.data
+      userInfo.value = res.data.data
       if (userInfo.value) {
         storage.setUserInfo(userInfo.value)
       }

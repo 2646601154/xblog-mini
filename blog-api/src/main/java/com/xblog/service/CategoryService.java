@@ -18,4 +18,6 @@ public interface CategoryService extends IService<Category> {
     CategoryPublicVo updateCategory(Long id, CategoryUpdateParam param);
 
     void deleteCategory(Long id);
+
+    CategoryPublicVo getCategoryBySlug(String slug);
 }

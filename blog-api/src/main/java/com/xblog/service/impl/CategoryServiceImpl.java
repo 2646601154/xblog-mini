@@ -16,6 +16,9 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
@@ -116,5 +119,28 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .update();
 
         removeById(id);
+    }
+
+    @Override
+    public CategoryPublicVo getCategoryBySlug(String slug) {
+        Category category = lambdaQuery().eq(Category::getSlug, slug).one();
+        if (category == null) {
+            throw new BusinessException(ResultCode.CATEGORY_NOT_FOUND);
+        }
+
+        // 查询该分类下的文章数量
+        long articleCount = articleService.lambdaQuery()
+                .eq(Article::getCategoryId, category.getId())
+                .eq(Article::getDeleted, false)
+                .count();
+
+        CategoryPublicVo vo = new CategoryPublicVo();
+        vo.setId(category.getId());
+        vo.setName(category.getName());
+        vo.setSlug(category.getSlug());
+        vo.setDescription(category.getDescription());
+        vo.setSortOrder(category.getSortOrder());
+
+        return vo;
     }
 }

@@ -1,10 +1,11 @@
 import request from '../request'
-import type { ApiResponse } from '@/types'
+import type { AxiosResponse } from 'axios'
 import type { TagVO } from './article'
 
 export type { TagVO }
 
-// 标签列表
-export function getTagList(): Promise<ApiResponse<TagVO[]>> {
+export type TagListResponse = Promise<AxiosResponse<{ code: number; message: string; data: TagVO[] }>>
+
+export function getTagList(): TagListResponse {
   return request.get('/api/v1/tags')
 }

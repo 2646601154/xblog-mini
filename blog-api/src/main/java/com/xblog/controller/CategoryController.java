@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,5 +39,12 @@ public class CategoryController {
             return vo;
         }).toList();
         return Result.success(voList);
+    }
+
+    @Operation(summary = "获取分类详情")
+    @GetMapping("/{slug}")
+    public Result<CategoryPublicVo> getCategoryBySlug(@PathVariable String slug) {
+        log.info("获取分类详情: slug={}", slug);
+        return Result.success(categoryService.getCategoryBySlug(slug));
     }
 }

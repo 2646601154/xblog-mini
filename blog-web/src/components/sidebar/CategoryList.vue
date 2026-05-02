@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
+import { useRouter, useRoute } from 'vue-router'
 import type { CategoryVO } from '@/api'
 
 interface CategoryWithCount extends CategoryVO {
-  articleCount?: number
 }
 
 defineProps<{
   categories: CategoryWithCount[]
 }>()
 
+const router = useRouter()
+const route = useRoute()
+
 const handleClick = (slug: string) => {
-  // TODO: 实现分类页面跳转
-  ElMessage.info('分类页面开发中')
-  console.log('跳转至分类页面:', slug)
+  router.push(`/categories/${slug}`)
+}
+
+const isActive = (slug: string) => {
+  return route.params.slug === slug
 }
 </script>
 
@@ -26,10 +30,10 @@ const handleClick = (slug: string) => {
         v-for="category in categories"
         :key="category.id"
         class="category-item"
+        :class="{ active: isActive(category.slug) }"
         @click="handleClick(category.slug)"
       >
         <span class="category-name">{{ category.name }}</span>
-        <el-badge :value="category.articleCount ?? 0" :max="99" type="primary" />
       </li>
     </ul>
   </div>
@@ -62,23 +66,35 @@ const handleClick = (slug: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.category-item:last-child {
-  border-bottom: none;
+.category-item:hover {
+  background: var(--bg-secondary);
+  padding-left: 16px;
 }
 
-.category-item:hover {
-  color: var(--accent);
-  padding-left: 8px;
+.category-item.active {
+  background: var(--accent);
+  color: var(--white);
+}
+
+.category-item.active .category-name {
+  color: var(--white);
+}
+
+.category-item.active :deep(.el-badge__content) {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--white);
 }
 
 .category-name {
   font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {

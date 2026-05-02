@@ -2,15 +2,16 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Menu } from '@element-plus/icons-vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 const isMenuOpen = ref(false)
 
 const menuItems = [
   { label: '首页', path: '/', key: 'home' },
-  { label: '分类', path: '/category/frontend', key: 'category' },
-  { label: '标签', path: '/tag/vue', key: 'tag' },
+  { label: '分类', path: '/categories', key: 'category' },
 ]
 
 const navigateTo = (path: string) => {
@@ -20,6 +21,16 @@ const navigateTo = (path: string) => {
 
 const handleMenuSelect = (path: string) => {
   navigateTo(path)
+}
+
+const handleCommand = (command: string) => {
+  if (command === 'profile') {
+    router.push('/profile')
+  } else if (command === 'logout') {
+    authStore.logout()
+    router.push('/')
+  }
+  isMenuOpen.value = false
 }
 </script>
 
@@ -48,8 +59,26 @@ const handleMenuSelect = (path: string) => {
       </el-menu>
 
       <div class="header-auth">
-        <el-button plain @click="navigateTo('/login')">登录</el-button>
-        <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+        <template v-if="authStore.isLoggedIn">
+          <el-dropdown @command="handleCommand">
+            <span class="user-info">
+              <el-avatar :size="32" :src="authStore.avatar">
+                {{ authStore.nickname?.[0] || 'U' }}
+              </el-avatar>
+              <span class="nickname">{{ authStore.nickname }}</span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                <el-dropdown-item command="logout" divided>退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
+        <template v-else>
+          <el-button plain @click="navigateTo('/login')">登录</el-button>
+          <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+        </template>
       </div>
 
       <el-icon class="mobile-menu-icon" :size="24" @click="isMenuOpen = !isMenuOpen">
@@ -79,8 +108,19 @@ const handleMenuSelect = (path: string) => {
           </el-menu-item>
         </el-menu>
         <div class="mobile-auth">
-          <el-button plain @click="navigateTo('/login')">登录</el-button>
-          <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+          <template v-if="authStore.isLoggedIn">
+            <div class="mobile-user-info" @click="navigateTo('/profile')">
+              <el-avatar :size="40" :src="authStore.avatar">
+                {{ authStore.nickname?.[0] || 'U' }}
+              </el-avatar>
+              <span class="mobile-nickname">{{ authStore.nickname }}</span>
+            </div>
+            <el-button plain @click="handleCommand('logout')">退出</el-button>
+          </template>
+          <template v-else>
+            <el-button plain @click="navigateTo('/login')">登录</el-button>
+            <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+          </template>
         </div>
       </div>
     </el-drawer>
@@ -171,6 +211,25 @@ const handleMenuSelect = (path: string) => {
   font-size: 14px;
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+}
+
+.user-info:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nickname {
+  font-size: 14px;
+}
+
 .mobile-menu-icon {
   display: none;
   color: #fff;
@@ -196,6 +255,28 @@ const handleMenuSelect = (path: string) => {
 .mobile-menu .el-menu-item.is-active {
   background-color: rgba(255, 255, 255, 0.15) !important;
   color: #fff !important;
+}
+
+.mobile-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+}
+
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mobile-nickname {
+  color: #fff;
+  font-size: 16px;
 }
 
 @media (max-width: 768px) {
