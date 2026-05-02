@@ -23,6 +23,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/v1/auth/login",
                         "/v1/auth/register",
                         "/v1/categories",
+                        "/v1/tags",
                         "/v1/configs",
                         "/v1/articles",                  // 新增
                         "/v1/articles/*",               // 新增（文章详情）
