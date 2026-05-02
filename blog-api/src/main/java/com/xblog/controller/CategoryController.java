@@ -4,6 +4,8 @@ import com.xblog.entity.Category;
 import com.xblog.entity.Result;
 import com.xblog.service.CategoryService;
 import com.xblog.vo.CategoryPublicVo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +17,13 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/v1/categories")
+@Tag(name = "分类接口", description = "公开分类相关接口")
 public class CategoryController {
 
     @Resource
     private CategoryService categoryService;
 
-    //获取分类列表 (公开)
+    @Operation(summary = "获取分类列表")
     @GetMapping
     public Result<List<CategoryPublicVo>> getCategoryList(){
         log.info("获取分类列表");

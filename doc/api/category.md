@@ -185,8 +185,8 @@ DELETE /api/v1/admin/categories/{id}
 
 ```json
 {
-  "code": 400,
-  "message": "无法删除有文章的分类",
+  "code": 5001,
+  "message": "分类下存在文章，无法删除",
   "data": null
 }
 ```

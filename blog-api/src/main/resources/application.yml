@@ -64,6 +64,28 @@ oss:
   bucket-name: ${OSS_BUCKET_NAME:}
   url-prefix: ${OSS_URL_PREFIX:}
 
+# Knife4j 配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# springdoc OpenAPI 配置
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  group-configs:
+    - group: '公开接口'
+      paths-to-match:
+        - '/v1/articles/**'
+        - '/v1/categories/**'
+        - '/v1/auth/**'
+    - group: '管理接口'
+      paths-to-match:
+        - '/v1/admin/**'
+
 # 日志配置
 logging:
   level:

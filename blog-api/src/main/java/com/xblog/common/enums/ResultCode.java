@@ -1,4 +1,4 @@
-package com.xblog.common;
+package com.xblog.common.enums;
 
 import lombok.Getter;
 
@@ -24,8 +24,19 @@ public enum ResultCode {
     USER_DELETE_FORBIDDEN(2010, "无法删除管理员账号"),
 
     ARTICLE_NOT_FOUND(3000, "文章不存在"),
+    ARTICLE_ALREADY_RECYCLED(3009, "文章已在回收站"),
+    ARTICLE_TITLE_EMPTY(3002, "文章标题不能为空"),
+    ARTICLE_CONTENT_EMPTY(3003, "文章内容不能为空"),
+    ARTICLE_STATUS_INVALID(3005, "文章状态无效"),
+    ARTICLE_CANNOT_EDIT_OTHERS(3006, "不能编辑他人的文章"),
+    ARTICLE_CANNOT_DELETE_OTHERS(3007, "不能删除他人的文章"),
+    ARTICLE_IN_RECYCLE_CANNOT_PUBLISH(3010, "文章在回收站，无法发布"),
+    ARTICLE_NOT_IN_RECYCLE_CANNOT_RESTORE(3011, "文章不在回收站，无法恢复"),
 
     COMMENT_NOT_FOUND(4000, "评论不存在"),
+    COMMENT_CANNOT_EDIT_OTHERS(4004, "不能编辑他人的评论"),
+    COMMENT_CANNOT_DELETE_OTHERS(4005, "不能删除他人的评论"),
+    COMMENT_APPROVED_CANNOT_DELETE(4009, "已审核通过的评论无法删除"),
 
     CATEGORY_NOT_FOUND(5000, "分类不存在"),
     CATEGORY_HAS_ARTICLES(5001, "分类下存在文章，无法删除"),
@@ -36,6 +47,11 @@ public enum ResultCode {
     CATEGORY_SLUG_FORMAT_ERROR(5006, "分类slug格式错误"),
 
     TAG_NOT_FOUND(6000, "标签不存在"),
+    TAG_NAME_EMPTY(6001, "标签名称不能为空"),
+    TAG_NAME_EXISTS(6002, "标签名称已存在"),
+    TAG_SLUG_EXISTS(6003, "标签slug已存在"),
+    TAG_NAME_FORMAT_ERROR(6004, "标签名称格式错误"),
+    TAG_SLUG_FORMAT_ERROR(6005, "标签slug格式错误"),
 
     SYSTEM_ERROR(9000, "系统错误");
 

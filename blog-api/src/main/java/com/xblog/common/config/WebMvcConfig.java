@@ -1,6 +1,6 @@
 package com.xblog.common.config;
 
-import com.xblog.common.JwtInterceptor;
+import com.xblog.common.intercepter.JwtInterceptor;
 import com.xblog.common.util.JwtUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -22,7 +22,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/v1/auth/login",
                         "/v1/auth/register",
-                        "/v1/categories"
+                        "/v1/categories",
+                        "/v1/configs",
+                        "/v1/articles/*/comments",
+                        "/doc.html",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/favicon.ico"
                 );
     }
 }

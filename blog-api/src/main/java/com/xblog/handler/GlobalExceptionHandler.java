@@ -1,6 +1,6 @@
 package com.xblog.handler;
 
-import com.xblog.common.ResultCode;
+import com.xblog.common.enums.ResultCode;
 import com.xblog.entity.Result;
 import com.xblog.common.exception.BusinessException;
 import io.jsonwebtoken.JwtException;

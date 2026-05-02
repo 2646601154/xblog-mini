@@ -13,8 +13,9 @@
 | 3006 | 不能编辑他人的文章 |
 | 3007 | 不能删除他人的文章 |
 | 3008 | 标签不存在 |
-| 3009 | 文章已发布，无法编辑 |
+| 3009 | 文章已在回收站 |
 | 3010 | 文章在回收站，无法发布 |
+| 3011 | 文章不在回收站，无法恢复 |
 
 ---
 
@@ -184,6 +185,7 @@ GET /api/v1/admin/articles
 | size | Integer | Query | 否 | 每页条数 (默认 10) |
 | status | String | Query | 否 | 状态筛选 (draft/published/recycled) |
 | categoryId | Long | Query | 否 | 分类 ID 筛选 |
+| title | String | Query | 否 | 标题模糊搜索 |
 
 ### 响应 (成功)
 
@@ -198,8 +200,12 @@ GET /api/v1/admin/articles
         "title": "Spring Boot 3.x 快速入门指南",
         "summary": "本文介绍了...",
         "coverImage": "https://picsum.photos/seed/spring/800/400",
-        "category": {"id": 1, "name": "技术"},
-        "author": {"id": 1, "nickname": "管理员"},
+        "category": {"id": 1, "name": "技术", "slug": "tech"},
+        "author": {"id": 1, "nickname": "管理员", "username": "admin", "avatar": "..."},
+        "tags": [
+          {"id": 1, "name": "Java", "slug": "java"},
+          {"id": 2, "name": "Spring Boot", "slug": "spring-boot"}
+        ],
         "status": "published",
         "viewCount": 100,
         "publishedAt": "2026-04-01T10:00:00",
