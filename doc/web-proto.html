@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xblog-mini - 我的个人博客</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <style>
+    :root {
+      --bg-primary: #FAF7F2;
+      --bg-secondary: #F5F0E8;
+      --bg-dark: #3D3A35;
+      --text-primary: #5D4E37;
+      --text-secondary: #8B7355;
+      --accent: #D4815A;
+      --accent-light: #E8A882;
+      --border: #E5DDD0;
+      --white: #FFFFFF;
+      --shadow: rgba(93, 78, 55, 0.08);
+      --shadow-hover: rgba(93, 78, 55, 0.15);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ========== 顶部导航 ========== */
+    .header {
+      background: var(--bg-dark);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      padding: 8px 16px;
+      color: rgba(255, 255, 255, 0.85);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .nav-auth {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--white);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: var(--white);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(212, 129, 90, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* ========== 主布局 ========== */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 40px;
+    }
+
+    .content-area {
+      min-width: 0;
+    }
+
+    /* ========== 文章卡片 ========== */
+    .article-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 12px var(--shadow);
+      margin-bottom: 30px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px var(--shadow-hover);
+    }
+
+    .article-card-cover {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .article-card-body {
+      padding: 24px;
+    }
+
+    .article-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .article-card-category {
+      background: var(--bg-secondary);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .article-card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .article-card-title:hover {
+      color: var(--accent);
+    }
+
+    .article-card-summary {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .article-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .article-card-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .article-card-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .article-card-author-name {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .article-card-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .article-card-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ========== 侧边栏 ========== */
+    .sidebar {
+      position: sticky;
+      top: 84px;
+      height: fit-content;
+    }
+
+    .sidebar-widget {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+
+    .sidebar-widget-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    .category-list {
+      list-style: none;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .category-item:last-child {
+      border-bottom: none;
+    }
+
+    .category-item:hover {
+      color: var(--accent);
+      padding-left: 8px;
+    }
+
+    .category-item-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-item-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .category-item-count {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: 2px 10px;
+      border-radius: 10px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-item {
+      padding: 6px 14px;
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tag-item:hover {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    /* ========== 分页 ========== */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    .pagination-item {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .pagination-item:hover,
+    .pagination-item.active {
+      background: var(--accent);
+      color: var(--white);
+      border-color: var(--accent);
+    }
+
+    .pagination-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ========== 文章详情 ========== */
+    .article-detail {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+
+    .article-detail-cover {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    .article-detail-body {
+      padding: 40px;
+    }
+
+    .article-detail-header {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .article-detail-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .article-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .article-detail-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .article-content {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-primary);
+    }
+
+    .article-content h2 {
+      margin: 30px 0 15px;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .article-content p {
+      margin-bottom: 16px;
+    }
+
+    .article-content ul,
+    .article-content ol {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    .article-content li {
+      margin-bottom: 8px;
+    }
+
+    .article-content blockquote {
+      margin: 20px 0;
+      padding: 16px 24px;
+      background: var(--bg-secondary);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .article-content pre {
+      background: var(--bg-dark);
+      color: #f8f8f2;
+      padding: 20px;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    .article-content code {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9em;
+    }
+
+    .article-content p code {
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    .article-tags {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .article-tags-label {
+      color: var(--text-secondary);
+    }
+
+    .article-tag {
+      padding: 4px 14px;
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    /* ========== 评论区 ========== */
+    .comments-section {
+      margin-top: 40px;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+
+    .comments-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .comment-form {
+      margin-bottom: 30px;
+    }
+
+    .comment-form-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      transition: var(--transition);
+      background: var(--bg-primary);
+    }
+
+    .comment-form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--white);
+    }
+
+    .comment-form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .comment-form-hint {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .comment-list {
+      list-style: none;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comment-item:last-child {
+      border-bottom: none;
+    }
+
+    .comment-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .comment-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .comment-time {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .comment-content {
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* ========== 表单页面 ========== */
+    .auth-page {
+      min-height: calc(100vh - 64px - 200px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 48px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px var(--shadow);
+    }
+
+    .auth-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg-primary);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--white);
+    }
+
+    .form-input.error {
+      border-color: #e74c3c;
+    }
+
+    .form-error {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .form-error.show {
+      display: block;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .auth-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-success {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .auth-success-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .auth-success-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .auth-success-text {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    /* ========== 底部 ========== */
+    .footer {
+      background: var(--bg-dark);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 40px 20px;
+      margin-top: 80px;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .footer-icp {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ========== 面包屑 ========== */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    .breadcrumb-item {
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb-item a:hover {
+      color: var(--accent);
+    }
+
+    .breadcrumb-separator {
+      color: var(--border);
+    }
+
+    .breadcrumb-current {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* ========== 页面隐藏/显示 ========== */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ========== 响应式 ========== */
+    @media (max-width: 900px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .sidebar-widget {
+        margin-bottom: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .main-container {
+        padding: 24px 16px;
+        gap: 24px;
+      }
+
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      .article-detail-cover {
+        height: 240px;
+      }
+
+      .article-detail-body {
+        padding: 24px;
+      }
+
+      .article-detail-title {
+        font-size: 1.5rem;
+      }
+
+      .article-detail-meta {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .article-content {
+        font-size: 1rem;
+      }
+
+      .article-content h2 {
+        font-size: 1.3rem;
+      }
+
+      .auth-card {
+        padding: 32px 24px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .article-card-cover {
+        height: 160px;
+      }
+    }
+
+    /* ========== 移动端菜单 ========== */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: var(--bg-dark);
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      z-index: 99;
+    }
+
+    .mobile-menu.show {
+      display: block;
+    }
+
+    .mobile-menu .nav-link {
+      display: block;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .mobile-menu .nav-auth {
+      flex-direction: column;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <nav class="nav-container">
+      <a class="logo" onclick="navigateTo('home')">
+        <span class="logo-icon">📝</span>
+        <span>Xblog</span>
+      </a>
+
+      <div class="nav-links" id="navLinks">
+        <a class="nav-link active" data-page="home" onclick="navigateTo('home')">首页</a>
+        <a class="nav-link" data-page="category" onclick="navigateTo('category', 'frontend')">分类</a>
+        <a class="nav-link" data-page="tag" onclick="navigateTo('tag', 'vue')">标签</a>
+      </div>
+
+      <div class="nav-auth" id="navAuth">
+        <button class="btn btn-outline" onclick="navigateTo('login')">登录</button>
+        <button class="btn btn-primary" onclick="navigateTo('register')">注册</button>
+      </div>
+
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a class="nav-link" onclick="navigateTo('home'); toggleMobileMenu()">首页</a>
+      <a class="nav-link" onclick="navigateTo('category', 'frontend'); toggleMobileMenu()">分类</a>
+      <a class="nav-link" onclick="navigateTo('tag', 'vue'); toggleMobileMenu()">标签</a>
+      <div class="nav-auth">
+        <button class="btn btn-outline" onclick="navigateTo('login'); toggleMobileMenu()">登录</button>
+        <button class="btn btn-primary" onclick="navigateTo('register'); toggleMobileMenu()">注册</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== 首页 ========== -->
+  <div class="page active" id="page-home">
+    <div class="main-container">
+      <main class="content-area">
+        <h2 style="font-size: 1.5rem; margin-bottom: 24px; color: var(--text-primary);">最新文章</h2>
+
+        <!-- 文章卡片 1 -->
+        <article class="article-card" onclick="navigateTo('detail', 1)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">前端开发</span>
+              <span>2026-04-25</span>
+            </div>
+            <h3 class="article-card-title">Vue 3 Composition API 完全指南：从入门到精通</h3>
+            <p class="article-card-summary">本文深入探讨 Vue 3 的 Composition API，包括 setup 语法糖、ref 和 reactive、computed 和 watch、生命周期钩子等核心概念，并通过实际案例帮助你掌握这一强大的 API。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">技术小熊</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 1.2k</span>
+                <span class="article-card-stat">💬 28</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 文章卡片 2 -->
+        <article class="article-card" onclick="navigateTo('detail', 2)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">后端架构</span>
+              <span>2026-04-22</span>
+            </div>
+            <h3 class="article-card-title">Spring Boot 3.x 实战：构建高性能 RESTful API</h3>
+            <p class="article-card-summary">本文详细讲解如何使用 Spring Boot 3.x 构建高性能 RESTful API，涵盖项目结构设计、数据访问层优化、缓存策略、CORS 跨域处理等关键主题。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">架构师老王</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 2.8k</span>
+                <span class="article-card-stat">💬 45</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 文章卡片 3 -->
+        <article class="article-card" onclick="navigateTo('detail', 3)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">技术分享</span>
+              <span>2026-04-18</span>
+            </div>
+            <h3 class="article-card-title">Git 进阶技巧：让你的提交历史更优雅</h3>
+            <p class="article-card-summary">介绍 Git 的进阶使用技巧，包括交互式 rebase、git cherry-pick、git stash、 submodule 等功能，帮助你更好地管理代码版本和协作开发。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">代码诗人</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 856</span>
+                <span class="article-card-stat">💬 12</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 文章卡片 4 -->
+        <article class="article-card" onclick="navigateTo('detail', 4)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">随笔感悟</span>
+              <span>2026-04-15</span>
+            </div>
+            <h3 class="article-card-title">程序员如何保持持续学习与成长</h3>
+            <p class="article-card-summary">作为程序员，保持技术栈的更新和个人的成长非常重要。本文分享一些我在学习和成长过程中的经验和方法，希望能对大家有所启发。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">产品小白</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 3.5k</span>
+                <span class="article-card-stat">💬 67</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 分页 -->
+        <div class="pagination">
+          <span class="pagination-item disabled">‹</span>
+          <span class="pagination-item active">1</span>
+          <span class="pagination-item">2</span>
+          <span class="pagination-item">3</span>
+          <span class="pagination-item">...</span>
+          <span class="pagination-item">10</span>
+          <span class="pagination-item">›</span>
+        </div>
+      </main>
+
+      <!-- 侧边栏 -->
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">分类</h3>
+          <ul class="category-list">
+            <li class="category-item" onclick="navigateTo('category', 'frontend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                前端开发
+              </span>
+              <span class="category-item-count">12</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'backend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                后端架构
+              </span>
+              <span class="category-item-count">8</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'tech')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                技术分享
+              </span>
+              <span class="category-item-count">15</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'essay')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                随笔感悟
+              </span>
+              <span class="category-item-count">6</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">标签云</h3>
+          <div class="tag-cloud">
+            <span class="tag-item" onclick="navigateTo('tag', 'vue')">Vue</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'react')">React</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'typescript')">TypeScript</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'node')">Node.js</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'java')">Java</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'spring')">Spring Boot</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'docker')">Docker</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'git')">Git</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'css')">CSS</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'javascript')">JavaScript</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========== 文章详情 ========== -->
+  <div class="page" id="page-detail">
+    <div class="main-container">
+      <main class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="#" onclick="navigateTo('home')">首页</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item"><a href="#" onclick="navigateTo('category', 'frontend')">前端开发</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">文章详情</span>
+        </div>
+
+        <article class="article-detail">
+          <img class="article-detail-cover" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop" alt="文章封面">
+          <div class="article-detail-body">
+            <header class="article-detail-header">
+              <h1 class="article-detail-title">Vue 3 Composition API 完全指南：从入门到精通</h1>
+              <div class="article-detail-meta">
+                <span class="article-detail-meta-item">👤 技术小熊</span>
+                <span class="article-detail-meta-item">📅 2026-04-25</span>
+                <span class="article-detail-meta-item">👁 1.2k 阅读</span>
+                <span class="article-detail-meta-item">💬 28 评论</span>
+              </div>
+            </header>
+
+            <div class="article-content">
+              <h2>什么是 Composition API？</h2>
+              <p>Composition API 是 Vue 3 引入的一种新的编写组件逻辑的方式。它允许我们使用导入的函数来组织组件逻辑，而不是依赖于选项对象。这种方式提供了更好的逻辑复用性、更灵活的代码组织，以及更好的 TypeScript 支持。</p>
+
+              <blockquote>
+                "Composition API 是 Vue 3 最强大的特性之一，它让我们能够以一种更灵活的方式组织组件代码。"
+              </blockquote>
+
+              <h2>setup 函数基础</h2>
+              <p>setup 是 Composition API 的入口点，它在组件实例创建之前执行，在 beforeCreate 钩子之前被调用。这意味着在 setup 中你还不能使用 this，因为实例还没有创建。</p>
+
+              <h2>响应式系统</h2>
+              <p>Vue 3 提供了两种创建响应式数据的方式：ref 和 reactive。</p>
+              <ul>
+                <li><strong>ref</strong>：用于创建基本类型的响应式数据，也可以用于对象类型</li>
+                <li><strong>reactive</strong>：用于创建对象或数组的响应式引用</li>
+                <li><strong>computed</strong>：创建计算属性</li>
+                <li><strong>watch</strong>：监听响应式数据的变化</li>
+              </ul>
+
+              <h2>生命周期钩子</h2>
+              <p>在 Composition API 中，生命周期钩子可以通过 onXxx 函数来调用：</p>
+              <pre><code>import { onMounted, onUpdated, onUnmounted } from 'vue'
+
+onMounted(() => {
+  console.log('组件挂载完成')
+})
+
+onUpdated(() => {
+  console.log('组件更新')
+})
+
+onUnmounted(() => {
+  console.log('组件卸载')
+})</code></pre>
+
+              <h2>实际应用案例</h2>
+              <p>让我们通过一个实际的搜索功能来展示 Composition API 的用法：</p>
+              <pre><code>// useSearch.js
+import { ref, watch } from 'vue'
+import { fetchSearchResults } from '@/api/search'
+
+export function useSearch() {
+  const query = ref('')
+  const results = ref([])
+  const loading = ref(false)
+
+  watch(query, async (newQuery) => {
+    if (!newQuery) {
+      results.value = []
+      return
+    }
+    loading.value = true
+    results.value = await fetchSearchResults(newQuery)
+    loading.value = false
+  })
+
+  return { query, results, loading }
+}</code></pre>
+
+              <p>这个自定义 Hook 可以轻松地在多个组件中复用，极大地提高了代码的可维护性。</p>
+            </div>
+
+            <div class="article-tags">
+              <span class="article-tags-label">标签：</span>
+              <span class="article-tag" onclick="navigateTo('tag', 'vue')">Vue</span>
+              <span class="article-tag" onclick="navigateTo('tag', 'javascript')">JavaScript</span>
+              <span class="article-tag" onclick="navigateTo('tag', 'typescript')">TypeScript</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 评论区 -->
+        <section class="comments-section">
+          <h3 class="comments-title">评论 (28)</h3>
+
+          <div class="comment-form">
+            <textarea class="comment-form-textarea" id="commentInput" placeholder="写下你的评论..."></textarea>
+            <div class="comment-form-footer">
+              <span class="comment-form-hint">登录后即可发表评论</span>
+              <button class="btn btn-primary" onclick="showLoginPrompt()">发表评论</button>
+            </div>
+          </div>
+
+          <ul class="comment-list">
+            <li class="comment-item">
+              <img class="comment-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&fit=crop" alt="头像">
+              <div class="comment-body">
+                <div class="comment-header">
+                  <span class="comment-author">前端新手</span>
+                  <span class="comment-time">2026-04-26 09:30</span>
+                </div>
+                <p class="comment-content">这篇文章写得非常详细！Composition API 确实让代码组织更清晰了，特别是自定义 Hook 的设计思路很受启发。</p>
+              </div>
+            </li>
+            <li class="comment-item">
+              <img class="comment-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&h=96&fit=crop" alt="头像">
+              <div class="comment-body">
+                <div class="comment-header">
+                  <span class="comment-author">全栈开发者</span>
+                  <span class="comment-time">2026-04-25 18:45</span>
+                </div>
+                <p class="comment-content">写得很好！建议补充一下关于 watchEffect 的使用场景，它和 watch 的区别值得深入探讨。</p>
+              </div>
+            </li>
+            <li class="comment-item">
+              <img class="comment-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop" alt="头像">
+              <div class="comment-body">
+                <div class="comment-header">
+                  <span class="comment-author">Vue 爱好者</span>
+                  <span class="comment-time">2026-04-25 14:20</span>
+                </div>
+                <p class="comment-content">收藏了！正准备把项目迁移到 Vue 3，这篇文章来得太及时了。</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">分类</h3>
+          <ul class="category-list">
+            <li class="category-item" onclick="navigateTo('category', 'frontend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                前端开发
+              </span>
+              <span class="category-item-count">12</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'backend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                后端架构
+              </span>
+              <span class="category-item-count">8</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'tech')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                技术分享
+              </span>
+              <span class="category-item-count">15</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'essay')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                随笔感悟
+              </span>
+              <span class="category-item-count">6</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">标签云</h3>
+          <div class="tag-cloud">
+            <span class="tag-item" onclick="navigateTo('tag', 'vue')">Vue</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'react')">React</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'typescript')">TypeScript</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'node')">Node.js</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'java')">Java</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'spring')">Spring Boot</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'docker')">Docker</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'git')">Git</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========== 分类页 ========== -->
+  <div class="page" id="page-category">
+    <div class="main-container">
+      <main class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="#" onclick="navigateTo('home')">首页</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">前端开发</span>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 24px; color: var(--text-primary);">前端开发 · 12 篇文章</h2>
+
+        <article class="article-card" onclick="navigateTo('detail', 1)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">前端开发</span>
+              <span>2026-04-25</span>
+            </div>
+            <h3 class="article-card-title">Vue 3 Composition API 完全指南：从入门到精通</h3>
+            <p class="article-card-summary">本文深入探讨 Vue 3 的 Composition API，包括 setup 语法糖、ref 和 reactive、computed 和 watch、生命周期钩子等核心概念。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">技术小熊</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 1.2k</span>
+                <span class="article-card-stat">💬 28</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="pagination">
+          <span class="pagination-item disabled">‹</span>
+          <span class="pagination-item active">1</span>
+          <span class="pagination-item">2</span>
+          <span class="pagination-item">›</span>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">分类</h3>
+          <ul class="category-list">
+            <li class="category-item" onclick="navigateTo('category', 'frontend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                前端开发
+              </span>
+              <span class="category-item-count">12</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'backend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                后端架构
+              </span>
+              <span class="category-item-count">8</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'tech')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                技术分享
+              </span>
+              <span class="category-item-count">15</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'essay')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                随笔感悟
+              </span>
+              <span class="category-item-count">6</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">标签云</h3>
+          <div class="tag-cloud">
+            <span class="tag-item" onclick="navigateTo('tag', 'vue')">Vue</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'react')">React</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'typescript')">TypeScript</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'node')">Node.js</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'java')">Java</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'spring')">Spring Boot</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========== 标签页 ========== -->
+  <div class="page" id="page-tag">
+    <div class="main-container">
+      <main class="content-area">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="#" onclick="navigateTo('home')">首页</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">#Vue</span>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 24px; color: var(--text-primary);">#Vue · 8 篇文章</h2>
+
+        <article class="article-card" onclick="navigateTo('detail', 1)">
+          <img class="article-card-cover" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop" alt="文章封面">
+          <div class="article-card-body">
+            <div class="article-card-meta">
+              <span class="article-card-category">前端开发</span>
+              <span>2026-04-25</span>
+            </div>
+            <h3 class="article-card-title">Vue 3 Composition API 完全指南：从入门到精通</h3>
+            <p class="article-card-summary">本文深入探讨 Vue 3 的 Composition API，包括 setup 语法糖、ref 和 reactive、computed 和 watch、生命周期钩子等核心概念。</p>
+            <div class="article-card-footer">
+              <div class="article-card-author">
+                <img class="article-card-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop" alt="头像">
+                <span class="article-card-author-name">技术小熊</span>
+              </div>
+              <div class="article-card-stats">
+                <span class="article-card-stat">👁 1.2k</span>
+                <span class="article-card-stat">💬 28</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="pagination">
+          <span class="pagination-item disabled">‹</span>
+          <span class="pagination-item active">1</span>
+          <span class="pagination-item">›</span>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">标签云</h3>
+          <div class="tag-cloud">
+            <span class="tag-item" onclick="navigateTo('tag', 'vue')">Vue</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'react')">React</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'typescript')">TypeScript</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'node')">Node.js</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'java')">Java</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'spring')">Spring Boot</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'docker')">Docker</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'git')">Git</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'css')">CSS</span>
+            <span class="tag-item" onclick="navigateTo('tag', 'javascript')">JavaScript</span>
+          </div>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget-title">分类</h3>
+          <ul class="category-list">
+            <li class="category-item" onclick="navigateTo('category', 'frontend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                前端开发
+              </span>
+              <span class="category-item-count">12</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'backend')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                后端架构
+              </span>
+              <span class="category-item-count">8</span>
+            </li>
+            <li class="category-item" onclick="navigateTo('category', 'tech')">
+              <span class="category-item-name">
+                <span class="category-item-dot"></span>
+                技术分享
+              </span>
+              <span class="category-item-count">15</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========== 登录页 ========== -->
+  <div class="page" id="page-login">
+    <div class="auth-page">
+      <div class="auth-card" id="loginCard">
+        <h2 class="auth-title">欢迎回来</h2>
+        <p class="auth-subtitle">登录到 Xblog-mini</p>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginUsername">用户名</label>
+            <input type="text" class="form-input" id="loginUsername" name="username" placeholder="请输入用户名" autocomplete="username">
+            <p class="form-error" id="loginUsernameError"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">密码</label>
+            <input type="password" class="form-input" id="loginPassword" name="password" placeholder="请输入密码" autocomplete="current-password">
+            <p class="form-error" id="loginPasswordError"></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-submit">登录</button>
+        </form>
+
+        <p class="auth-footer">
+          还没有账号？<a href="#" onclick="navigateTo('register')">立即注册</a>
+        </p>
+      </div>
+
+      <div class="auth-card" id="loginSuccessCard" style="display: none;">
+        <div class="auth-success">
+          <div class="auth-success-icon">✓</div>
+          <h3 class="auth-success-title">登录成功</h3>
+          <p class="auth-success-text">正在跳转到首页...</p>
+          <button class="btn btn-primary" onclick="navigateTo('home'); location.reload();">返回首页</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 注册页 ========== -->
+  <div class="page" id="page-register">
+    <div class="auth-page">
+      <div class="auth-card" id="registerCard">
+        <h2 class="auth-title">创建账号</h2>
+        <p class="auth-subtitle">加入 Xblog-mini 开始创作</p>
+
+        <form id="registerForm" onsubmit="return handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label" for="registerUsername">用户名</label>
+            <input type="text" class="form-input" id="registerUsername" name="username" placeholder="3-20个字符，字母开头" autocomplete="username">
+            <p class="form-error" id="registerUsernameError"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerNickname">昵称</label>
+            <input type="text" class="form-input" id="registerNickname" name="nickname" placeholder="2-50个字符" autocomplete="nickname">
+            <p class="form-error" id="registerNicknameError"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerEmail">邮箱</label>
+            <input type="email" class="form-input" id="registerEmail" name="email" placeholder="用于接收通知" autocomplete="email">
+            <p class="form-error" id="registerEmailError"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="registerPassword">密码</label>
+            <input type="password" class="form-input" id="registerPassword" name="password" placeholder="至少6个字符" autocomplete="new-password">
+            <p class="form-error" id="registerPasswordError"></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-submit">注册</button>
+        </form>
+
+        <p class="auth-footer">
+          已有账号？<a href="#" onclick="navigateTo('login')">立即登录</a>
+        </p>
+      </div>
+
+      <div class="auth-card" id="registerSuccessCard" style="display: none;">
+        <div class="auth-success">
+          <div class="auth-success-icon">✓</div>
+          <h3 class="auth-success-title">注册成功</h3>
+          <p class="auth-success-text">请登录后开始精彩内容</p>
+          <button class="btn btn-primary" onclick="navigateTo('login')">立即登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 底部 ========== -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="footer-text">© 2026 Xblog-mini · 用心记录每一天</p>
+      <p class="footer-icp">皖ICP备2026012345号-1</p>
+    </div>
+  </footer>
+
+  <script>
+    let currentPage = 'home';
+
+    function navigateTo(page, param) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+      currentPage = page;
+      const targetPage = document.getElementById('page-' + page);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+
+      const navLink = document.querySelector(`.nav-link[data-page="${page}"]`);
+      if (navLink) {
+        navLink.classList.add('active');
+      }
+
+      window.scrollTo(0, 0);
+
+      if (page === 'login' || page === 'register') {
+        document.getElementById('loginCard').style.display = 'block';
+        document.getElementById('loginSuccessCard').style.display = 'none';
+        document.getElementById('registerCard').style.display = 'block';
+        document.getElementById('registerSuccessCard').style.display = 'none';
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('show');
+    }
+
+    function showLoginPrompt() {
+      alert('请先登录后再发表评论');
+      navigateTo('login');
+    }
+
+    function validateUsername(username) {
+      if (!username) return '请输入用户名';
+      if (username.length < 3) return '用户名至少3个字符';
+      if (!/^[a-zA-Z]/.test(username)) return '用户名必须以字母开头';
+      return '';
+    }
+
+    function validateNickname(nickname) {
+      if (!nickname) return '请输入昵称';
+      if (nickname.length < 2) return '昵称至少2个字符';
+      if (nickname.length > 50) return '昵称最多50个字符';
+      return '';
+    }
+
+    function validateEmail(email) {
+      if (!email) return '请输入邮箱';
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) return '请输入有效的邮箱地址';
+      return '';
+    }
+
+    function validatePassword(password) {
+      if (!password) return '请输入密码';
+      if (password.length < 6) return '密码至少6个字符';
+      return '';
+    }
+
+    function showError(inputId, errorId, message) {
+      const input = document.getElementById(inputId);
+      const error = document.getElementById(errorId);
+      if (message) {
+        input.classList.add('error');
+        error.textContent = message;
+        error.classList.add('show');
+      } else {
+        input.classList.remove('error');
+        error.classList.remove('show');
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      let isValid = true;
+
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        showError('loginUsername', 'loginUsernameError', usernameError);
+        isValid = false;
+      } else {
+        showError('loginUsername', 'loginUsernameError', '');
+      }
+
+      const passwordError = validatePassword(password);
+      if (passwordError) {
+        showError('loginPassword', 'loginPasswordError', passwordError);
+        isValid = false;
+      } else {
+        showError('loginPassword', 'loginPasswordError', '');
+      }
+
+      if (isValid) {
+        document.getElementById('loginCard').style.display = 'none';
+        document.getElementById('loginSuccessCard').style.display = 'block';
+      }
+
+      return false;
+    }
+
+    function handleRegister(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('registerUsername').value.trim();
+      const nickname = document.getElementById('registerNickname').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      let isValid = true;
+
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        showError('registerUsername', 'registerUsernameError', usernameError);
+        isValid = false;
+      } else {
+        showError('registerUsername', 'registerUsernameError', '');
+      }
+
+      const nicknameError = validateNickname(nickname);
+      if (nicknameError) {
+        showError('registerNickname', 'registerNicknameError', nicknameError);
+        isValid = false;
+      } else {
+        showError('registerNickname', 'registerNicknameError', '');
+      }
+
+      const emailError = validateEmail(email);
+      if (emailError) {
+        showError('registerEmail', 'registerEmailError', emailError);
+        isValid = false;
+      } else {
+        showError('registerEmail', 'registerEmailError', '');
+      }
+
+      const passwordError = validatePassword(password);
+      if (passwordError) {
+        showError('registerPassword', 'registerPasswordError', passwordError);
+        isValid = false;
+      } else {
+        showError('registerPassword', 'registerPasswordError', '');
+      }
+
+      if (isValid) {
+        document.getElementById('registerCard').style.display = 'none';
+        document.getElementById('registerSuccessCard').style.display = 'block';
+      }
+
+      return false;
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('mobileMenu');
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+      if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+        menu.classList.remove('show');
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.getElementById('mobileMenu').classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>
