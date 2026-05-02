@@ -1,22 +1,22 @@
 :root {
-  --bg-primary: #FAF7F2;
-  --bg-secondary: #F5F0E8;
-  --bg-dark: #3D3A35;
-  --text-primary: #5D4E37;
-  --text-secondary: #8B7355;
-  --accent: #D4815A;
-  --accent-light: #E8A882;
-  --border: #E5DDD0;
+  --bg-primary: #FAFCFC;
+  --bg-secondary: #F0F5F5;
+  --bg-dark: #1F2D2D;
+  --text-primary: #2C3838;
+  --text-secondary: #6B8080;
+  --accent: #3A9E96;
+  --accent-light: #A8D8D4;
+  --border: #CFE2E2;
   --white: #FFFFFF;
-  --shadow: rgba(93, 78, 55, 0.08);
-  --shadow-hover: rgba(93, 78, 55, 0.15);
+  --shadow: rgba(44, 56, 56, 0.06);
+  --shadow-hover: rgba(44, 56, 56, 0.12);
   --radius: 12px;
   --radius-sm: 8px;
 
-  --el-color-primary: #D4815A;
+  --el-color-primary: #3A9E96;
   --el-border-radius-base: 8px;
-  --el-border-color: #E5DDD0;
-  --el-fill-color-blank: #FAF7F2;
+  --el-border-color: #CFE2E2;
+  --el-fill-color-blank: #FAFCFC;
 }
 
 * {
