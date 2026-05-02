@@ -13,6 +13,7 @@
 | 4006 | 评论状态无效 |
 | 4007 | 文章不存在 |
 | 4008 | 评论审核状态无法修改 |
+| 4009 | 已审核通过的评论无法删除 |
 
 ---
 
@@ -179,8 +180,10 @@ PUT /api/v1/comments/{id}
   "message": "success",
   "data": {
     "id": 1,
+    "articleId": 1,
     "content": "更新后的评论内容",
     "status": "pending",
+    "createdAt": "2026-04-01T10:00:00",
     "updatedAt": "2026-04-28T12:00:00"
   }
 }
@@ -189,6 +192,11 @@ PUT /api/v1/comments/{id}
 ---
 
 ## 删除评论 (需登录，仅自己的评论)
+
+### 业务说明
+
+- 仅能删除自己的评论
+- 已审核通过的评论无法删除（需先驳回再删除）
 
 ### 请求
 
@@ -208,7 +216,14 @@ DELETE /api/v1/comments/{id}
 {
   "code": 200,
   "message": "success",
-  "data": null
+  "data": {
+    "id": 1,
+    "articleId": 1,
+    "content": "写得很好！",
+    "status": "pending",
+    "createdAt": "2026-04-01T10:00:00",
+    "updatedAt": "2026-04-01T10:00:00"
+  }
 }
 ```
 

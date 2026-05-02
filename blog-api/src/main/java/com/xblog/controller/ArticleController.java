@@ -1,10 +1,13 @@
 package com.xblog.controller;
 
 import com.xblog.dto.QueryArticleDto;
+import com.xblog.dto.QueryCommentDto;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.Result;
 import com.xblog.service.ArticleService;
+import com.xblog.service.CommentService;
 import com.xblog.vo.ArticleVo;
+import com.xblog.vo.CommentPublicVo;
 import com.xblog.vo.TagVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +28,9 @@ public class ArticleController {
 
     @Resource
     private ArticleService articleService;
+
+    @Resource
+    private CommentService commentService;
 
     /**
      * 查询文章列表
@@ -56,6 +62,19 @@ public class ArticleController {
     public Result<List<TagVo>> getArticleTags(@PathVariable Long id) {
         log.info("获取文章标签: {}", id);
         return Result.success(articleService.getArticleTags(id));
+    }
+
+    /**
+     * 获取文章评论列表
+     */
+    @Operation(summary = "获取文章评论列表")
+    @GetMapping("/{articleId}/comments")
+    public Result<PageResult<CommentPublicVo>> getArticleComments(
+            @PathVariable Long articleId,
+            QueryCommentDto queryCommentDto) {
+        log.info("获取文章评论列表: articleId={}", articleId);
+        queryCommentDto.setArticleId(articleId);
+        return Result.success(commentService.getArticleComments(queryCommentDto));
     }
 
 }

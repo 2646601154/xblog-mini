@@ -34,6 +34,9 @@ public enum ResultCode {
     ARTICLE_NOT_IN_RECYCLE_CANNOT_RESTORE(3011, "文章不在回收站，无法恢复"),
 
     COMMENT_NOT_FOUND(4000, "评论不存在"),
+    COMMENT_CANNOT_EDIT_OTHERS(4004, "不能编辑他人的评论"),
+    COMMENT_CANNOT_DELETE_OTHERS(4005, "不能删除他人的评论"),
+    COMMENT_APPROVED_CANNOT_DELETE(4009, "已审核通过的评论无法删除"),
 
     CATEGORY_NOT_FOUND(5000, "分类不存在"),
     CATEGORY_HAS_ARTICLES(5001, "分类下存在文章，无法删除"),
