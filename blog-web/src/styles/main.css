@@ -1,0 +1,117 @@
+:root {
+  --bg-primary: #FAFCFC;
+  --bg-secondary: #F0F5F5;
+  --bg-dark: #1F2D2D;
+  --text-primary: #2C3838;
+  --text-secondary: #6B8080;
+  --accent: #3A9E96;
+  --accent-light: #A8D8D4;
+  --border: #CFE2E2;
+  --white: #FFFFFF;
+  --shadow: rgba(44, 56, 56, 0.06);
+  --shadow-hover: rgba(44, 56, 56, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --el-color-primary: #3A9E96;
+  --el-border-radius-base: 8px;
+  --el-border-color: #CFE2E2;
+  --el-fill-color-blank: #FAFCFC;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px 0;
+}
+
+/* Utility Classes */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent { color: var(--accent); }
+.text-white { color: var(--white); }
+
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-white { background-color: var(--white); }
+.bg-dark { background-color: var(--bg-dark); }
+
+.rounded { border-radius: var(--radius); }
+.rounded-sm { border-radius: var(--radius-sm); }
+
+.shadow { box-shadow: 0 2px 12px var(--shadow); }
+.shadow-hover:hover { box-shadow: 0 8px 30px var(--shadow-hover); }
+
+/* ElMenu Custom */
+.el-menu {
+  border-bottom: none !important;
+}
+
+.el-menu--horizontal > .el-menu-item {
+  height: 64px;
+  line-height: 64px;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.el-menu--horizontal > .el-menu-item:hover,
+.el-menu--horizontal > .el-menu-item.is-active {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  border-bottom-color: var(--accent) !important;
+}
+
+.header-menu .el-menu {
+  background-color: transparent !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .main-content {
+    padding: 24px 0;
+  }
+}
