@@ -6,6 +6,7 @@ import com.xblog.entity.Result;
 import com.xblog.service.TagService;
 import com.xblog.vo.TagAdminVo;
 import com.xblog.vo.TagVo;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @RestController("adminTagController")
 @RequestMapping("/v1/admin/tags")
+@Tag(name = "管理-标签接口", description = "标签管理接口")
 public class TagController {
 
     @Resource
