@@ -24,6 +24,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/v1/auth/register",
                         "/v1/categories",
                         "/v1/configs",
+                        "/v1/articles",
+                        "/v1/articles/*",
                         "/v1/articles/*/comments",
                         "/doc.html",
                         "/swagger-ui.html",

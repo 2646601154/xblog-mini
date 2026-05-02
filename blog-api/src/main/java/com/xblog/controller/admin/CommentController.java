@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("adminCommentController")
 @RequestMapping("/v1/admin/comments")
 @Tag(name = "管理-评论接口", description = "管理员评论管理接口")
 public class CommentController {
