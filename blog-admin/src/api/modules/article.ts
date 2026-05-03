@@ -17,7 +17,7 @@ export function getArticleList(params: ArticleQueryDTO): ArticleListResponse {
 }
 
 export function getArticleDetail(id: number): ArticleDetailResponse {
-  return request.get(`/api/v1/admin/articles/${id}`)
+  return request.get(`/api/v1/articles/${id}`)
 }
 
 export function createArticle(data: ArticleFormData): Promise<{ data: { code: number; message: string; data: { id: number } } }> {
@@ -45,5 +45,5 @@ export function deleteArticle(id: number): Promise<{ data: { code: number; messa
 }
 
 export function bindArticleTags(id: number, tagIds: number[]): Promise<{ data: { code: number; message: string; data: any[] } }> {
-  return request.post(`/api/v1/admin/articles/${id}/tags`, { tagIds })
+  return request.post(`/api/v1/admin/articles/${id}/tags`, tagIds)
 }

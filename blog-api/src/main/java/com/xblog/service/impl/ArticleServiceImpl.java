@@ -300,6 +300,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setContent(param.getContent());
         article.setCoverImage(param.getCoverImage());
         article.setCategoryId(param.getCategoryId());
+        if (param.getStatus() != null && ("draft".equals(param.getStatus()) || "published".equals(param.getStatus()))) {
+            article.setStatus(param.getStatus());
+        }
+
         updateById(article);
 
         // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
@@ -324,6 +328,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleUpdateVo vo = new ArticleUpdateVo();
         vo.setId(article.getId());
         vo.setTitle(article.getTitle());
+        vo.setStatus(article.getStatus());
         vo.setUpdatedAt(article.getUpdatedAt());
         return vo;
     }
@@ -529,6 +534,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             vo.setViewCount(article.getViewCount());
             vo.setPublishedAt(article.getPublishedAt());
             vo.setCreatedAt(article.getCreatedAt());
+            vo.setStatus(article.getStatus());
 
             // 设置分类
             if (article.getCategoryId() != null && categoryMap.containsKey(article.getCategoryId())) {

@@ -26,4 +26,6 @@ public class ArticleUpdateParam {
     private Long categoryId;
 
     private List<Long> tagIds;
+
+    private String status;
 }

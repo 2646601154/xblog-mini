@@ -8,5 +8,6 @@ import java.time.LocalDateTime;
 public class ArticleUpdateVo {
     private Long id;
     private String title;
+    private String status;
     private LocalDateTime updatedAt;
 }
