@@ -2,9 +2,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { register, login } from '@/api/modules/auth'
-import { useAuthStore } from '@/stores/auth'
+import { register } from '@/api/modules/auth'
 import { storage } from '@/utils/storage'
+import { useAuthStore } from '@/stores/auth'
 
 interface RegisterForm {
   username: string
@@ -74,21 +74,15 @@ async function handleRegister() {
 
     ElMessage.success('注册成功，正在登录...')
 
-    const res = await login({
+    const success = await authStore.login({
       username: registerForm.username,
       password: registerForm.password,
     })
-    const { token, user } = res.data.data
 
-    authStore.token = token
-    authStore.userInfo = user
-    storage.setToken(token)
-    storage.setUserInfo(user)
-
-    ElMessage.success('登录成功')
-
-    const redirect = route.query.redirect as string
-    router.push(redirect || '/')
+    if (success) {
+      const redirect = route.query.redirect as string
+      router.push(redirect || '/')
+    }
   } catch (error: any) {
     ElMessage.error(error.message || '注册失败')
   } finally {

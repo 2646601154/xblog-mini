@@ -1,12 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as apiLogin, register as apiRegister, getCurrentUser, type LoginDTO, type RegisterDTO, type UserInfo } from '@/api'
+import {
+  login as apiLogin,
+  register as apiRegister,
+  refreshToken as apiRefreshToken,
+  logout as apiLogout,
+  getCurrentUser,
+  type LoginDTO,
+  type RegisterDTO,
+  type UserInfo,
+} from '@/api'
 import { storage } from '@/utils/storage'
 import { showSuccessMessage } from '@/utils/error'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const token = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
   const userInfo = ref<UserInfo | null>(null)
 
   // Getters
@@ -19,11 +29,13 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials: LoginDTO): Promise<boolean> {
     try {
       const res = await apiLogin(credentials)
-      const { token: newToken, user } = res.data.data
-      token.value = newToken
-      userInfo.value = user
-      storage.setToken(newToken)
-      storage.setUserInfo(user)
+      const { accessToken, refreshToken: newRefreshToken } = res.data.data
+      token.value = accessToken
+      refreshToken.value = newRefreshToken
+      storage.setAccessToken(accessToken)
+      storage.setRefreshToken(newRefreshToken)
+      // 获取用户信息
+      await fetchCurrentUser()
       showSuccessMessage('登录成功')
       return true
     } catch {
@@ -41,8 +53,40 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout(): void {
+  /**
+   * 刷新 Access Token
+   */
+  async function refreshAccessToken(): Promise<boolean> {
+    const rt = refreshToken.value || storage.getRefreshToken()
+    if (!rt) return false
+
+    try {
+      const res = await apiRefreshToken({ refreshToken: rt })
+      const { accessToken, refreshToken: newRefreshToken } = res.data.data
+      token.value = accessToken
+      refreshToken.value = newRefreshToken
+      storage.setAccessToken(accessToken)
+      storage.setRefreshToken(newRefreshToken)
+      return true
+    } catch {
+      // 刷新失败，清除登录态
+      clearAuth()
+      return false
+    }
+  }
+
+  async function logout(): Promise<void> {
+    try {
+      await apiLogout()
+    } catch {
+      // 忽略登出 API 错误
+    }
+    clearAuth()
+  }
+
+  function clearAuth(): void {
     token.value = null
+    refreshToken.value = null
     userInfo.value = null
     storage.clearAuth()
   }
@@ -62,10 +106,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function initAuth(): void {
-    const savedToken = storage.getToken()
+    const savedToken = storage.getAccessToken()
+    const savedRefreshToken = storage.getRefreshToken()
     const savedUserInfo = storage.getUserInfo<UserInfo>()
     if (savedToken) {
       token.value = savedToken
+    }
+    if (savedRefreshToken) {
+      refreshToken.value = savedRefreshToken
     }
     if (savedUserInfo) {
       userInfo.value = savedUserInfo
@@ -75,6 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     // State
     token,
+    refreshToken,
     userInfo,
     // Getters
     isLoggedIn,
@@ -84,7 +133,9 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     login,
     register,
+    refreshAccessToken,
     logout,
+    clearAuth,
     fetchCurrentUser,
     initAuth,
   }

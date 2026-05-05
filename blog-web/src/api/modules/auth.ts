@@ -23,12 +23,16 @@ export interface UserInfo {
   email?: string
 }
 
-export interface LoginVO {
-  token: string
-  user: UserInfo
+/**
+ * 双 Token 响应
+ */
+export interface TokenVO {
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
 }
 
-export type LoginResponse = Promise<{ data: { code: number; message: string; data: LoginVO } }>
+export type LoginResponse = Promise<{ data: { code: number; message: string; data: TokenVO } }>
 export type RegisterResponse = Promise<{ data: { code: number; message: string; data: UserInfo } }>
 export type UserInfoResponse = Promise<{ data: { code: number; message: string; data: UserInfo } }>
 
@@ -40,6 +44,20 @@ export function login(data: LoginDTO): LoginResponse {
 // 注册
 export function register(data: RegisterDTO): RegisterResponse {
   return request.post('/api/v1/auth/register', data)
+}
+
+// 刷新 Access Token
+export interface RefreshTokenDTO {
+  refreshToken: string
+}
+
+export function refreshToken(data: RefreshTokenDTO): LoginResponse {
+  return request.post('/api/v1/auth/refresh', data)
+}
+
+// 登出
+export function logout(): Promise<{ data: { code: number; message: string; data: null } }> {
+  return request.post('/api/v1/auth/logout')
 }
 
 // 获取当前用户

@@ -2,7 +2,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { login } from '@/api/modules/auth'
 import { useAuthStore } from '@/stores/auth'
 import { storage } from '@/utils/storage'
 
@@ -44,33 +43,27 @@ function loadRemember() {
   }
 }
 
-async function handleLogin() {
+  async function handleLogin() {
   const valid = await loginFormRef.value.validate().catch(() => false)
   if (!valid) return
 
   loading.value = true
   try {
-    const res = await login({
+    const success = await authStore.login({
       username: loginForm.username,
       password: loginForm.password,
     })
-    const { token, user } = res.data.data
 
-    authStore.token = token
-    authStore.userInfo = user
-    storage.setToken(token)
-    storage.setUserInfo(user)
+    if (success) {
+      if (rememberMe.value) {
+        storage.setRemember(loginForm.username, loginForm.password)
+      } else {
+        storage.clearRemember()
+      }
 
-    if (rememberMe.value) {
-      storage.setRemember(loginForm.username, loginForm.password)
-    } else {
-      storage.clearRemember()
+      const redirect = route.query.redirect as string
+      router.push(redirect || '/')
     }
-
-    ElMessage.success('登录成功')
-
-    const redirect = route.query.redirect as string
-    router.push(redirect || '/')
   } catch (error: any) {
     ElMessage.error(error.message || '登录失败')
   } finally {

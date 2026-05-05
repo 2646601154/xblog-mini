@@ -1,6 +1,7 @@
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
 import { storage } from '@/utils/storage'
+import { useAuthStore } from '@/stores/auth'
 import { showErrorMessage } from '@/utils/error'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
@@ -14,10 +15,52 @@ const request: AxiosInstance = axios.create({
   },
 })
 
+// 刷新 Token 的状态管理
+let isRefreshing = false
+let refreshSubscribers: Array<(token: string) => void> = []
+
+// 订阅刷新完成事件
+function subscribeTokenRefresh(callback: (token: string) => void) {
+  refreshSubscribers.push(callback)
+}
+
+// 通知所有订阅者新 Token（或刷新失败
+function onTokenRefreshed(newToken: string) {
+  refreshSubscribers.forEach((callback) => callback(newToken))
+  refreshSubscribers = []
+}
+
+// 刷新 Access Token
+async function doRefreshToken(): Promise<string | null> {
+  const refreshToken = storage.getRefreshToken()
+  if (!refreshToken) return null
+
+  try {
+    const res = await axios.post(`${baseURL}/api/v1/auth/refresh`, {
+      refreshToken,
+    })
+    if (res.data.code === 200) {
+      const { accessToken, refreshToken: newRefreshToken } = res.data.data
+      storage.setAccessToken(accessToken)
+      storage.setRefreshToken(newRefreshToken)
+
+      // 同步更新 authStore
+      const authStore = useAuthStore()
+      authStore.token = accessToken
+      authStore.refreshToken = newRefreshToken
+
+      return accessToken
+    }
+  } catch (e) {
+    console.error('刷新 Token 失败:', e)
+  }
+  return null
+}
+
 // 请求拦截器：自动带上 Authorization
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = storage.getToken()
+    const token = storage.getAccessToken()
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -49,19 +92,66 @@ request.interceptors.response.use(
 
     return response
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+
     // 网络错误处理
     if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
       ElMessage.error('请求超时，请稍后重试')
-    } else if (error.response) {
-      // HTTP 错误状态码
+      return Promise.reject(error)
+    }
+
+    if (error.response) {
       const status = error.response.status
+
+      // 401 未授权：尝试刷新 Token
+      if (status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true
+
+        if (isRefreshing) {
+          // 正在刷新中，排队等待
+          return new Promise((resolve, reject) => {
+            subscribeTokenRefresh((newToken: string) => {
+              if (newToken) {
+                originalRequest.headers = originalRequest.headers || {}
+                originalRequest.headers.Authorization = `Bearer ${newToken}`
+                resolve(request(originalRequest))
+              } else {
+                // 刷新失败，拒绝所有排队的请求
+                reject(error)
+              }
+            })
+          })
+        }
+
+        isRefreshing = true
+
+        try {
+          const newToken = await doRefreshToken()
+          if (newToken) {
+            onTokenRefreshed(newToken)
+            originalRequest.headers = originalRequest.headers || {}
+            originalRequest.headers.Authorization = `Bearer ${newToken}`
+            return request(originalRequest)
+          }
+          // 刷新失败，newToken 为 null
+          onTokenRefreshed('') // 通知所有订阅者刷新失败
+        } catch (e) {
+          console.error('Token 刷新异常:', e)
+          onTokenRefreshed('') // 通知所有订阅者刷新失败
+        } finally {
+          isRefreshing = false
+        }
+
+        // 刷新失败或没有 refreshToken，清除登录态并跳转
+        storage.clearAuth()
+        showErrorMessage(1001)
+        window.location.href = '/login'
+        return Promise.reject(error)
+      }
+
+      // 其他 HTTP 错误
       switch (status) {
-        case 401:
-          storage.clearAuth()
-          showErrorMessage(1001)
-          window.location.href = '/login'
-          break
         case 403:
           ElMessage.error('无权限访问')
           break
