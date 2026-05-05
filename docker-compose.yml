@@ -21,16 +21,31 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: xblog-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    restart: always
+    networks:
+      - xblog-net
+
   api:
     build: ./blog-api
     container_name: xblog-api
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/xblog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
     restart: always
     networks:
       - xblog-net
@@ -52,6 +67,7 @@ services:
 
 volumes:
   mysql-data:
+  redis-data:
 
 networks:
   xblog-net:

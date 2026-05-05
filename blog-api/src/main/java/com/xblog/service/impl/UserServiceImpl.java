@@ -4,38 +4,51 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xblog.common.enums.ResultCode;
+import com.xblog.common.properties.JwtProperties;
 import com.xblog.common.util.UserContext;
 import com.xblog.common.util.JwtUtil;
 import com.xblog.common.util.PageUtil;
+import com.xblog.common.util.RedisUtil;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
 import com.xblog.entity.PageResult;
+import com.xblog.entity.RefreshToken;
 import com.xblog.entity.User;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.mapper.UserMapper;
 import com.xblog.service.UserService;
-import com.xblog.vo.LoginUserVo;
-import com.xblog.vo.LoginVo;
 import com.xblog.vo.RegisterUserVo;
+import com.xblog.vo.TokenVo;
 import com.xblog.vo.UserStatusVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
+    private final JwtProperties jwtProperties;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public UserServiceImpl(JwtUtil jwtUtil) {
+    public UserServiceImpl(JwtUtil jwtUtil, RedisUtil redisUtil, JwtProperties jwtProperties, RedisTemplate<String, Object> redisTemplate) {
         this.jwtUtil = jwtUtil;
+        this.redisUtil = redisUtil;
+        this.jwtProperties = jwtProperties;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public LoginVo login(LoginParam loginParam) {
+    public TokenVo login(LoginParam loginParam) {
         // 1. 根据用户名查询用户
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, loginParam.getUsername());
@@ -56,17 +69,80 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ResultCode.AUTH_LOGIN_FAILED, "用户名或密码错误");
         }
 
-        // 5. 生成 JWT Token
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+        // 5. 生成 Access Token
+        String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getUsername(), user.getRole());
 
-        // 6. 组装响应
-        LoginUserVo loginUserVo = new LoginUserVo();
-        BeanUtils.copyProperties(user, loginUserVo);
+        // 6. 生成 Refresh Token UUID 并存入 Redis
+        String refreshTokenUuid = jwtUtil.generateRefreshToken();
+        String rtKey = "refresh_token:" + user.getId() + ":" + refreshTokenUuid;
+        RefreshToken rtValue = new RefreshToken(user.getId(), user.getUsername(), user.getRole(), LocalDateTime.now());
+        redisUtil.set(rtKey, rtValue, 7, TimeUnit.DAYS);
+        // 6.5 添加反向索引（uuid -> key），用于快速查找 RT key
+        redisTemplate.opsForHash().put("rt_uuid_map", refreshTokenUuid, rtKey);
 
-        LoginVo loginVo = new LoginVo();
-        loginVo.setToken(token);
-        loginVo.setUser(loginUserVo);
-        return loginVo;
+        // 7. 组装响应
+        TokenVo tokenVo = new TokenVo();
+        tokenVo.setAccessToken(accessToken);
+        tokenVo.setRefreshToken(refreshTokenUuid);
+        tokenVo.setExpiresIn(jwtProperties.getAccessExpiration() / 1000);
+        return tokenVo;
+    }
+
+    @Override
+    public void logout() {
+        Long userId = UserContext.getUserId();
+        // 查找该用户所有 RT 的 key
+        Set<String> rtKeys = redisTemplate.keys("refresh_token:" + userId + ":*");
+        if (rtKeys != null && !rtKeys.isEmpty()) {
+            // 删除所有 RT
+            redisTemplate.delete(rtKeys);
+            // 从反向索引中删除这些 key 对应的 uuid
+            for (String rtKey : rtKeys) {
+                String uuid = rtKey.substring(rtKey.lastIndexOf(":") + 1);
+                redisTemplate.opsForHash().delete("rt_uuid_map", uuid);
+            }
+        }
+    }
+
+    @Override
+    public String refreshAccessToken(String refreshToken) {
+        // 1. 从反向索引中查找 RT 对应的完整 key
+        String rtKey = (String) redisTemplate.opsForHash().get("rt_uuid_map", refreshToken);
+        if (rtKey == null) {
+            throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
+        }
+
+        // 2. 检查 RT 是否存在
+        RefreshToken rtValue = redisUtil.get(rtKey);
+        if (rtValue == null) {
+            // 清理无效的索引
+            redisTemplate.opsForHash().delete("rt_uuid_map", refreshToken);
+            throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
+        }
+
+        // 3. 原子性删除旧 RT（Token Rotation，防竞态）
+        Boolean deleted = redisTemplate.delete(rtKey);
+        if (!Boolean.TRUE.equals(deleted)) {
+            throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
+        }
+
+        // 4. 从反向索引中删除 uuid
+        redisTemplate.opsForHash().delete("rt_uuid_map", refreshToken);
+
+        // 5. 生成新 Access Token
+        String newAccessToken = jwtUtil.generateAccessToken(rtValue.getUserId(), rtValue.getUsername(), rtValue.getRole());
+
+        // 6. 生成新 Refresh Token 并存入 Redis
+        String newRefreshTokenUuid = jwtUtil.generateRefreshToken();
+        String newRtKey = "refresh_token:" + rtValue.getUserId() + ":" + newRefreshTokenUuid;
+        RefreshToken newRtValue = new RefreshToken(rtValue.getUserId(), rtValue.getUsername(), rtValue.getRole(), LocalDateTime.now());
+        redisUtil.set(newRtKey, newRtValue, 7, TimeUnit.DAYS);
+
+        // 7. 更新反向索引
+        redisTemplate.opsForHash().put("rt_uuid_map", newRefreshTokenUuid, newRtKey);
+
+        // 8. 返回新 AT 和新 RT，用 | 分隔
+        return newAccessToken + "|" + newRefreshTokenUuid;
     }
 
     @Override

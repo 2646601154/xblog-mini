@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -42,6 +43,53 @@ public class JwtUtil {
                 .expiration(expiryDate)
                 .signWith(key())
                 .compact();
+    }
+
+    /**
+     * 生成 Access Token（短期有效，使用 accessExpiration）
+     *
+     * @param userId   用户 ID
+     * @param username 用户名
+     * @param role     角色
+     * @return JWT access token 字符串
+     */
+    public String generateAccessToken(Long userId, String username, String role) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtProperties.getAccessExpiration());
+
+        return Jwts.builder()
+                .subject(username)
+                .claim("userId", userId)
+                .claim("role", role)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(key())
+                .compact();
+    }
+
+    /**
+     * 生成 Refresh Token UUID（仅作标识符，不含用户信息）
+     *
+     * @return UUID 字符串
+     */
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * 校验 Access Token 是否有效
+     *
+     * @param token JWT token 字符串
+     * @return true 有效，false 无效
+     */
+    public boolean validateAccessToken(String token) {
+        try {
+            parseToken(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("AT校验失败: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**

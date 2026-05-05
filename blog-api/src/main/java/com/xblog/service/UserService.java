@@ -7,13 +7,17 @@ import com.xblog.dto.RegisterParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.User;
 
-import com.xblog.vo.LoginVo;
+import com.xblog.vo.TokenVo;
 import com.xblog.vo.RegisterUserVo;
 import com.xblog.vo.UserStatusVo;
 
 public interface UserService extends IService<User> {
 
-    LoginVo login(LoginParam loginParam);
+    TokenVo login(LoginParam loginParam);
+
+    void logout();
+
+    String refreshAccessToken(String refreshToken);
 
     RegisterUserVo register(RegisterParam registerParam);
 

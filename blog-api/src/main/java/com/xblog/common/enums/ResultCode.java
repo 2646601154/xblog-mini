@@ -15,6 +15,7 @@ public enum ResultCode {
     AUTH_LOGIN_FAILED(1000, "登录失败"),
     AUTH_TOKEN_EXPIRED(1001, "Token 已过期"),
     AUTH_TOKEN_INVALID(1002, "Token 无效"),
+    AUTH_REFRESH_TOKEN_INVALID(1003, "Refresh Token 无效或已过期"),
 
     USER_NOT_FOUND(2000, "用户不存在"),
     USERNAME_EXISTS(2001, "用户名已存在"),
