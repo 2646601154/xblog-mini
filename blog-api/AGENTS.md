@@ -1,4 +1,11 @@
-# API 开发指南
+# blog-api 后端开发指南
+
+**Generated:** 2026-05-05
+**父级**: `../AGENTS.md`
+
+---
+
+## API 开发指南
 
 本文档提供 Xblog-mini 后端 API 开发的详细指南。
 
@@ -264,6 +271,12 @@ Page<Xxx> page = new Page<>(pageNum, pageSize);
 | 删除用户 | DELETE | `/v1/admin/users/{id}` |
 
 ---
+
+## 安全注意事项
+
+- `application.yml` 中 JWT secret 为占位值 `your-secret-key-change-in-production`，生产环境必须替换
+- `UserContext` 使用 ThreadLocal 存储当前用户信息，需在请求链路终点（如拦截器 `afterCompletion`）调用 `UserContext.clear()` 防止内存泄漏
+- 存在空的 `com.xblog.xblog` 包目录，可清理
 
 ## 文档同步
 

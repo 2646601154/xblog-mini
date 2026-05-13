@@ -11,6 +11,7 @@ Thumbs.db
 
 # Build output
 dist/
+dist-*/
 build/
 target/
 
@@ -33,7 +34,7 @@ __pycache__/
 .mvnw
 
 # Docker
-.docker/
+docker/
 
 # Temporary files
 *.tmp
@@ -48,3 +49,6 @@ __pycache__/
 *.pem
 *.key
 credentials.json
+
+.sisyphus/
+/docker.zip
