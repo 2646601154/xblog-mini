@@ -18,16 +18,8 @@ import java.util.Map;
 @Service
 public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {
 
-    private static final String CACHE_KEY = "config:public";
-    private static final long CACHE_TTL = 3600L;
-
     @Override
     public PublicConfigVo getPublicConfig() {
-        // TODO: Redis 缓存支持
-        // 1. 先从 Redis 缓存读取，key = "config:public"
-        // 2. 缓存命中则直接返回
-        // 3. 缓存未命中则查询数据库，存入缓存（TTL 1小时）
-
         List<Config> configs = this.list();
         Map<String, String> configMap = new HashMap<>();
         for (Config config : configs) {
@@ -65,8 +57,6 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                 this.updateById(config);
             }
         }
-
-        // TODO: 清除 Redis 缓存，key = "config:public"
 
         return configs.stream()
                 .map(param -> new ConfigKeyValueVo(param.getConfigKey(), param.getConfigValue()))
