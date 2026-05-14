@@ -144,7 +144,7 @@ defineExpose({
     />
     <Editor
       v-model="valueHtml"
-      style="overflow-y: hidden"
+      :style="{ height: `${height}px`, overflowY: 'hidden' }"
       :defaultConfig="editorConfig"
       :mode="mode"
       :disabled="disabled"
@@ -173,8 +173,7 @@ defineExpose({
 }
 
 .rich-editor-container :deep(.w-e-text-container) {
-  flex: 1;
-  min-height: v-bind("`${height}px`");
+  height: 100% !important;
   overflow-y: auto;
 }
 </style>
