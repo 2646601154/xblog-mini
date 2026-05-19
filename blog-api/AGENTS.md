@@ -82,9 +82,10 @@ public interface XxxService extends IService<Xxx> {
 @RequestMapping("/v1")
 @Tag(name = "xxx接口", description = "xxx相关接口")
 public class XxxController {
-
-    @Resource
     private XxxService xxxService;
+    public XxxController(XxxService xxxService) {
+        this.xxxService = xxxService;
+    }
 
     @Operation(summary = "获取xxx列表")
     @GetMapping("/xxx")

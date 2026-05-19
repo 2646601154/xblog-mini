@@ -181,6 +181,7 @@ onMounted(() => {
                   show-password
                   placeholder="输入原密码"
                 />
+                <p class="form-help">忘记原密码，请联系管理员</p>
               </el-form-item>
               <el-form-item label="新密码">
                 <el-input

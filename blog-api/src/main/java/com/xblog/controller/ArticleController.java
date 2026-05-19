@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 
 @Slf4j
@@ -35,8 +34,8 @@ public class ArticleController {
 
     /**
      * 查询文章列表
-     * @param queryArticleDto
-     * @return
+     * @param queryArticleDto 查询参数
+     * @return 文章列表
      */
     @Operation(summary = "查询文章列表")
     @GetMapping

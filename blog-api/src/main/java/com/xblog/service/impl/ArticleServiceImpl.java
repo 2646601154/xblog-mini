@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xblog.common.enums.ResultCode;
-import com.xblog.common.util.UserContext;
 import com.xblog.common.exception.BusinessException;
+import com.xblog.common.util.IpUtil;
+import com.xblog.common.util.RedisUtil;
+import com.xblog.common.util.UserContext;
 import com.xblog.dto.AdminQueryArticleDto;
 import com.xblog.dto.ArticleCreateParam;
 import com.xblog.dto.ArticleUpdateParam;
@@ -13,18 +15,10 @@ import com.xblog.dto.QueryArticleDto;
 import com.xblog.entity.*;
 import com.xblog.mapper.*;
 import com.xblog.service.ArticleService;
-import com.xblog.vo.ArticleCreateVo;
-import com.xblog.vo.ArticlePublishVo;
-import com.xblog.vo.ArticleStatusVo;
-import com.xblog.vo.ArticleUpdateVo;
-import com.xblog.vo.ArticleVo;
-import com.xblog.vo.AuthorVo;
-import com.xblog.vo.CategoryPublicVo;
-import com.xblog.vo.TagVo;
+import com.xblog.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,15 +26,26 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
+    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
+    private final TagMapper tagMapper;
+    private final ArticleTagMapper articleTagMapper;
+    private final RedisUtil redisUtil;
+    private final IpUtil ipUtil;
 
-    @Resource
-    private CategoryMapper categoryMapper;
-    @Resource
-    private UserMapper userMapper;
-    @Resource
-    private TagMapper tagMapper;
-    @Resource
-    private ArticleTagMapper articleTagMapper;
+    public ArticleServiceImpl(CategoryMapper categoryMapper,
+                              UserMapper userMapper,
+                              TagMapper tagMapper,
+                              ArticleTagMapper articleTagMapper,
+                              RedisUtil redisUtil,
+                              IpUtil ipUtil) {
+        this.categoryMapper = categoryMapper;
+        this.userMapper = userMapper;
+        this.tagMapper = tagMapper;
+        this.articleTagMapper = articleTagMapper;
+        this.redisUtil = redisUtil;
+        this.ipUtil = ipUtil;
+    }
 
     @Override
     public PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto) {
@@ -101,12 +106,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
         }
 
-        // TODO: 后续优化 - 可根据 IP 或用户 ID 防止重复计数
-        // 浏览量原子 +1
-        lambdaUpdate()
-                .eq(Article::getId, id)
-                .setSql("view_count = view_count + 1")
-                .update();
+        // 基于 Redis Set 防重复计数：同一用户/IP 在 24 小时内对同一文章只计数一次
+        String viewKey = "article:view:" + id;
+        String viewerId;
+        Long userId = UserContext.getUserId();
+        if (userId != null) {
+            viewerId = "user:" + userId;
+        } else {
+            viewerId = "ip:" + ipUtil.getClientIp();
+        }
+        // sAdd 返回 1 表示新成员（需要计数），返回 0 表示已存在（不计数）
+        long isNewView = redisUtil.sAdd(viewKey, viewerId);
+        if (isNewView > 0) {
+            lambdaUpdate()
+                    .eq(Article::getId, id)
+                    .setSql("view_count = view_count + 1")
+                    .update();
+            // 设置 24 小时过期
+            redisUtil.expire(viewKey, 24, java.util.concurrent.TimeUnit.HOURS);
+        }
 
         // 复用列表查询逻辑组装 VO（分类、作者、标签）
         List<ArticleVo> voList = convertToArticleVoList(Collections.singletonList(article));
@@ -494,7 +512,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Map<Long, Category> categoryMap = categoryIds.isEmpty()
                 ? Collections.emptyMap()
                 : categoryMapper.selectList(categoryQueryWrapper).stream()
-                        .collect(Collectors.toMap(Category::getId, c -> c));
+                  .collect(Collectors.toMap(Category::getId, c -> c));
 
         // 批量查询作者
         LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
@@ -502,7 +520,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Map<Long, User> authorMap = authorIds.isEmpty()
                 ? Collections.emptyMap()
                 : userMapper.selectList(userQueryWrapper).stream()
-                        .collect(Collectors.toMap(User::getId, u -> u));
+                  .collect(Collectors.toMap(User::getId, u -> u));
 
         // 批量查询文章标签关联
         LambdaQueryWrapper<ArticleTag> articleTagWrapper = new LambdaQueryWrapper<>();
@@ -518,7 +536,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Map<Long, Tag> tagMap = tagIds.isEmpty()
                 ? Collections.emptyMap()
                 : tagMapper.selectList(tagQueryWrapper).stream()
-                        .collect(Collectors.toMap(Tag::getId, t -> t));
+                  .collect(Collectors.toMap(Tag::getId, t -> t));
 
         // 按文章ID分组标签
         Map<Long, List<ArticleTag>> articleTagMap = articleTags.stream()

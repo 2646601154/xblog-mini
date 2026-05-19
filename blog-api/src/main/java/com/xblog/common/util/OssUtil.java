@@ -6,7 +6,6 @@ import com.aliyun.oss.model.PutObjectRequest;
 import com.xblog.common.enums.ResultCode;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.common.properties.OssProperties;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
