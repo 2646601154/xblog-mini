@@ -181,6 +181,7 @@ onMounted(fetchArticles)
             <el-button type="primary" size="small" link @click="handleEdit(row)">编辑</el-button>
             <el-button v-if="row.status === 'draft'" type="success" size="small" link @click="handlePublish(row)">发布</el-button>
             <el-button v-if="row.status === 'published'" type="warning" size="small" link @click="handleRecycle(row)">删除</el-button>
+            <el-button v-if="row.status === 'draft'" type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
             <el-button v-if="row.status === 'recycled'" type="success" size="small" link @click="handleRestore(row)">恢复</el-button>
             <el-button v-if="row.status === 'recycled'" type="danger" size="small" link @click="handleDelete(row)">彻底删除</el-button>
           </template>

@@ -53,3 +53,4 @@ credentials.json
 .sisyphus/
 /docker.zip
 .claude/
+desktop.ini

@@ -12,17 +12,17 @@ export interface CommentQueryDTO {
 export type CommentListResponse = Promise<{ data: { code: number; message: string; data: PageResult<Comment> } }>
 
 export function getCommentList(params: CommentQueryDTO): CommentListResponse {
-  return request.get('/api/v1/admin/comments', { params })
+  return request.get('/v1/admin/comments', { params })
 }
 
 export function approveComment(id: number): Promise<{ data: { code: number; message: string; data: { id: number; status: string } } }> {
-  return request.put(`/api/v1/admin/comments/${id}/approve`)
+  return request.put(`/v1/admin/comments/${id}/approve`)
 }
 
 export function rejectComment(id: number): Promise<{ data: { code: number; message: string; data: { id: number; status: string } } }> {
-  return request.put(`/api/v1/admin/comments/${id}/reject`)
+  return request.put(`/v1/admin/comments/${id}/reject`)
 }
 
 export function deleteComment(id: number): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.delete(`/api/v1/admin/comments/${id}`)
+  return request.delete(`/v1/admin/comments/${id}`)
 }

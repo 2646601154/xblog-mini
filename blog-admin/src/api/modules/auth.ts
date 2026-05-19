@@ -13,11 +13,11 @@ export interface TokenVO {
 export type LoginResponse = Promise<{ data: { code: number; message: string; data: TokenVO } }>
 
 export function login(data: LoginDTO): LoginResponse {
-  return request.post('/api/v1/auth/login', data)
+  return request.post('/v1/auth/login', data)
 }
 
 export function getCurrentUser(): Promise<{ data: { code: number; message: string; data: UserInfo } }> {
-  return request.get('/api/v1/auth/me')
+  return request.get('/v1/auth/me')
 }
 
 // 刷新 Access Token
@@ -26,12 +26,12 @@ export interface RefreshTokenDTO {
 }
 
 export function refreshToken(data: RefreshTokenDTO): LoginResponse {
-  return request.post('/api/v1/auth/refresh', data)
+  return request.post('/v1/auth/refresh', data)
 }
 
 // 登出
 export function logout(): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.post('/api/v1/auth/logout')
+  return request.post('/v1/auth/logout')
 }
 
 export type { LoginDTO, UserInfo }
