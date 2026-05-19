@@ -54,3 +54,4 @@ credentials.json
 /docker.zip
 .claude/
 desktop.ini
+.omo/
