@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
+import com.xblog.dto.UpdatePasswordParam;
+import com.xblog.dto.UpdateProfileParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.User;
 
@@ -26,6 +28,10 @@ public interface UserService extends IService<User> {
     PageResult<User> getUserPage(QueryUserDto queryUserDto);
 
     User updateUser(Long id, User user);
+
+    void updateProfile(UpdateProfileParam param);
+
+    void updatePassword(UpdatePasswordParam param);
 
     UserStatusVo disableUser(Long id);
 

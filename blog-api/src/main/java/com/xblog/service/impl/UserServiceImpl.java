@@ -12,6 +12,8 @@ import com.xblog.common.util.RedisUtil;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
+import com.xblog.dto.UpdatePasswordParam;
+import com.xblog.dto.UpdateProfileParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.RefreshToken;
 import com.xblog.entity.User;
@@ -207,6 +209,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         this.page(page, wrapper);
         return PageUtil.build(page);
+    }
+
+    @Override
+    public void updateProfile(UpdateProfileParam param) {
+        Long userId = UserContext.getUserId();
+        User user = this.getById(userId);
+        if (user == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+
+        // 校验邮箱是否被其他用户使用
+        if (StringUtils.hasText(param.getEmail()) && !param.getEmail().equals(user.getEmail())) {
+            LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
+            emailWrapper.eq(User::getEmail, param.getEmail());
+            if (this.count(emailWrapper) > 0) {
+                throw new BusinessException(ResultCode.EMAIL_ALREADY_USED_BY_OTHERS);
+            }
+        }
+
+        if (StringUtils.hasText(param.getNickname())) {
+            user.setNickname(param.getNickname());
+        }
+        if (StringUtils.hasText(param.getAvatar())) {
+            user.setAvatar(param.getAvatar());
+        }
+        if (StringUtils.hasText(param.getEmail())) {
+            user.setEmail(param.getEmail());
+        }
+
+        this.updateById(user);
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordParam param) {
+        Long userId = UserContext.getUserId();
+        User user = this.getById(userId);
+        if (user == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+
+        // 校验旧密码
+        if (!passwordEncoder.matches(param.getOldPassword(), user.getPassword())) {
+            throw new BusinessException(ResultCode.OLD_PASSWORD_INCORRECT);
+        }
+
+        // 新密码加密并保存
+        user.setPassword(passwordEncoder.encode(param.getNewPassword()));
+        this.updateById(user);
     }
 
     @Override

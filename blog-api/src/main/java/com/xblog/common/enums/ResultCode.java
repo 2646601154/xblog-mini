@@ -21,6 +21,8 @@ public enum ResultCode {
     USERNAME_EXISTS(2001, "用户名已存在"),
     USER_DISABLED(2002, "用户已被禁用"),
     EMAIL_EXISTS(2003, "邮箱已存在"),
+    OLD_PASSWORD_INCORRECT(2004, "原密码错误"),
+    EMAIL_ALREADY_USED_BY_OTHERS(2005, "邮箱已被其他用户使用"),
     USER_DISABLE_FORBIDDEN(2009, "无法禁用管理员账号"),
     USER_DELETE_FORBIDDEN(2010, "无法删除管理员账号"),
 
