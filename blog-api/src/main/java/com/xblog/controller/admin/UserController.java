@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RestController
+@RestController("adminUserController")
 @RequestMapping("/v1/admin/users")
 @Tag(name = "管理-用户接口", description = "管理员用户管理接口")
 public class UserController {
