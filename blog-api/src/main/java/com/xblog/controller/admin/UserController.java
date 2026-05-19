@@ -2,6 +2,7 @@ package com.xblog.controller.admin;
 
 import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.QueryUserDto;
+import com.xblog.dto.ResetPasswordParam;
 import com.xblog.entity.PageResult;
 import com.xblog.vo.UserStatusVo;
 import com.xblog.entity.Result;
@@ -73,6 +74,14 @@ public class UserController {
     public Result<Void> deleteUser(@PathVariable Long id) {
         log.info("删除用户, id={}", id);
         userService.deleteUser(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "重置用户密码")
+    @PutMapping("/{id}/reset-password")
+    public Result<Void> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordParam param) {
+        log.info("重置用户密码, id={}", id);
+        userService.resetPassword(id, param);
         return Result.success();
     }
 }

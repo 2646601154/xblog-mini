@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getUserList, createUser, updateUser, disableUser, enableUser, deleteUser } from '@/api'
-import type { User, UserFormData, CreateUserFormData } from '@/types'
+import { getUserList, createUser, updateUser, disableUser, enableUser, deleteUser, resetPassword } from '@/api'
+import type { User, UserFormData, CreateUserFormData, ResetPasswordFormData } from '@/types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const loading = ref(false)
@@ -46,6 +46,19 @@ const createRules = {
   ],
   email: [
     { type: 'email' as const, message: '邮箱格式不正确', trigger: 'blur' },
+  ],
+}
+
+const resetPwdDialogVisible = ref(false)
+const resetPwdFormRef = ref()
+const resetPwdUser = ref<User | null>(null)
+const resetPwdForm = ref<ResetPasswordFormData>({
+  newPassword: '',
+})
+const resetPwdRules = {
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码最少6位', trigger: 'blur' },
   ],
 }
 
@@ -168,6 +181,26 @@ async function handleDelete(user: User) {
   }
 }
 
+function openResetPasswordDialog(user: User) {
+  resetPwdUser.value = user
+  resetPwdForm.value = { newPassword: '' }
+  resetPwdDialogVisible.value = true
+}
+
+async function handleResetPasswordSubmit() {
+  if (!resetPwdFormRef.value || !resetPwdUser.value) return
+  await resetPwdFormRef.value.validate(async (valid: boolean) => {
+    if (!valid) return
+    try {
+      await resetPassword(resetPwdUser.value!.id, resetPwdForm.value)
+      ElMessage.success('密码重置成功')
+      resetPwdDialogVisible.value = false
+    } catch (e) {
+      console.error(e)
+    }
+  })
+}
+
 onMounted(fetchUsers)
 </script>
 
@@ -225,9 +258,10 @@ onMounted(fetchUsers)
             {{ new Date(row.createdAt).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="270" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" link @click="openEditDialog(row)">编辑</el-button>
+            <el-button type="warning" size="small" link @click="openResetPasswordDialog(row)">重置密码</el-button>
             <el-button v-if="row.status === 'normal'" type="danger" size="small" link @click="handleDisable(row)">禁用</el-button>
             <el-button v-else type="success" size="small" link @click="handleEnable(row)">启用</el-button>
             <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
@@ -302,6 +336,21 @@ onMounted(fetchUsers)
       <template #footer>
         <el-button @click="createDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleCreateSubmit">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="resetPwdDialogVisible" title="重置密码" width="400px">
+      <el-form ref="resetPwdFormRef" :model="resetPwdForm" :rules="resetPwdRules" label-width="80px">
+        <el-form-item label="用户名">
+          <span class="text-gray-500">{{ resetPwdUser?.username }}</span>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="resetPwdForm.newPassword" type="password" show-password placeholder="至少6位" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="resetPwdDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleResetPasswordSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>

@@ -5,6 +5,7 @@ import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
+import com.xblog.dto.ResetPasswordParam;
 import com.xblog.dto.UpdatePasswordParam;
 import com.xblog.dto.UpdateProfileParam;
 import com.xblog.entity.PageResult;
@@ -35,6 +36,8 @@ public interface UserService extends IService<User> {
     void updateProfile(UpdateProfileParam param);
 
     void updatePassword(UpdatePasswordParam param);
+
+    void resetPassword(Long id, ResetPasswordParam param);
 
     UserStatusVo disableUser(Long id);
 

@@ -13,6 +13,7 @@ import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
+import com.xblog.dto.ResetPasswordParam;
 import com.xblog.dto.UpdatePasswordParam;
 import com.xblog.dto.UpdateProfileParam;
 import com.xblog.entity.PageResult;
@@ -24,7 +25,7 @@ import com.xblog.service.UserService;
 import com.xblog.vo.RegisterUserVo;
 import com.xblog.vo.TokenVo;
 import com.xblog.vo.UserStatusVo;
-import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -52,6 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public TokenVo login(LoginParam loginParam) {
+        log.info("用户登录, username={}", loginParam.getUsername());
         // 1. 根据用户名查询用户
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, loginParam.getUsername());
@@ -59,16 +62,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 2. 用户不存在
         if (user == null) {
+            log.warn("用户登录失败, 用户名不存在: {}", loginParam.getUsername());
             throw new BusinessException(ResultCode.AUTH_LOGIN_FAILED, "用户名或密码错误");
         }
 
         // 3. 用户已禁用
         if ("disabled".equals(user.getStatus())) {
+            log.warn("用户登录失败, 用户已禁用: {}", loginParam.getUsername());
             throw new BusinessException(ResultCode.USER_DISABLED);
         }
 
         // 4. 密码校验
         if (!passwordEncoder.matches(loginParam.getPassword(), user.getPassword())) {
+            log.warn("用户登录失败, 密码错误: {}", loginParam.getUsername());
             throw new BusinessException(ResultCode.AUTH_LOGIN_FAILED, "用户名或密码错误");
         }
 
@@ -88,12 +94,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         tokenVo.setAccessToken(accessToken);
         tokenVo.setRefreshToken(refreshTokenUuid);
         tokenVo.setExpiresIn(jwtProperties.getAccessExpiration() / 1000);
+        log.info("用户登录成功, userId={}, username={}", user.getId(), user.getUsername());
         return tokenVo;
     }
 
     @Override
     public void logout() {
         Long userId = UserContext.getUserId();
+        log.info("用户登出, userId={}", userId);
         // 查找该用户所有 RT 的 key
         Set<String> rtKeys = redisTemplate.keys("refresh_token:" + userId + ":*");
         if (rtKeys != null && !rtKeys.isEmpty()) {
@@ -104,14 +112,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 String uuid = rtKey.substring(rtKey.lastIndexOf(":") + 1);
                 redisTemplate.opsForHash().delete("rt_uuid_map", uuid);
             }
+            log.info("用户登出成功, 已清除 {} 个 Refresh Token, userId={}", rtKeys.size(), userId);
         }
     }
 
     @Override
     public String refreshAccessToken(String refreshToken) {
+        log.info("刷新 Access Token");
         // 1. 从反向索引中查找 RT 对应的完整 key
         String rtKey = (String) redisTemplate.opsForHash().get("rt_uuid_map", refreshToken);
         if (rtKey == null) {
+            log.warn("刷新 Token 失败, Refresh Token 无效");
             throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
         }
 
@@ -120,12 +131,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (rtValue == null) {
             // 清理无效的索引
             redisTemplate.opsForHash().delete("rt_uuid_map", refreshToken);
+            log.warn("刷新 Token 失败, Refresh Token 不存在于 Redis");
             throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
         }
 
         // 3. 原子性删除旧 RT（Token Rotation，防竞态）
         Boolean deleted = redisTemplate.delete(rtKey);
         if (!Boolean.TRUE.equals(deleted)) {
+            log.warn("刷新 Token 失败, 删除旧 RT 失败");
             throw new BusinessException(ResultCode.AUTH_REFRESH_TOKEN_INVALID);
         }
 
@@ -145,15 +158,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         redisTemplate.opsForHash().put("rt_uuid_map", newRefreshTokenUuid, newRtKey);
 
         // 8. 返回新 AT 和新 RT，用 | 分隔
+        log.info("刷新 Token 成功, userId={}", rtValue.getUserId());
         return newAccessToken + "|" + newRefreshTokenUuid;
     }
 
     @Override
     public RegisterUserVo register(RegisterParam registerParam) {
+        log.info("用户注册, username={}, email={}", registerParam.getUsername(), registerParam.getEmail());
         // 1. 校验用户名是否已存在
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, registerParam.getUsername());
         if (this.count(wrapper) > 0) {
+            log.warn("用户注册失败, 用户名已存在: {}", registerParam.getUsername());
             throw new BusinessException(ResultCode.USERNAME_EXISTS);
         }
 
@@ -162,6 +178,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
             emailWrapper.eq(User::getEmail, registerParam.getEmail());
             if (this.count(emailWrapper) > 0) {
+                log.warn("用户注册失败, 邮箱已存在: {}", registerParam.getEmail());
                 throw new BusinessException(ResultCode.EMAIL_EXISTS);
             }
         }
@@ -185,15 +202,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         vo.setNickname(user.getNickname());
         vo.setEmail(user.getEmail());
         vo.setRole(user.getRole());
+        log.info("用户注册成功, userId={}, username={}", user.getId(), user.getUsername());
         return vo;
     }
 
     @Override
     public User createUser(CreateUserParam param) {
+        log.info("管理员创建用户, username={}, role={}", param.getUsername(), param.getRole());
         // 1. 校验用户名是否已存在
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, param.getUsername());
         if (this.count(wrapper) > 0) {
+            log.warn("创建用户失败, 用户名已存在: {}", param.getUsername());
             throw new BusinessException(ResultCode.USERNAME_EXISTS);
         }
 
@@ -202,6 +222,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
             emailWrapper.eq(User::getEmail, param.getEmail());
             if (this.count(emailWrapper) > 0) {
+                log.warn("创建用户失败, 邮箱已存在: {}", param.getEmail());
                 throw new BusinessException(ResultCode.EMAIL_EXISTS);
             }
         }
@@ -218,6 +239,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 4. 保存到数据库
         this.save(user);
 
+        log.info("创建用户成功, userId={}, username={}", user.getId(), user.getUsername());
         return user;
     }
 
@@ -248,8 +270,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updateProfile(UpdateProfileParam param) {
         Long userId = UserContext.getUserId();
+        log.info("更新个人资料, userId={}", userId);
         User user = this.getById(userId);
         if (user == null) {
+            log.warn("更新个人资料失败, 用户不存在, userId={}", userId);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
 
@@ -258,6 +282,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
             emailWrapper.eq(User::getEmail, param.getEmail());
             if (this.count(emailWrapper) > 0) {
+                log.warn("更新个人资料失败, 邮箱已被其他用户使用: {}", param.getEmail());
                 throw new BusinessException(ResultCode.EMAIL_ALREADY_USED_BY_OTHERS);
             }
         }
@@ -273,24 +298,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         this.updateById(user);
+        log.info("更新个人资料成功, userId={}", userId);
     }
 
     @Override
     public void updatePassword(UpdatePasswordParam param) {
         Long userId = UserContext.getUserId();
+        log.info("修改密码, userId={}", userId);
         User user = this.getById(userId);
         if (user == null) {
+            log.warn("修改密码失败, 用户不存在, userId={}", userId);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
 
         // 校验旧密码
         if (!passwordEncoder.matches(param.getOldPassword(), user.getPassword())) {
+            log.warn("修改密码失败, 旧密码错误, userId={}", userId);
             throw new BusinessException(ResultCode.OLD_PASSWORD_INCORRECT);
         }
 
         // 新密码加密并保存
         user.setPassword(passwordEncoder.encode(param.getNewPassword()));
         this.updateById(user);
+        log.info("修改密码成功, userId={}", userId);
+    }
+
+    @Override
+    public void resetPassword(Long id, ResetPasswordParam param) {
+        log.info("重置密码, userId={}", id);
+        User user = this.getById(id);
+        if (user == null) {
+            log.warn("重置密码失败, 用户不存在, userId={}", id);
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+
+        // BCrypt 加密新密码
+        user.setPassword(passwordEncoder.encode(param.getNewPassword()));
+        this.updateById(user);
+        log.info("重置密码成功, userId={}", id);
     }
 
     @Override
@@ -306,38 +351,49 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserStatusVo disableUser(Long id) {
+        log.info("禁用用户, targetUserId={}", id);
         User user = this.getById(id);
         if (user == null) {
+            log.warn("禁用用户失败, 用户不存在, userId={}", id);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
         if ("admin".equals(user.getRole())) {
+            log.warn("禁用用户失败, 不能禁用管理员, userId={}", id);
             throw new BusinessException(ResultCode.USER_DISABLE_FORBIDDEN);
         }
         user.setStatus("disabled");
         this.updateById(user);
+        log.info("禁用用户成功, userId={}", id);
         return new UserStatusVo(user.getId(), user.getStatus());
     }
 
     @Override
     public UserStatusVo enableUser(Long id) {
+        log.info("启用用户, targetUserId={}", id);
         User user = this.getById(id);
         if (user == null) {
+            log.warn("启用用户失败, 用户不存在, userId={}", id);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
         user.setStatus("normal");
         this.updateById(user);
+        log.info("启用用户成功, userId={}", id);
         return new UserStatusVo(user.getId(), user.getStatus());
     }
 
     @Override
     public void deleteUser(Long id) {
+        log.info("删除用户, targetUserId={}", id);
         User user = this.getById(id);
         if (user == null) {
+            log.warn("删除用户失败, 用户不存在, userId={}", id);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
         if ("admin".equals(user.getRole())) {
+            log.warn("删除用户失败, 不能删除管理员, userId={}", id);
             throw new BusinessException(ResultCode.USER_DELETE_FORBIDDEN);
         }
         this.removeById(id);
+        log.info("删除用户成功, userId={}", id);
     }
 }

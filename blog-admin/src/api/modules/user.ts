@@ -1,5 +1,5 @@
 import request from '../request'
-import type { User, UserFormData, CreateUserFormData, PageResult } from '@/types'
+import type { User, UserFormData, CreateUserFormData, ResetPasswordFormData, PageResult } from '@/types'
 
 export interface UserQueryDTO {
   page?: number
@@ -39,4 +39,8 @@ export function enableUser(id: number): Promise<{ data: { code: number; message:
 
 export function deleteUser(id: number): Promise<{ data: { code: number; message: string; data: null } }> {
   return request.delete(`/v1/admin/users/${id}`)
+}
+
+export function resetPassword(id: number, data: ResetPasswordFormData): Promise<{ data: { code: number; message: string; data: null } }> {
+  return request.put(`/v1/admin/users/${id}/reset-password`, data)
 }

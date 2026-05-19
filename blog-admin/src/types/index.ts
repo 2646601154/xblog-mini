@@ -124,6 +124,10 @@ export interface CreateUserFormData {
   role?: 'admin' | 'user'
 }
 
+export interface ResetPasswordFormData {
+  newPassword: string
+}
+
 export interface ConfigItem {
   id: number
   configKey: string

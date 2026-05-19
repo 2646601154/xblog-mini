@@ -50,6 +50,7 @@ Xblog-mini/
 - ❌ **不要**在 `application.yml` 中使用默认/占位密钥（JWT secret 当前为 `your-secret-key-change-in-production`）
 - ❌ **不要**忘记清理 ThreadLocal（`UserContext` 使用 ThreadLocal 存储用户信息，需确保在请求结束后调用 `clear()`）
 - ❌ **不要**提交嵌套 `blog-web/blog-web/` 目录（疑似构建产物混淆）
+- ❌ **不要**在委托后台探索任务后自行进行相同搜索——必须结束回复等待 `<system-reminder>`，再用 `background_output` 收集结果后再行动
 
 ## UNIQUE STYLES
 
