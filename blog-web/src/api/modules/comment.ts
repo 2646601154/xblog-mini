@@ -27,12 +27,12 @@ export type CommentListResponse = Promise<AxiosResponse<{ code: number; message:
 export type CommentResponse = Promise<AxiosResponse<{ code: number; message: string; data: CommentVO }>>
 
 export function postComment(data: CommentDTO): CommentResponse {
-  return request.post('/api/v1/comments', data)
+  return request.post('/v1/comments', data)
 }
 
 export function getArticleComments(
   articleId: number,
   params?: { page?: number; size?: number }
 ): CommentListResponse {
-  return request.get(`/api/v1/articles/${articleId}/comments`, { params })
+  return request.get(`/v1/articles/${articleId}/comments`, { params })
 }

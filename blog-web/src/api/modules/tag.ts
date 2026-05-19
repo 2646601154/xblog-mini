@@ -7,5 +7,5 @@ export type { TagVO }
 export type TagListResponse = Promise<AxiosResponse<{ code: number; message: string; data: TagVO[] }>>
 
 export function getTagList(): TagListResponse {
-  return request.get('/api/v1/tags')
+  return request.get('/v1/tags')
 }
