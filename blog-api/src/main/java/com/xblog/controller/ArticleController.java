@@ -25,12 +25,13 @@ import java.util.List;
 @RequestMapping("/v1/articles")
 @Tag(name = "文章接口", description = "公开文章相关接口")
 public class ArticleController {
+    private final ArticleService articleService;
+    private final CommentService commentService;
 
-    @Resource
-    private ArticleService articleService;
-
-    @Resource
-    private CommentService commentService;
+    public ArticleController(ArticleService articleService, CommentService commentService) {
+        this.articleService = articleService;
+        this.commentService = commentService;
+    }
 
     /**
      * 查询文章列表

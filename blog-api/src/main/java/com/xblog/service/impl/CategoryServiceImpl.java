@@ -23,8 +23,11 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
 
-    @Resource
-    private ArticleService articleService;
+    private final ArticleService articleService;
+
+    public CategoryServiceImpl(ArticleService articleService) {
+        this.articleService = articleService;
+    }
 
     @Override
     public List<CategoryAdminVo> getAdminCategoryList() {

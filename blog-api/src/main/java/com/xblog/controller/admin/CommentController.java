@@ -26,9 +26,11 @@ import java.util.List;
 @RequestMapping("/v1/admin/comments")
 @Tag(name = "管理-评论接口", description = "管理员评论管理接口")
 public class CommentController {
+    private final CommentService commentService;
 
-    @Resource
-    private CommentService commentService;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @Operation(summary = "评论管理列表")
     @GetMapping

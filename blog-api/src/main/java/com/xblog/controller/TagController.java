@@ -16,9 +16,11 @@ import java.util.List;
 @RequestMapping("/v1/tags")
 @Tag(name = "标签接口", description = "公开标签相关接口")
 public class TagController {
+    private final TagService tagService;
 
-    @Resource
-    private TagService tagService;
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping
     public Result<List<TagVo>> getTagList() {

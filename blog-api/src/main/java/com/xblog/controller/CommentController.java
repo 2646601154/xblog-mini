@@ -29,9 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/comments")
 @Tag(name = "评论接口", description = "评论相关接口")
 public class CommentController {
+    private final CommentService commentService;
 
-    @Resource
-    private CommentService commentService;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
 
     @Operation(summary = "发表评论")
     @PostMapping

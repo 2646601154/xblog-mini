@@ -19,11 +19,13 @@ import java.util.UUID;
 @Slf4j
 public class OssUtil {
 
-    @Resource
-    private OSS ossClient;
+    private final OSS ossClient;
+    private final OssProperties ossProperties;
 
-    @Resource
-    private OssProperties ossProperties;
+    public OssUtil(OSS ossClient, OssProperties ossProperties) {
+        this.ossClient = ossClient;
+        this.ossProperties = ossProperties;
+    }
 
     /**
      * 上传文件到 OSS
@@ -100,3 +102,4 @@ public class OssUtil {
         return idx >= 0 ? fileUrl.substring(idx + 1) : fileUrl;
     }
 }
+

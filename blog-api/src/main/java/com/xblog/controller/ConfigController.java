@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "配置接口", description = "公开配置相关接口")
 public class ConfigController {
+    private final ConfigService configService;
 
-    @Resource
-    private ConfigService configService;
+    public ConfigController(ConfigService configService) {
+        this.configService = configService;
+    }
 
     @Operation(summary = "获取公开配置")
     @GetMapping("/configs")

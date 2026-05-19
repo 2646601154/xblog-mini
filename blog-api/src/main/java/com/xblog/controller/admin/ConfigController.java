@@ -24,9 +24,11 @@ import java.util.List;
 @RequestMapping("/v1/admin/configs")
 @Tag(name = "管理-配置接口", description = "管理员配置管理接口")
 public class ConfigController {
+    private final ConfigService configService;
 
-    @Resource
-    private ConfigService configService;
+    public ConfigController(ConfigService configService) {
+        this.configService = configService;
+    }
 
     @Operation(summary = "获取所有配置")
     @GetMapping

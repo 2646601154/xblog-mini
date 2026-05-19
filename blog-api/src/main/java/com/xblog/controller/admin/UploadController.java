@@ -14,9 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/v1/admin")
 @Tag(name = "管理-文件上传接口", description = "管理员文件上传接口")
 public class UploadController {
+    private final OssUtil ossUtil;
 
-    @Resource
-    private OssUtil ossUtil;
+    public UploadController(OssUtil ossUtil) {
+        this.ossUtil = ossUtil;
+    }
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")

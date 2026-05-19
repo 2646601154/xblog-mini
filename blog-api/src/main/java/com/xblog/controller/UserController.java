@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/users")
 @Tag(name = "用户接口", description = "普通用户相关接口")
 public class UserController {
+    private final UserService userService;
 
-    @Resource
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(summary = "修改个人资料")
     @PutMapping("/profile")

@@ -24,9 +24,11 @@ import java.util.List;
 @RequestMapping("/v1/admin/tags")
 @Tag(name = "管理-标签接口", description = "标签管理接口")
 public class TagController {
+    private final TagService tagService;
 
-    @Resource
-    private TagService tagService;
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping
     public Result<List<TagAdminVo>> getAdminTagList() {

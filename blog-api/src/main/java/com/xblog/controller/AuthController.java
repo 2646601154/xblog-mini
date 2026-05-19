@@ -26,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/auth")
 @Tag(name = "认证接口", description = "登录、注册、刷新Token、登出接口")
 public class AuthController {
+    private final UserService userService;
+    private final JwtProperties jwtProperties;
 
-    @Resource
-    private UserService userService;
-
-    @Resource
-    private JwtProperties jwtProperties;
+    public AuthController(UserService userService, JwtProperties jwtProperties) {
+        this.userService = userService;
+        this.jwtProperties = jwtProperties;
+    }
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")

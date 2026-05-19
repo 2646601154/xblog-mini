@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/admin/users")
 @Tag(name = "管理-用户接口", description = "管理员用户管理接口")
 public class UserController {
+    private final UserService userService;
 
-    @Resource
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(summary = "查询用户列表")
     @GetMapping

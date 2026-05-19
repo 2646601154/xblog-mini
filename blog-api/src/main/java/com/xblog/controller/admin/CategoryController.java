@@ -20,9 +20,11 @@ import java.util.List;
 @RequestMapping("/v1/admin/categories")
 @Tag(name = "管理-分类接口", description = "管理员分类管理接口")
 public class CategoryController {
+    private final CategoryService categoryService;
 
-    @Resource
-    private CategoryService categoryService;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @Operation(summary = "获取管理分类列表")
     @GetMapping

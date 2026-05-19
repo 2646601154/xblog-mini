@@ -33,9 +33,11 @@ import java.util.List;
 @RequestMapping("/v1/admin/articles")
 @Tag(name = "管理-文章接口", description = "管理员文章管理接口")
 public class ArticleController {
+    private final ArticleService articleService;
 
-    @Resource
-    private ArticleService articleService;
+    public ArticleController(ArticleService articleService) {
+        this.articleService = articleService;
+    }
 
     @Operation(summary = "查询文章管理列表")
     @GetMapping
