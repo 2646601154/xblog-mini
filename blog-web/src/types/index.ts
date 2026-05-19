@@ -69,3 +69,11 @@ export interface ApiResponse<T = any> {
   message: string
   data: T
 }
+
+export interface SiteConfig {
+  siteTitle: string
+  siteLogo: string
+  siteDescription: string
+  icpNumber: string
+  copyright: string
+}
