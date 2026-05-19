@@ -36,3 +36,21 @@ export function getArticleComments(
 ): CommentListResponse {
   return request.get(`/v1/articles/${articleId}/comments`, { params })
 }
+
+// 我的评论
+export interface CommentMyVO {
+  id: number
+  article: { id: number; title: string }
+  content: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type MyCommentListVO = PageResult<CommentMyVO>
+
+export type MyCommentListResponse = Promise<AxiosResponse<{ code: number; message: string; data: MyCommentListVO }>>
+
+export function getMyComments(params?: { page?: number; size?: number }): MyCommentListResponse {
+  return request.get('/v1/comments/my', { params })
+}

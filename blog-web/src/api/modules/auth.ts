@@ -64,3 +64,24 @@ export function logout(): Promise<{ data: { code: number; message: string; data:
 export function getCurrentUser(): UserInfoResponse {
   return request.get('/v1/auth/me')
 }
+
+// 修改个人资料
+export interface UpdateProfileDTO {
+  nickname?: string
+  avatar?: string
+  email?: string
+}
+
+export function updateProfile(data: UpdateProfileDTO): Promise<{ data: { code: number; message: string; data: null } }> {
+  return request.put('/v1/auth/me', data)
+}
+
+// 修改密码
+export interface ChangePasswordDTO {
+  oldPassword: string
+  newPassword: string
+}
+
+export function changePassword(data: ChangePasswordDTO): Promise<{ data: { code: number; message: string; data: null } }> {
+  return request.put('/v1/auth/password', data)
+}

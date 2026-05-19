@@ -6,42 +6,39 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/pages/home/index.vue'),
+      component: () => import('@/views/home/index.vue'),
     },
     {
       path: '/article/:id',
       name: 'article-detail',
-      component: () => import('@/pages/article/detail.vue'),
+      component: () => import('@/views/article/detail.vue'),
     },
     {
       path: '/categories',
       name: 'categories',
-      component: () => import('@/pages/categories/index.vue'),
+      component: () => import('@/views/categories/index.vue'),
     },
     {
       path: '/categories/:slug',
       name: 'category',
-      component: () => import('@/pages/categories/index.vue'),
-    },
-    {
-      path: '/tag/:slug',
-      name: 'tag',
-      component: () => import('@/pages/tag/index.vue'),
+      component: () => import('@/views/categories/index.vue'),
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/pages/login/index.vue'),
+      meta: { layout: 'blank' },
+      component: () => import('@/views/login/index.vue'),
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('@/pages/register/index.vue'),
+      meta: { layout: 'blank' },
+      component: () => import('@/views/register/index.vue'),
     },
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('@/pages/profile/index.vue'),
+      component: () => import('@/views/profile/index.vue'),
     },
   ],
 })

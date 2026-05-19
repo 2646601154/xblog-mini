@@ -80,6 +80,5 @@ pnpm preview # 预览构建产物
 
 ## NOTES
 
-- 页面目录使用 `pages/`（非标准的 `views/`，与 blog-admin 的 `views/` 不同）
 - `dist-web/` 为构建产物目录，不应提交到仓库
 - 存在嵌套的 `blog-web/blog-web/` 目录，疑似构建产物混淆
