@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { User, Lock } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -26,6 +27,11 @@ async function handleLogin() {
     try {
       const success = await authStore.login(form.value)
       if (success) {
+        if (!authStore.isAdmin) {
+          ElMessage.error('无权限访问管理后台')
+          authStore.logout()
+          return
+        }
         router.push('/admin')
       }
     } finally {
