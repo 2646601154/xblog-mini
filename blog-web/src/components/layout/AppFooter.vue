@@ -1,12 +1,15 @@
 <script setup lang="ts">
-const currentYear = new Date().getFullYear()
+import { useConfigStore } from '@/stores/config'
+
+const configStore = useConfigStore()
+configStore.initConfig()
 </script>
 
 <template>
   <footer class="footer">
     <div class="footer-container">
-      <p class="footer-text">© {{ currentYear }} Xblog-mini · 用心记录每一天</p>
-      <p class="footer-icp">皖ICP备2026012345号-1</p>
+      <p class="footer-text">{{ configStore.copyright }}</p>
+      <p class="footer-icp">{{ configStore.icpNumber }}</p>
     </div>
   </footer>
 </template>
@@ -14,7 +17,7 @@ const currentYear = new Date().getFullYear()
 <style scoped>
 .footer {
   background: var(--bg-dark);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   padding: 40px 20px;
   margin-top: auto;
 }
@@ -28,11 +31,13 @@ const currentYear = new Date().getFullYear()
 .footer-text {
   font-size: 0.95rem;
   margin-bottom: 8px;
+  color: var(--text-secondary);
 }
 
 .footer-icp {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 @media (max-width: 768px) {

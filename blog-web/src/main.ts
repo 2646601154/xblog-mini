@@ -8,6 +8,7 @@ import * as ElementPlusIcons from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import { useAuthStore } from './stores/auth'
+import { useConfigStore } from './stores/config'
 import '@/styles/main.css'
 
 const app = createApp(App)
@@ -22,5 +23,8 @@ app.use(ElementPlus)
 
 const authStore = useAuthStore()
 authStore.initAuth()
+
+const configStore = useConfigStore()
+configStore.initConfig()
 
 app.mount('#app')

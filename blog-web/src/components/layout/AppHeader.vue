@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Menu } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { useConfigStore } from '@/stores/config'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const configStore = useConfigStore()
 const isMenuOpen = ref(false)
+
+onMounted(() => {
+  configStore.initConfig()
+})
 
 const menuItems = [
   { label: '首页', path: '/', key: 'home' },
@@ -38,8 +44,16 @@ const handleCommand = (command: string) => {
   <header class="header">
     <div class="header-container">
       <div class="logo" @click="navigateTo('/')">
-        <span class="logo-icon">📝</span>
-        <span class="logo-text">Xblog</span>
+        <img
+          v-if="configStore.siteLogo"
+          :src="configStore.siteLogo"
+          :alt="configStore.siteTitle"
+          class="logo-image"
+        />
+        <template v-else>
+          <span class="logo-icon">{{ configStore.siteTitle[0] }}</span>
+          <span class="logo-text">{{ configStore.siteTitle }}</span>
+        </template>
       </div>
 
       <el-menu
@@ -149,12 +163,17 @@ const handleCommand = (command: string) => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 1.4rem;
   font-weight: 600;
   cursor: pointer;
   margin-right: 40px;
   flex-shrink: 0;
+}
+
+.logo-image {
+  height: 36px;
+  object-fit: contain;
 }
 
 .logo-icon {
@@ -190,12 +209,12 @@ const handleCommand = (command: string) => {
 }
 
 .header-menu .el-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(58, 158, 150, 0.1) !important;
 }
 
 .header-menu .el-menu-item.is-active {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  color: #fff !important;
+  background-color: rgba(58, 158, 150, 0.15) !important;
+  color: var(--accent) !important;
   border-bottom: none !important;
 }
 
@@ -216,14 +235,14 @@ const handleCommand = (command: string) => {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: #fff;
+  color: var(--text-primary);
   padding: 4px 8px;
   border-radius: 20px;
   transition: background-color 0.3s;
 }
 
 .user-info:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(58, 158, 150, 0.1);
 }
 
 .nickname {
@@ -232,12 +251,12 @@ const handleCommand = (command: string) => {
 
 .mobile-menu-icon {
   display: none;
-  color: #fff;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .mobile-menu {
-  background: var(--bg-dark);
+  background: var(--bg-primary);
   padding: 20px;
 }
 
@@ -246,15 +265,15 @@ const handleCommand = (command: string) => {
 }
 
 .mobile-menu .el-menu-item {
-  color: #fff !important;
+  color: var(--text-primary) !important;
   font-size: 16px;
   height: 44px;
   line-height: 44px;
 }
 
 .mobile-menu .el-menu-item.is-active {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  color: #fff !important;
+  background-color: rgba(58, 158, 150, 0.1) !important;
+  color: var(--accent) !important;
 }
 
 .mobile-auth {
@@ -269,13 +288,13 @@ const handleCommand = (command: string) => {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(58, 158, 150, 0.08);
   border-radius: 8px;
   cursor: pointer;
 }
 
 .mobile-nickname {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 16px;
 }
 
