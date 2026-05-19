@@ -1,8 +1,12 @@
 package com.xblog;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
+@Slf4j
 @SpringBootApplication
 public class Main {
 
@@ -10,4 +14,19 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        String banner = """
+
+                 ██╗  ██╗██████╗ ██╗      ██████╗  ██████╗
+                 ╚██╗██╔╝██╔══██╗██║     ██╔═══██╗██╔════╝
+                  ╚███╔╝ ██████╔╝██║     ██║   ██║██║  ███╗
+                  ██╔██╗ ██╔══██╗██║     ██║   ██║██║   ██║
+                 ██╔╝ ██╗██████╔╝███████╗╚██████╔╝╚██████╔╝
+                 ╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝
+
+                 :: Xblog Mini ::  启动成功 ✓
+                """;
+        log.info(banner);
+    }
 }
