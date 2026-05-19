@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private final ArticleTagMapper articleTagMapper;
     private final RedisUtil redisUtil;
     private final IpUtil ipUtil;
+
+    // ============================= Cache Constants ============================
+
+    private static final String CACHE_KEY_PUBLIC_LIST = "article:list:";
+    private static final String CACHE_KEY_DETAIL = "article:detail:";
+    private static final String CACHE_KEY_TAGS = "article:tags:";
+
+    private static final long TTL_PUBLIC_LIST_MINUTES = 5;
+    private static final long TTL_DETAIL_MINUTES = 30;
+    private static final long TTL_TAGS_MINUTES = 60;
 
     public ArticleServiceImpl(CategoryMapper categoryMapper,
                               UserMapper userMapper,
@@ -49,6 +60,36 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto) {
+        String cacheKey = buildPublicListKey(queryDto);
+
+        // 1. 尝试读取缓存
+        try {
+            PageResult<ArticleVo> cached = redisUtil.get(cacheKey);
+            if (cached != null) {
+                log.debug("缓存命中 - 公开文章列表: {}", cacheKey);
+                return cached;
+            }
+        } catch (Exception e) {
+            log.warn("缓存读取失败，回退到数据库: {}", cacheKey, e);
+        }
+
+        // 2. 缓存未命中，查询数据库
+        PageResult<ArticleVo> result = queryPublicArticlePage(queryDto);
+
+        // 3. 写入缓存
+        try {
+            redisUtil.set(cacheKey, result, TTL_PUBLIC_LIST_MINUTES, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.warn("缓存写入失败: {}", cacheKey, e);
+        }
+
+        return result;
+    }
+
+    /**
+     * 从数据库查询公开文章列表（无缓存）
+     */
+    private PageResult<ArticleVo> queryPublicArticlePage(QueryArticleDto queryDto) {
         // 1. 构建分页对象
         int pageNum = queryDto.getPage() != null ? queryDto.getPage() : 1;
         int pageSize = queryDto.getSize() != null ? queryDto.getSize() : 10;
@@ -93,9 +134,38 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return pageResult;
     }
 
+    /**
+     * 构建公开文章列表缓存 key
+     */
+    private String buildPublicListKey(QueryArticleDto dto) {
+        return CACHE_KEY_PUBLIC_LIST
+                + (dto.getCategoryId() != null ? dto.getCategoryId() : "all")
+                + ":"
+                + (dto.getTagId() != null ? dto.getTagId() : "all")
+                + ":"
+                + (dto.getPage() != null ? dto.getPage() : 1)
+                + ":"
+                + (dto.getSize() != null ? dto.getSize() : 10);
+    }
+
     @Override
     public ArticleVo getArticleDetail(Long id) {
-        // 查询文章
+        String cacheKey = CACHE_KEY_DETAIL + id;
+
+        // 1. 尝试读取缓存
+        try {
+            ArticleVo cached = redisUtil.get(cacheKey);
+            if (cached != null) {
+                log.debug("缓存命中 - 文章详情: {}", cacheKey);
+                // 缓存命中时仍然记录浏览量（独立于缓存）
+                incrementViewCount(id);
+                return cached;
+            }
+        } catch (Exception e) {
+            log.warn("缓存读取失败，回退到数据库: {}", cacheKey, e);
+        }
+
+        // 2. 缓存未命中，查询数据库
         Article article = getById(id);
         if (article == null) {
             throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
@@ -106,27 +176,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
         }
 
-        // 基于 Redis Set 防重复计数：同一用户/IP 在 24 小时内对同一文章只计数一次
-        String viewKey = "article:view:" + id;
-        String viewerId;
-        Long userId = UserContext.getUserId();
-        if (userId != null) {
-            viewerId = "user:" + userId;
-        } else {
-            viewerId = "ip:" + ipUtil.getClientIp();
-        }
-        // sAdd 返回 1 表示新成员（需要计数），返回 0 表示已存在（不计数）
-        long isNewView = redisUtil.sAdd(viewKey, viewerId);
-        if (isNewView > 0) {
-            lambdaUpdate()
-                    .eq(Article::getId, id)
-                    .setSql("view_count = view_count + 1")
-                    .update();
-            // 设置 24 小时过期
-            redisUtil.expire(viewKey, 24, java.util.concurrent.TimeUnit.HOURS);
-        }
+        // 3. 增加浏览量
+        incrementViewCount(id);
 
-        // 复用列表查询逻辑组装 VO（分类、作者、标签）
+        // 4. 组装 VO
         List<ArticleVo> voList = convertToArticleVoList(Collections.singletonList(article));
         ArticleVo vo = voList.get(0);
 
@@ -136,12 +189,59 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         vo.setUpdatedAt(article.getUpdatedAt());
         vo.setViewCount(article.getViewCount() + 1);
 
+        // 5. 写入缓存
+        try {
+            redisUtil.set(cacheKey, vo, TTL_DETAIL_MINUTES, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.warn("缓存写入失败: {}", cacheKey, e);
+        }
+
         return vo;
+    }
+
+    /**
+     * 增加文章浏览量（基于 Redis Set 防重复计数）
+     */
+    private void incrementViewCount(Long articleId) {
+        String viewKey = "article:view:" + articleId;
+        String viewerId = getViewerId();
+        long isNewView = redisUtil.sAdd(viewKey, viewerId);
+        if (isNewView > 0) {
+            lambdaUpdate()
+                    .eq(Article::getId, articleId)
+                    .setSql("view_count = view_count + 1")
+                    .update();
+            redisUtil.expire(viewKey, 24, TimeUnit.HOURS);
+        }
+    }
+
+    /**
+     * 获取当前访问者标识（用户ID 或 IP）
+     */
+    private String getViewerId() {
+        Long userId = UserContext.getUserId();
+        if (userId != null) {
+            return "user:" + userId;
+        }
+        return "ip:" + ipUtil.getClientIp();
     }
 
     @Override
     public List<TagVo> getArticleTags(Long id) {
-        // 检查文章是否存在
+        String cacheKey = CACHE_KEY_TAGS + id;
+
+        // 1. 尝试读取缓存
+        try {
+            List<TagVo> cached = redisUtil.get(cacheKey);
+            if (cached != null) {
+                log.debug("缓存命中 - 文章标签: {}", cacheKey);
+                return cached;
+            }
+        } catch (Exception e) {
+            log.warn("缓存读取失败，回退到数据库: {}", cacheKey, e);
+        }
+
+        // 2. 缓存未命中，查询数据库
         Article article = getById(id);
         if (article == null) {
             throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
@@ -165,7 +265,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .collect(Collectors.toMap(Tag::getId, t -> t));
 
         // 转换为 TagVo
-        return tagIds.stream()
+        List<TagVo> result = tagIds.stream()
                 .map(tagMap::get)
                 .filter(tag -> tag != null)
                 .map(tag -> {
@@ -176,6 +276,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     return vo;
                 })
                 .collect(Collectors.toList());
+
+        // 3. 写入缓存
+        try {
+            redisUtil.set(cacheKey, result, TTL_TAGS_MINUTES, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.warn("缓存写入失败: {}", cacheKey, e);
+        }
+
+        return result;
     }
 
     @Override
@@ -260,7 +369,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         save(article);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表)
+        // 清理文章列表缓存
+        redisUtil.deleteByPattern("article:list:*");
 
         // 保存文章标签关联
         if (param.getTagIds() != null && !param.getTagIds().isEmpty()) {
@@ -324,7 +434,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         updateById(article);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表和详情缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
+        // 清理文章标签缓存
+        redisUtil.delete(CACHE_KEY_TAGS + id);
 
         // 更新文章标签关联（先删后插）
         articleTagMapper.delete(
@@ -367,7 +481,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setPublishedAt(now);
         updateById(article);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表和详情缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
 
         ArticlePublishVo vo = new ArticlePublishVo();
         vo.setId(article.getId());
@@ -390,7 +506,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setStatus("recycled");
         updateById(article);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表和详情缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
 
         ArticleStatusVo vo = new ArticleStatusVo();
         vo.setId(article.getId());
@@ -412,7 +530,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setStatus("draft");
         updateById(article);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表和详情缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
 
         ArticleStatusVo vo = new ArticleStatusVo();
         vo.setId(article.getId());
@@ -438,7 +558,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         removeById(id);
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表和详情缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
     }
 
     @Override
@@ -471,7 +593,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleTags.forEach(articleTagMapper::insert);
         }
 
-        // TODO: 清理文章缓存 - article:list:* (文章列表) 和 article:detail:{id} (文章详情)
+        // 清理文章列表、详情和标签缓存
+        redisUtil.deleteByPattern("article:list:*");
+        redisUtil.delete("article:detail:" + id);
+        redisUtil.delete(CACHE_KEY_TAGS + id);
 
         if (tagIds == null || tagIds.isEmpty()) {
             return Collections.emptyList();

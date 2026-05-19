@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,6 +76,25 @@ public class RedisUtil {
      * @return 删除数量
      */
     public long delete(Collection<String> keys) {
+        Long result = redisTemplate.delete(keys);
+        return result != null ? result : 0;
+    }
+
+    /**
+     * 按模式删除（基于 KEYS 命令匹配）
+     * <p>
+     * 注意：KEYS 命令会阻塞 Redis，建议在缓存清理等低频场景使用。
+     * 高频场景建议使用 SCAN 替代。
+     * </p>
+     *
+     * @param pattern 匹配模式（如 "article:list:*"）
+     * @return 删除数量
+     */
+    public long deleteByPattern(String pattern) {
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys == null || keys.isEmpty()) {
+            return 0;
+        }
         Long result = redisTemplate.delete(keys);
         return result != null ? result : 0;
     }
