@@ -43,13 +43,10 @@ Xblog-mini/
 ## ANTI-PATTERNS（THIS PROJECT）
 
 - ❌ **不要**在 `node_modules` 目录放置项目文件（已发现误提交）
-- ❌ **不要**使用 `@Autowired`，用 `@Resource`
 - ❌ **不要**忘记分页null兜底：`int pageNum = dto.getPage() != null ? dto.getPage() : 1`
 - ❌ **不要**在循环内单独查询关联数据，用 `selectBatchIds` 批量查询
 - ❌ **不要**修改配置后忘记清理Redis缓存
-- ❌ **不要**在 `application.yml` 中使用默认/占位密钥（JWT secret 当前为 `your-secret-key-change-in-production`）
 - ❌ **不要**忘记清理 ThreadLocal（`UserContext` 使用 ThreadLocal 存储用户信息，需确保在请求结束后调用 `clear()`）
-- ❌ **不要**提交嵌套 `blog-web/blog-web/` 目录（疑似构建产物混淆）
 - ❌ **不要**在委托后台探索任务后自行进行相同搜索——必须结束回复等待 `<system-reminder>`，再用 `background_output` 收集结果后再行动
 
 ## UNIQUE STYLES
@@ -60,25 +57,12 @@ Xblog-mini/
 - `blog-admin` 使用 Tailwind CSS v4 + `@tailwindcss/vite` 插件（`blog-web` 使用 Element Plus）
 - 前端无项目级 `.eslintrc` / `.prettierrc`（仅使用 IDE 默认规则）
 
-## CI/CD
-
-- **.github/workflows/**: 当前为空，无活跃 CI 工作流
-- **mvnw**: blog-api包含Maven wrapper，但CI未使用
-- **Docker**: 存在两套Dockerfile（`blog-api/Dockerfile` vs `docker/Dockerfile.api`），`docker-compose` 使用后者
-
-## TESTS
-
-- 仅3个集成测试（`DemoTest`, `MainTests`, `TestUserServiceImpl`），全量Spring上下文
-- 无单元测试、无Mock测试
-- 无JaCoCo覆盖率配置
-- 测试数据：`sql/test-data.sql`
 
 ## COMMANDS
 
 ```bash
 # 后端启动
 cd blog-api
-$env:DB_PASSWORD = "123456"
 ./mvnw spring-boot:run
 
 # 前端启动
@@ -101,9 +85,6 @@ mysql -u root -p < sql/test-data.sql
 - `MybatisPlusFillMetaObjectHandler` 自动填充 `createdAt`/`updatedAt`
 - 逻辑删除：仅 `article` 表使用，其他表物理删除
 - 数据库变更需同步 `sql/init.sql` 和 `doc/PRD.md`
-- `blog-web/blog-web/` 子目录异常，需确认是否为构建产物
-- `docker/dist-web/`、`docker/dist-admin/`、`docker/blog-api-0.0.1-SNAPSHOT.jar` 为构建产物，不应提交到仓库
-- 存在空的 `com.xblog.xblog` 包目录，无实际用途
 
 ## 测试账号
 
@@ -111,4 +92,3 @@ mysql -u root -p < sql/test-data.sql
 |------|------|------|
 | `admin` | `123456` | admin |
 | `testuser` | `123456` | user |
-| `zhangsan` | `123456` | user |
