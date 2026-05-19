@@ -57,7 +57,7 @@ server:
   servlet:
     context-path: /
 
-# OSS 配置（后续补充）TODO
+# OSS 配置
 oss:
   endpoint: ${OSS_ENDPOINT:}
   access-key-id: ${OSS_ACCESS_KEY_ID:}
