@@ -66,9 +66,9 @@ export type CategoryListResponse = Promise<AxiosResponse<{ code: number; message
 export type TagListResponse = Promise<AxiosResponse<{ code: number; message: string; data: TagVO[] }>>
 
 export function getArticleList(params: ArticleListDTO): ArticleListResponse {
-  return request.get('/api/v1/articles', { params })
+  return request.get('/v1/articles', { params })
 }
 
 export function getArticleDetail(id: number): ArticleDetailResponse {
-  return request.get(`/api/v1/articles/${id}`)
+  return request.get(`/v1/articles/${id}`)
 }

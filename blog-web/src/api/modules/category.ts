@@ -13,9 +13,9 @@ export type CategoryListResponse = Promise<AxiosResponse<{ code: number; message
 export type CategoryDetailResponse = Promise<AxiosResponse<{ code: number; message: string; data: CategoryDetailVO }>>
 
 export function getCategoryList(): CategoryListResponse {
-  return request.get('/api/v1/categories')
+  return request.get('/v1/categories')
 }
 
 export function getCategoryBySlug(slug: string): CategoryDetailResponse {
-  return request.get(`/api/v1/categories/${slug}`)
+  return request.get(`/v1/categories/${slug}`)
 }

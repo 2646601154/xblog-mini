@@ -38,12 +38,12 @@ export type UserInfoResponse = Promise<{ data: { code: number; message: string; 
 
 // 登录
 export function login(data: LoginDTO): LoginResponse {
-  return request.post('/api/v1/auth/login', data)
+  return request.post('/v1/auth/login', data)
 }
 
 // 注册
 export function register(data: RegisterDTO): RegisterResponse {
-  return request.post('/api/v1/auth/register', data)
+  return request.post('/v1/auth/register', data)
 }
 
 // 刷新 Access Token
@@ -52,15 +52,15 @@ export interface RefreshTokenDTO {
 }
 
 export function refreshToken(data: RefreshTokenDTO): LoginResponse {
-  return request.post('/api/v1/auth/refresh', data)
+  return request.post('/v1/auth/refresh', data)
 }
 
 // 登出
 export function logout(): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.post('/api/v1/auth/logout')
+  return request.post('/v1/auth/logout')
 }
 
 // 获取当前用户
 export function getCurrentUser(): UserInfoResponse {
-  return request.get('/api/v1/auth/me')
+  return request.get('/v1/auth/me')
 }
