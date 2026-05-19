@@ -55,3 +55,4 @@ credentials.json
 .claude/
 desktop.ini
 .omo/
+application-local.yml
