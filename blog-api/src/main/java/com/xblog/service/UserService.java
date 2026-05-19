@@ -1,6 +1,7 @@
 package com.xblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
@@ -22,6 +23,8 @@ public interface UserService extends IService<User> {
     String refreshAccessToken(String refreshToken);
 
     RegisterUserVo register(RegisterParam registerParam);
+
+    User createUser(CreateUserParam param);
 
     User getLoginUser();
 

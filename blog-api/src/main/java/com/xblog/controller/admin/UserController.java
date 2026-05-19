@@ -1,11 +1,13 @@
 package com.xblog.controller.admin;
 
+import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.entity.PageResult;
 import com.xblog.vo.UserStatusVo;
 import com.xblog.entity.Result;
 import com.xblog.entity.User;
 import com.xblog.service.UserService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -27,6 +29,13 @@ public class UserController {
         log.info("查询用户列表, page={}, size={}", queryUserDto.getPage(), queryUserDto.getSize());
         PageResult<User> pageresult = userService.getUserPage(queryUserDto);
         return Result.success(pageresult);
+    }
+
+    @Operation(summary = "创建用户")
+    @PostMapping
+    public Result<User> createUser(@Valid @RequestBody CreateUserParam param) {
+        log.info("创建用户, username={}", param.getUsername());
+        return Result.success(userService.createUser(param));
     }
 
     @Operation(summary = "查询用户详情")

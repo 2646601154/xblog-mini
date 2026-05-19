@@ -116,6 +116,14 @@ export interface UserFormData {
   status?: 'normal' | 'disabled'
 }
 
+export interface CreateUserFormData {
+  username: string
+  password: string
+  nickname?: string
+  email?: string
+  role?: 'admin' | 'user'
+}
+
 export interface ConfigItem {
   id: number
   configKey: string

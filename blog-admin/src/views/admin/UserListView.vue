@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getUserList, updateUser, disableUser, enableUser, deleteUser } from '@/api'
-import type { User, UserFormData } from '@/types'
+import { getUserList, createUser, updateUser, disableUser, enableUser, deleteUser } from '@/api'
+import type { User, UserFormData, CreateUserFormData } from '@/types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const loading = ref(false)
@@ -25,6 +25,29 @@ const form = ref<UserFormData>({
   role: 'user',
   status: 'normal',
 })
+
+const createDialogVisible = ref(false)
+const createFormRef = ref()
+const createForm = ref<CreateUserFormData>({
+  username: '',
+  password: '',
+  nickname: '',
+  email: '',
+  role: 'user',
+})
+const createRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { pattern: /^[a-zA-Z][a-zA-Z0-9]{2,19}$/, message: '用户名需3-20位，字母开头', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码最少6位', trigger: 'blur' },
+  ],
+  email: [
+    { type: 'email' as const, message: '邮箱格式不正确', trigger: 'blur' },
+  ],
+}
 
 async function fetchUsers() {
   loading.value = true
@@ -57,6 +80,32 @@ function handlePageChange(p: number) {
 function handleSizeChange(s: number) {
   size.value = s
   fetchUsers()
+}
+
+function openCreateDialog() {
+  createForm.value = {
+    username: '',
+    password: '',
+    nickname: '',
+    email: '',
+    role: 'user',
+  }
+  createDialogVisible.value = true
+}
+
+async function handleCreateSubmit() {
+  if (!createFormRef.value) return
+  await createFormRef.value.validate(async (valid: boolean) => {
+    if (!valid) return
+    try {
+      await createUser(createForm.value)
+      ElMessage.success('创建成功')
+      createDialogVisible.value = false
+      fetchUsers()
+    } catch (e) {
+      console.error(e)
+    }
+  })
 }
 
 function openEditDialog(user: User) {
@@ -126,6 +175,7 @@ onMounted(fetchUsers)
   <div>
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold">用户管理</h2>
+      <el-button type="primary" @click="openCreateDialog">添加用户</el-button>
     </div>
 
     <el-card>
@@ -225,6 +275,33 @@ onMounted(fetchUsers)
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="createDialogVisible" title="添加用户" width="500px">
+      <el-form ref="createFormRef" :model="createForm" :rules="createRules" label-width="80px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="createForm.username" placeholder="3-20位，字母开头" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="createForm.password" type="password" show-password placeholder="至少6位" />
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="createForm.nickname" placeholder="选填，默认为用户名" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="createForm.email" placeholder="选填" />
+        </el-form-item>
+        <el-form-item label="角色" prop="role">
+          <el-select v-model="createForm.role">
+            <el-option label="用户" value="user" />
+            <el-option label="管理员" value="admin" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="createDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleCreateSubmit">确定</el-button>
       </template>
     </el-dialog>
   </div>

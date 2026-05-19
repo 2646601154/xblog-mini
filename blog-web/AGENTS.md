@@ -1,6 +1,6 @@
 # blog-web 前端开发指南
 
-**Generated:** 2026-05-05
+**Generated:** 2026-05-19
 **父级**: `../AGENTS.md`
 
 ## OVERVIEW
@@ -20,7 +20,7 @@ blog-web/src/
 │   ├── common/       # AppPagination.vue
 │   ├── layout/       # AppLayout.vue, AppHeader.vue, AppFooter.vue
 │   └── sidebar/      # CategoryList.vue, TagCloud.vue
-├── pages/            # 路由页面（按URL组织）
+├── views/            # 路由页面（按URL组织）
 │   ├── home/         # 首页
 │   ├── article/      # 文章详情
 │   ├── categories/   # 分类列表
@@ -42,7 +42,7 @@ blog-web/src/
 | API调用 | `src/api/request.ts` + `src/api/modules/` |
 | 认证状态 | `src/stores/auth.ts` |
 | 路由定义 | `src/router/index.ts` |
-| 首页逻辑 | `src/pages/home/index.vue` |
+| 首页逻辑 | `src/views/home/index.vue` |
 
 ## CONVENTIONS
 
@@ -59,7 +59,7 @@ blog-web/src/
 
 ### 路由
 - 使用 `createWebHistory` + 懒加载组件
-- `component: () => import('@/pages/...')`
+- `component: () => import('@/views/...')`
 - 公开路由：`/`, `/article/:id`, `/categories`, `/tag/:slug`, `/login`, `/register`, `/profile`
 
 ## ANTI-PATTERNS

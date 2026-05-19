@@ -25,6 +25,19 @@ let isSessionExpiredDialogShown = false
  */
 function showSessionExpiredDialog(message: string = '登录已过期，请重新登录'): void {
   if (isSessionExpiredDialogShown) return
+
+  // 如果当前已经在登录页，不弹出会话过期弹窗，避免用户在登录时看到"请重新登录"的困惑提示
+  if (window.location.pathname === '/login') {
+    storage.clearAuth()
+    try {
+      const authStore = useAuthStore()
+      authStore.clearAuth()
+    } catch {
+      // 忽略
+    }
+    return
+  }
+
   isSessionExpiredDialogShown = true
 
   // 先清除本地登录态

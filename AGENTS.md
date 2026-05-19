@@ -1,6 +1,6 @@
 # Xblog-mini PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-05-06
+**Generated:** 2026-05-19
 **Branch:** api
 
 ## OVERVIEW
@@ -24,7 +24,7 @@ Xblog-mini/
 
 | Task | Location | Notes |
 |------|----------|-------|
-| 后端开发规范 | `blog-api/AGENTS.md` | 280行，详细接口开发流程 |
+| 后端开发规范 | `blog-api/AGENTS.md` | 286行，详细接口开发流程 |
 | 前端API调用 | `blog-web/src/api/` / `blog-admin/src/api/` | Axios封装 + 模块化endpoint |
 | 前端状态管理 | `blog-web/src/stores/` / `blog-admin/src/stores/` | Pinia composition API |
 | 前端路由 | `blog-web/src/router/` / `blog-admin/src/router/` | Vue Router + 路由守卫 |
@@ -35,10 +35,10 @@ Xblog-mini/
 
 | Symbol | Type | Location | Hotspot |
 |--------|------|----------|---------|
-| `ArticleServiceImpl` | Service | `blog-api/.../service/impl/` | 579行，最大Service |
-| `CommentServiceImpl` | Service | `blog-api/.../service/impl/` | 340行，N+1查询典范 |
-| `RedisUtil` | Util | `blog-api/.../common/util/` | 302行，Redis操作封装 |
-| `detail.vue` | Vue | `blog-web/src/pages/article/` | 402行，文章详情页 |
+| `ArticleServiceImpl` | Service | `blog-api/.../service/impl/` | 494行，最大Service |
+| `CommentServiceImpl` | Service | `blog-api/.../service/impl/` | 284行，N+1查询典范 |
+| `RedisUtil` | Util | `blog-api/.../common/util/` | 270行，Redis操作封装 |
+| `detail.vue` | Vue | `blog-web/src/views/article/` | 341行，文章详情页 |
 
 ## ANTI-PATTERNS（THIS PROJECT）
 

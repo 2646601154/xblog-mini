@@ -1,5 +1,5 @@
 import request from '../request'
-import type { User, UserFormData, PageResult } from '@/types'
+import type { User, UserFormData, CreateUserFormData, PageResult } from '@/types'
 
 export interface UserQueryDTO {
   page?: number
@@ -11,6 +11,7 @@ export interface UserQueryDTO {
 export type UserListResponse = Promise<{ data: { code: number; message: string; data: PageResult<User> } }>
 export type UserDetailResponse = Promise<{ data: { code: number; message: string; data: User } }>
 export type UserUpdateResponse = Promise<{ data: { code: number; message: string; data: User } }>
+export type UserCreateResponse = Promise<{ data: { code: number; message: string; data: User } }>
 
 export function getUserList(params: UserQueryDTO): UserListResponse {
   return request.get('/v1/admin/users', { params })
@@ -18,6 +19,10 @@ export function getUserList(params: UserQueryDTO): UserListResponse {
 
 export function getUserDetail(id: number): UserDetailResponse {
   return request.get(`/v1/admin/users/${id}`)
+}
+
+export function createUser(data: CreateUserFormData): UserCreateResponse {
+  return request.post('/v1/admin/users', data)
 }
 
 export function updateUser(id: number, data: UserFormData): UserUpdateResponse {

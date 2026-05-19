@@ -9,6 +9,7 @@ import com.xblog.common.util.UserContext;
 import com.xblog.common.util.JwtUtil;
 import com.xblog.common.util.PageUtil;
 import com.xblog.common.util.RedisUtil;
+import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.RegisterParam;
@@ -185,6 +186,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         vo.setEmail(user.getEmail());
         vo.setRole(user.getRole());
         return vo;
+    }
+
+    @Override
+    public User createUser(CreateUserParam param) {
+        // 1. 校验用户名是否已存在
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, param.getUsername());
+        if (this.count(wrapper) > 0) {
+            throw new BusinessException(ResultCode.USERNAME_EXISTS);
+        }
+
+        // 2. 校验邮箱是否已存在
+        if (StringUtils.hasText(param.getEmail())) {
+            LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
+            emailWrapper.eq(User::getEmail, param.getEmail());
+            if (this.count(emailWrapper) > 0) {
+                throw new BusinessException(ResultCode.EMAIL_EXISTS);
+            }
+        }
+
+        // 3. 构建用户对象
+        User user = new User();
+        user.setUsername(param.getUsername());
+        user.setPassword(passwordEncoder.encode(param.getPassword()));
+        user.setNickname(StringUtils.hasText(param.getNickname()) ? param.getNickname() : param.getUsername());
+        user.setEmail(param.getEmail());
+        user.setRole(StringUtils.hasText(param.getRole()) ? param.getRole() : "user");
+        user.setStatus("normal");
+
+        // 4. 保存到数据库
+        this.save(user);
+
+        return user;
     }
 
     @Override
