@@ -1,7 +1,7 @@
 :root {
-  --bg-primary: #FAFCFC;
+  --bg-primary: #F8F8F8;
   --bg-secondary: #F0F5F5;
-  --bg-dark: #1F2D2D;
+  --bg-dark: #F8F8F8;
   --text-primary: #2C3838;
   --text-secondary: #6B8080;
   --accent: #3A9E96;
@@ -12,11 +12,12 @@
   --shadow-hover: rgba(44, 56, 56, 0.12);
   --radius: 12px;
   --radius-sm: 8px;
+  --header-text: #2C3838;
 
   --el-color-primary: #3A9E96;
   --el-border-radius-base: 8px;
   --el-border-color: #CFE2E2;
-  --el-fill-color-blank: #FAFCFC;
+  --el-fill-color-blank: #F8F8F8;
 }
 
 * {
@@ -91,13 +92,14 @@ img {
 .el-menu--horizontal > .el-menu-item {
   height: 64px;
   line-height: 64px;
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
 }
 
 .el-menu--horizontal > .el-menu-item:hover,
 .el-menu--horizontal > .el-menu-item.is-active {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  color: #FFFFFF !important;
+  background-color: rgba(58, 158, 150, 0.1) !important;
+  color: var(--accent) !important;
   border-bottom-color: var(--accent) !important;
 }
 
