@@ -137,6 +137,12 @@ request.interceptors.response.use(
 
       // 401 未授权：尝试刷新 Token
       if (status === 401 && !originalRequest._retry) {
+        // 主动登出请求的 401 直接清除状态，不弹窗不刷新
+        if (originalRequest.url?.includes('/auth/logout')) {
+          storage.clearAuth()
+          return Promise.reject(error)
+        }
+
         originalRequest._retry = true
 
         if (isRefreshing) {

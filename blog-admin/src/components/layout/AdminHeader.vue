@@ -12,8 +12,8 @@ const breadcrumbs = computed(() => {
   return matched.map(item => item.meta?.title || item.path)
 })
 
-function handleLogout() {
-  authStore.logout()
+async function handleLogout() {
+  await authStore.logout()
   router.push('/login')
 }
 </script>
