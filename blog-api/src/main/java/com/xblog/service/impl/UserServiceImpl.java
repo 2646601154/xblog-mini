@@ -255,8 +255,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public PageResult<User> getUserPage(QueryUserDto dto) {
-        int pageNum = dto.getPage() != null ? dto.getPage() : 1;
-        int pageSize = dto.getSize() != null ? dto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(dto.getPage());
+        int pageSize = PageUtil.pageSize(dto.getSize());
         Page<User> page = new Page<>(pageNum, pageSize);
 
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();

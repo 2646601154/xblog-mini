@@ -11,10 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Redis 工具类
- * <p>
  * 封装常用的 Redis 操作，提供类型安全的缓存读写方法。
  * 所有方法均基于 RedisTemplate，支持 String、Object、List、Set 等常见类型。
- * </p>
  */
 @Slf4j
 @Component
@@ -65,8 +63,7 @@ public class RedisUtil {
      * @return true 删除成功
      */
     public boolean delete(String key) {
-        Boolean result = redisTemplate.delete(key);
-        return Boolean.TRUE.equals(result);
+        return redisTemplate.delete(key);
     }
 
     /**
@@ -76,8 +73,7 @@ public class RedisUtil {
      * @return 删除数量
      */
     public long delete(Collection<String> keys) {
-        Long result = redisTemplate.delete(keys);
-        return result != null ? result : 0;
+        return redisTemplate.delete(keys);
     }
 
     /**
@@ -92,11 +88,10 @@ public class RedisUtil {
      */
     public long deleteByPattern(String pattern) {
         Set<String> keys = redisTemplate.keys(pattern);
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             return 0;
         }
-        Long result = redisTemplate.delete(keys);
-        return result != null ? result : 0;
+        return redisTemplate.delete(keys);
     }
 
     /**
@@ -106,8 +101,7 @@ public class RedisUtil {
      * @return true 存在
      */
     public boolean hasKey(String key) {
-        Boolean result = redisTemplate.hasKey(key);
-        return Boolean.TRUE.equals(result);
+        return redisTemplate.hasKey(key);
     }
 
     /**
@@ -119,8 +113,7 @@ public class RedisUtil {
      * @return true 设置成功
      */
     public boolean expire(String key, long timeout, TimeUnit unit) {
-        Boolean result = redisTemplate.expire(key, timeout, unit);
-        return Boolean.TRUE.equals(result);
+        return redisTemplate.expire(key, timeout, unit);
     }
 
     /**
@@ -130,8 +123,7 @@ public class RedisUtil {
      * @return 剩余秒数，-1 表示永不过期，-2 表示不存在
      */
     public long getExpire(String key) {
-        Long result = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-        return result != null ? result : -2;
+        return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
 
     // ============================= Increment ============================
@@ -193,8 +185,7 @@ public class RedisUtil {
      * @return 删除数量
      */
     public long hDelete(String key, Object... hashKeys) {
-        Long result = redisTemplate.opsForHash().delete(key, hashKeys);
-        return result != null ? result : 0;
+        return redisTemplate.opsForHash().delete(key, hashKeys);
     }
 
     /**
@@ -317,6 +308,6 @@ public class RedisUtil {
                 java.util.Collections.singletonList(key),
                 value
         );
-        return result != null && result > 0;
+        return result > 0;
     }
 }

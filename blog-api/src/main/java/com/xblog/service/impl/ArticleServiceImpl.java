@@ -7,6 +7,7 @@ import com.xblog.common.enums.ResultCode;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.common.util.IpUtil;
 import com.xblog.common.util.RedisUtil;
+import com.xblog.common.util.PageUtil;
 import com.xblog.common.util.UserContext;
 import com.xblog.dto.AdminQueryArticleDto;
 import com.xblog.dto.ArticleCreateParam;
@@ -91,8 +92,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     private PageResult<ArticleVo> queryPublicArticlePage(QueryArticleDto queryDto) {
         // 1. 构建分页对象
-        int pageNum = queryDto.getPage() != null ? queryDto.getPage() : 1;
-        int pageSize = queryDto.getSize() != null ? queryDto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(queryDto.getPage());
+        int pageSize = PageUtil.pageSize(queryDto.getSize());
         Page<Article> page = new Page<>(pageNum, pageSize);
 
         // 2. 构建查询条件
@@ -290,8 +291,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public PageResult<ArticleVo> getAdminArticlePage(AdminQueryArticleDto queryDto) {
         // 1. 构建分页对象
-        int pageNum = queryDto.getPage() != null ? queryDto.getPage() : 1;
-        int pageSize = queryDto.getSize() != null ? queryDto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(queryDto.getPage());
+        int pageSize = PageUtil.pageSize(queryDto.getSize());
         Page<Article> page = new Page<>(pageNum, pageSize);
 
         // 2. 构建查询条件

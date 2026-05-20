@@ -50,8 +50,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public PageResult<CommentPublicVo> getArticleComments(QueryCommentDto dto) {
-        int pageNum = dto.getPage() != null ? dto.getPage() : 1;
-        int pageSize = dto.getSize() != null ? dto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(dto.getPage());
+        int pageSize = PageUtil.pageSize(dto.getSize());
         Page<Comment> page = new Page<>(pageNum, pageSize);
 
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
@@ -64,42 +64,48 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 批量查询用户，避免 N+1 问题
         List<Comment> comments = page.getRecords();
         if (comments.isEmpty()) {
-            PageResult<CommentPublicVo> emptyResult = new PageResult<>();
-            emptyResult.setRecords(List.of());
-            emptyResult.setTotal(page.getTotal());
-            emptyResult.setPage((int) page.getCurrent());
-            emptyResult.setSize((int) page.getSize());
-            return emptyResult;
+            return PageUtil.build(page, List.of());
         }
+
+        // 批量查询文章和用户，避免 N+1 问题
+        Set<Long> articleIds = comments.stream()
+                .map(Comment::getArticleId)
+                .collect(Collectors.toSet());
 
         Set<Long> userIds = comments.stream()
                 .map(Comment::getUserId)
                 .collect(Collectors.toSet());
 
+        Map<Long, Article> articleMap = articleService.listByIds(articleIds).stream()
+                .collect(Collectors.toMap(Article::getId, a -> a));
+
         Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
                 .collect(Collectors.toMap(User::getId, u -> u));
 
-        List<CommentPublicVo> voList = comments.stream().map(comment -> {
-            CommentPublicVo vo = new CommentPublicVo();
+        List<CommentAdminVo> voList = comments.stream().map(comment -> {
+            CommentAdminVo vo = new CommentAdminVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
+            vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
+
+            Article article = articleMap.get(comment.getArticleId());
+            if (article != null) {
+                vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
+            }
 
             User user = userMap.get(comment.getUserId());
             if (user != null) {
-                AuthorVo authorVo = new AuthorVo();
-                BeanUtils.copyProperties(user, authorVo);
-                vo.setUser(authorVo);
+                vo.setUser(Map.of(
+                        "id", user.getId(),
+                        "username", user.getUsername(),
+                        "nickname", user.getNickname()
+                ));
             }
             return vo;
         }).toList();
 
-        PageResult<CommentPublicVo> result = new PageResult<>();
-        result.setRecords(voList);
-        result.setTotal(page.getTotal());
-        result.setPage((int) page.getCurrent());
-        result.setSize((int) page.getSize());
-        return result;
+        return PageUtil.build(page, voList);
     }
 
     @Override
@@ -129,8 +135,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public PageResult<CommentMyVo> getMyComments(QueryMyCommentDto dto) {
-        int pageNum = dto.getPage() != null ? dto.getPage() : 1;
-        int pageSize = dto.getSize() != null ? dto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(dto.getPage());
+        int pageSize = PageUtil.pageSize(dto.getSize());
         Page<Comment> page = new Page<>(pageNum, pageSize);
 
         Long userId = UserContext.getUserId();
@@ -143,43 +149,32 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         List<Comment> comments = page.getRecords();
         if (comments.isEmpty()) {
-            PageResult<CommentMyVo> emptyResult = new PageResult<>();
-            emptyResult.setRecords(List.of());
-            emptyResult.setTotal(page.getTotal());
-            emptyResult.setPage((int) page.getCurrent());
-            emptyResult.setSize((int) page.getSize());
-            return emptyResult;
+            return PageUtil.build(page, List.of());
         }
 
-        // 批量查询文章，避免 N+1 问题
-        Set<Long> articleIds = comments.stream()
-                .map(Comment::getArticleId)
+        Set<Long> userIds = comments.stream()
+                .map(Comment::getUserId)
                 .collect(Collectors.toSet());
 
-        Map<Long, Article> articleMap = articleService.listByIds(articleIds).stream()
-                .collect(Collectors.toMap(Article::getId, a -> a));
+        Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
+                .collect(Collectors.toMap(User::getId, u -> u));
 
-        List<CommentMyVo> voList = comments.stream().map(comment -> {
-            CommentMyVo vo = new CommentMyVo();
+        List<CommentPublicVo> voList = comments.stream().map(comment -> {
+            CommentPublicVo vo = new CommentPublicVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
-            vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
-            vo.setUpdatedAt(comment.getUpdatedAt());
 
-            Article article = articleMap.get(comment.getArticleId());
-            if (article != null) {
-                vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
+            User user = userMap.get(comment.getUserId());
+            if (user != null) {
+                AuthorVo authorVo = new AuthorVo();
+                BeanUtils.copyProperties(user, authorVo);
+                vo.setUser(authorVo);
             }
             return vo;
         }).toList();
 
-        PageResult<CommentMyVo> result = new PageResult<>();
-        result.setRecords(voList);
-        result.setTotal(page.getTotal());
-        result.setPage((int) page.getCurrent());
-        result.setSize((int) page.getSize());
-        return result;
+        return PageUtil.build(page, voList);
     }
 
     @Override
@@ -228,8 +223,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public PageResult<CommentAdminVo> getAdminCommentPage(QueryAdminCommentDto dto) {
-        int pageNum = dto.getPage() != null ? dto.getPage() : 1;
-        int pageSize = dto.getSize() != null ? dto.getSize() : 10;
+        int pageNum = PageUtil.pageNum(dto.getPage());
+        int pageSize = PageUtil.pageSize(dto.getSize());
         Page<Comment> page = new Page<>(pageNum, pageSize);
 
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
@@ -242,58 +237,33 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         List<Comment> comments = page.getRecords();
         if (comments.isEmpty()) {
-            PageResult<CommentAdminVo> emptyResult = new PageResult<>();
-            emptyResult.setRecords(List.of());
-            emptyResult.setTotal(page.getTotal());
-            emptyResult.setPage((int) page.getCurrent());
-            emptyResult.setSize((int) page.getSize());
-            return emptyResult;
+            return PageUtil.build(page, List.of());
         }
 
-        // 批量查询文章和用户，避免 N+1 问题
+        // 批量查询文章，避免 N+1 问题
         Set<Long> articleIds = comments.stream()
                 .map(Comment::getArticleId)
-                .collect(Collectors.toSet());
-
-        Set<Long> userIds = comments.stream()
-                .map(Comment::getUserId)
                 .collect(Collectors.toSet());
 
         Map<Long, Article> articleMap = articleService.listByIds(articleIds).stream()
                 .collect(Collectors.toMap(Article::getId, a -> a));
 
-        Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
-                .collect(Collectors.toMap(User::getId, u -> u));
-
-        List<CommentAdminVo> voList = comments.stream().map(comment -> {
-            CommentAdminVo vo = new CommentAdminVo();
+        List<CommentMyVo> voList = comments.stream().map(comment -> {
+            CommentMyVo vo = new CommentMyVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
             vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
+            vo.setUpdatedAt(comment.getUpdatedAt());
 
             Article article = articleMap.get(comment.getArticleId());
             if (article != null) {
                 vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
             }
-
-            User user = userMap.get(comment.getUserId());
-            if (user != null) {
-                vo.setUser(Map.of(
-                        "id", user.getId(),
-                        "username", user.getUsername(),
-                        "nickname", user.getNickname()
-                ));
-            }
             return vo;
         }).toList();
 
-        PageResult<CommentAdminVo> result = new PageResult<>();
-        result.setRecords(voList);
-        result.setTotal(page.getTotal());
-        result.setPage((int) page.getCurrent());
-        result.setSize((int) page.getSize());
-        return result;
+        return PageUtil.build(page, voList);
     }
 
     @Override
