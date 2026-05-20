@@ -6,7 +6,7 @@ App({
     userInfo: null,
     accessToken: null,
     refreshToken: null,
-    baseUrl: 'https://api.xblog.com/api/v1'  // TODO: 替换为实际域名
+    baseUrl: 'http://localhost:8080/v1'  // TODO: 替换为实际域名
   },
 
   onLaunch() {

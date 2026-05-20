@@ -1,38 +1,24 @@
 <view class="container">
-  <!-- 搜索框 -->
-  <view class="search-box">
-    <input
-      class="search-input"
-      placeholder="搜索文章..."
-      value="{{searchKeyword}}"
-      bindinput="onKeywordInput"
-      bindconfirm="onSearch"
-    />
-    <button class="search-btn" bindtap="onSearch">搜索</button>
-  </view>
-
-  <!-- 搜索历史 -->
-  <view class="history-section" wx:if="{{!articles.length && searchHistory.length > 0}}">
-    <view class="section-header flex-between">
-      <text class="section-title">搜索历史</text>
-      <text class="clear-btn" bindtap="clearHistory">清除</text>
-    </view>
-    <view class="history-tags">
+  <!-- 标签云 -->
+  <view class="tag-section card">
+    <view class="section-title">标签</view>
+    <view class="tag-cloud">
       <view
-        wx:for="{{searchHistory}}"
-        wx:key="index"
-        class="history-tag"
-        bindtap="useHistory"
-        data-keyword="{{item}}"
+        wx:for="{{tags}}"
+        wx:key="id"
+        class="tag-item {{selectedTag === item.id ? 'active' : ''}}"
+        bindtap="selectTag"
+        data-id="{{item.id}}"
       >
-        {{item}}
+        {{item.name}}
+        <text class="tag-count">({{item.articleCount || 0}})</text>
       </view>
     </view>
   </view>
 
-  <!-- 搜索结果 -->
-  <view class="result-section" wx:if="{{articles.length > 0}}">
-    <view class="result-tip text-secondary mb-20">找到 {{articles.length}} 篇文章</view>
+  <!-- 文章列表 -->
+  <view class="article-list" wx:if="{{selectedTag}}">
+    <view class="section-title">文章</view>
     <view
       wx:for="{{articles}}"
       wx:key="id"
@@ -52,14 +38,17 @@
       <text class="text-secondary">加载中...</text>
     </view>
 
+    <view class="empty" wx:if="{{!loading && articles.length === 0}}">
+      <text>该标签暂无文章</text>
+    </view>
+
     <view class="loading" wx:if="{{!hasMore && articles.length > 0}}">
       <text class="text-secondary">没有更多了</text>
     </view>
   </view>
 
-  <!-- 无结果 -->
-  <view class="empty" wx:if="{{noResult}}">
-    <text class="empty-icon">🔍</text>
-    <text>未找到相关文章</text>
+  <!-- 无标签选中 -->
+  <view class="empty" wx:if="{{!selectedTag && !loading}}">
+    <text>请选择一个标签</text>
   </view>
 </view>

@@ -57,6 +57,13 @@ async function doRefreshToken(): Promise<string | null> {
   return null
 }
 
+// 公开端点：这些 URL 不需要登录，401 时不应跳转登录页
+function isPublicEndpoint(url: string | undefined): boolean {
+  if (!url) return false
+  const publicPatterns = ['/v1/articles', '/v1/categories', '/v1/tags', '/v1/comments', '/v1/configs']
+  return publicPatterns.some(pattern => url.startsWith(pattern))
+}
+
 // 请求拦截器：自动带上 Authorization
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -82,7 +89,9 @@ request.interceptors.response.use(
       if (code === 1001 || code === 1002) {
         storage.clearAuth()
         showErrorMessage(code)
-        window.location.href = '/login'
+        if (!isPublicEndpoint(response.config.url)) {
+          window.location.href = '/login'
+        }
         return Promise.reject(new Error(message))
       }
 
@@ -146,7 +155,9 @@ request.interceptors.response.use(
         // 刷新失败或没有 refreshToken，清除登录态并跳转
         storage.clearAuth()
         showErrorMessage(1001)
-        window.location.href = '/login'
+        if (!isPublicEndpoint(originalRequest.url)) {
+          window.location.href = '/login'
+        }
         return Promise.reject(error)
       }
 

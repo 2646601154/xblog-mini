@@ -1,0 +1,25 @@
+{
+  "name": "blog-mobile-tests",
+  "version": "1.0.0",
+  "description": "Unit tests for blog-mobile WeChat Mini Program",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "jest": {
+    "preset": "jest-miniprogram",
+    "testEnvironment": "node",
+    "moduleFileExtensions": ["js", "json"],
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "collectCoverageFrom": [
+      "app.js",
+      "services/**/*.js",
+      "utils/**/*.js",
+      "!node_modules/**"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

@@ -16,22 +16,6 @@
     </view>
   </view>
 
-  <!-- 标签云 -->
-  <view class="tag-section card">
-    <view class="section-title">标签</view>
-    <view class="tag-cloud">
-      <view
-        wx:for="{{tags}}"
-        wx:key="id"
-        class="tag-item"
-        bindtap="selectCategory"
-        data-id="{{item.id}}"
-      >
-        {{item.name}}
-      </view>
-    </view>
-  </view>
-
   <!-- 文章列表 -->
   <view class="article-list" wx:if="{{selectedCategory}}">
     <view class="section-title">文章</view>
@@ -49,8 +33,16 @@
       </view>
     </view>
 
+    <view class="loading" wx:if="{{loading}}">
+      <text class="text-secondary">加载中...</text>
+    </view>
+
     <view class="empty" wx:if="{{!loading && articles.length === 0}}">
       <text>该分类暂无文章</text>
+    </view>
+
+    <view class="loading" wx:if="{{!hasMore && articles.length > 0}}">
+      <text class="text-secondary">没有更多了</text>
     </view>
   </view>
 </view>

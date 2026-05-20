@@ -48,28 +48,30 @@ async function handleSubmit() {
   <div class="comment-form">
     <h3 class="form-title">发表评论</h3>
 
-    <div v-if="!authStore.isLoggedIn" class="login-prompt">
-      <span>登录后即可评论</span>
-      <router-link to="/login" class="login-link">去登录</router-link>
-    </div>
-
-    <div v-else class="form-content">
+    <div class="form-content">
       <el-input
         v-model="content"
         type="textarea"
         :rows="4"
-        placeholder="写下你的评论... (最多1000字符)"
+        :disabled="!authStore.isLoggedIn"
+        :placeholder="authStore.isLoggedIn ? '写下你的评论... (最多1000字符)' : '登录后即可发表评论'"
         maxlength="1000"
-        show-word-limit
+        :show-word-limit="authStore.isLoggedIn"
       />
-      <div class="form-actions">
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="handleSubmit"
-        >
+
+      <!-- Logged in: show submit button -->
+      <div v-if="authStore.isLoggedIn" class="form-actions">
+        <el-button type="primary" :loading="loading" @click="handleSubmit">
           提交评论
         </el-button>
+      </div>
+
+      <!-- Not logged in: show login link -->
+      <div v-else class="login-hint">
+        <router-link to="/login" class="login-link">
+          登录或注册
+        </router-link>
+        <span class="hint-text">后即可发表评论</span>
       </div>
     </div>
   </div>
@@ -89,14 +91,25 @@ async function handleSubmit() {
   color: var(--text-primary);
 }
 
-.login-prompt {
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.login-hint {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0;
   color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .login-link {
@@ -109,14 +122,7 @@ async function handleSubmit() {
   text-decoration: underline;
 }
 
-.form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
+.hint-text {
+  color: var(--text-secondary);
 }
 </style>

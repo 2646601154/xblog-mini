@@ -36,7 +36,7 @@
       },
       {
         "pagePath": "pages/search/search",
-        "text": "搜索",
+        "text": "标签",
         "iconPath": "static/icons/search.png",
         "selectedIconPath": "static/icons/search-active.png"
       },

@@ -7,7 +7,6 @@ const articleAPI = require('../../services/article')
 Page({
   data: {
     categories: [],
-    tags: [],
     selectedCategory: null,
     articles: [],
     page: 1,
@@ -18,7 +17,6 @@ Page({
 
   onLoad() {
     this.loadCategories()
-    this.loadTags()
   },
 
   async loadCategories() {
@@ -26,48 +24,53 @@ Page({
       const res = await categoryAPI.getCategories()
       this.setData({ categories: res })
     } catch (e) {
-      // TODO: 使用示例数据
       this.setData({ categories: [] })
-    }
-  },
-
-  async loadTags() {
-    try {
-      const res = await categoryAPI.getTags()
-      this.setData({ tags: res })
-    } catch (e) {
-      this.setData({ tags: [] })
     }
   },
 
   selectCategory(e) {
     const { id } = e.currentTarget.dataset
+    const newCategory = this.data.selectedCategory === id ? null : id
     this.setData({
-      selectedCategory: id,
+      selectedCategory: newCategory,
       articles: [],
       page: 1,
       hasMore: true
     })
-    if (id) {
+    if (newCategory) {
       this.loadArticlesByCategory()
     }
   },
 
-  async loadArticlesByCategory() {
+  async loadArticlesByCategory(isLoadMore = false) {
+    if (this.data.loading) return
+
     this.setData({ loading: true })
     try {
       const res = await articleAPI.getList({
-        page: this.data.page,
+        page: isLoadMore ? this.data.page : 1,
         size: this.data.size,
         categoryId: this.data.selectedCategory
       })
+
+      const articles = isLoadMore
+        ? [...this.data.articles, ...res.records]
+        : res.records
+
       this.setData({
-        articles: res.records,
-        hasMore: res.records.length < res.total,
+        articles,
+        page: this.data.page + 1,
+        hasMore: articles.length < res.total,
         loading: false
       })
     } catch (e) {
       this.setData({ loading: false })
+    }
+  },
+
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading && this.data.selectedCategory) {
+      this.loadArticlesByCategory(true)
     }
   },
 
