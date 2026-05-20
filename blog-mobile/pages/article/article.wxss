@@ -194,6 +194,22 @@
   color: #999;
 }
 
-.full {
-  height: 60vh;
+/* 未登录评论提示 */
+.login-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 16rpx 0 32rpx;
+}
+
+.login-link-text {
+  color: var(--primary-color);
+  font-size: 28rpx;
+  text-decoration: underline;
+}
+
+.hint-text {
+  color: #999;
+  font-size: 26rpx;
 }

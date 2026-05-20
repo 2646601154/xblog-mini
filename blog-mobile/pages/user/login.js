@@ -46,7 +46,7 @@ Page({
 
       wx.showToast({ title: '登录成功', icon: 'success' })
 
-      // 返回上一页
+      // 返回上一页（onShow 会刷新登录状态）
       setTimeout(() => {
         wx.navigateBack()
       }, 1000)

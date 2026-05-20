@@ -56,7 +56,7 @@
     <view class="comment-input-wrap">
       <input
         class="comment-input"
-        placeholder="{{isLoggedIn ? '写下你的评论...' : '登录后参与评论'}}"
+        placeholder="{{isLoggedIn ? '写下你的评论...' : '登录后即可发表评论'}}"
         value="{{commentText}}"
         bindinput="onCommentInput"
         disabled="{{!isLoggedIn}}"
@@ -69,6 +69,12 @@
       >
         {{submitting ? '发送中...' : '发送'}}
       </button>
+    </view>
+
+    <!-- 未登录提示：登录链接 -->
+    <view wx:if="{{!isLoggedIn}}" class="login-hint" bindtap="goToLogin">
+      <text class="login-link-text">登录或注册</text>
+      <text class="hint-text">后即可发表评论</text>
     </view>
 
     <!-- 评论列表 -->

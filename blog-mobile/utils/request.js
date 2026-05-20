@@ -18,6 +18,14 @@ const notifyTokenRefresh = (newToken) => {
   refreshSubscribers = []
 }
 
+// 公开接口列表 - 这些接口401时不应跳转登录页
+const PUBLIC_ENDPOINTS = ['/articles', '/categories', '/tags', '/comments']
+
+function isPublicEndpoint(url) {
+  if (!url) return false
+  return PUBLIC_ENDPOINTS.some(pattern => url.includes(pattern))
+}
+
 /**
  * 基础请求方法
  */
@@ -43,10 +51,22 @@ const request = (options) => {
       data: options.data || {},
       header,
       success: async (res) => {
+        // 确保 res.data 是对象（小程序某些情况下返回字符串）
+        let responseData = res.data
+        if (typeof responseData === 'string') {
+          try {
+            responseData = JSON.parse(responseData)
+          } catch (e) {
+            wx.showToast({ title: '响应格式错误', icon: 'none' })
+            reject({ message: '响应格式错误' })
+            return
+          }
+        }
+
         if (res.statusCode === 200) {
-          if (res.data.code === 200) {
-            resolve(res.data.data)
-          } else if (res.data.code === 1001 || res.data.code === 1002) {
+          if (responseData.code === 200) {
+            resolve(responseData.data)
+          } else if (responseData.code === 1001 || responseData.code === 1002) {
             // Token 过期，尝试刷新
             const refreshed = await handleTokenRefresh()
             if (refreshed) {
@@ -56,20 +76,32 @@ const request = (options) => {
             } else {
               // 刷新失败，清除登录状态
               app.clearTokens()
-              wx.navigateTo({ url: '/pages/user/login' })
-              reject(res.data)
+              if (!isPublicEndpoint(options.url)) {
+                wx.navigateTo({ url: '/pages/user/login' })
+              } else {
+                // 公开接口 token 无效时，返回空数据而非 reject
+                resolve(null)
+                return
+              }
+              reject(responseData)
             }
           } else {
             wx.showToast({
-              title: res.data.message || '请求失败',
+              title: responseData.message || '请求失败',
               icon: 'none'
             })
-            reject(res.data)
+            reject(responseData)
           }
         } else if (res.statusCode === 401) {
           // 未登录
           app.clearTokens()
-          wx.navigateTo({ url: '/pages/user/login' })
+          if (!isPublicEndpoint(options.url)) {
+            wx.navigateTo({ url: '/pages/user/login' })
+          } else {
+            // 公开接口 401 时，返回空数据而非 reject
+            resolve(null)
+            return
+          }
           reject({ message: '请先登录' })
         } else {
           wx.showToast({
@@ -120,8 +152,14 @@ const handleTokenRefresh = async () => {
       data: { refreshToken }
     })
 
-    if (res.data.code === 200) {
-      const { accessToken, refreshToken: newRefreshToken } = res.data.data
+    // 确保 res.data 是对象
+    let refreshData = res.data
+    if (typeof refreshData === 'string') {
+      refreshData = JSON.parse(refreshData)
+    }
+
+    if (refreshData.code === 200) {
+      const { accessToken, refreshToken: newRefreshToken } = refreshData.data
       app.setTokens(accessToken, newRefreshToken)
       notifyTokenRefresh(accessToken)
       isRefreshing = false

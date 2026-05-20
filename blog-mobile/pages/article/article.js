@@ -111,7 +111,12 @@ Page({
         articleId: this.articleId,
         content: commentText.trim()
       })
-      wx.showToast({ title: '评论成功', icon: 'success' })
+      wx.showModal({
+        title: '提示',
+        content: '评论成功，请等待后台审核通过',
+        showCancel: false,
+        confirmText: '知道了'
+      })
       this.setData({ commentText: '' })
       // 刷新评论列表
       this.setData({ commentPage: 1, comments: [] })
@@ -121,6 +126,17 @@ Page({
     } finally {
       this.setData({ submitting: false })
     }
+  },
+
+  goToLogin() {
+    if (!this.data.isLoggedIn) {
+      wx.navigateTo({ url: '/pages/user/login' })
+    }
+  },
+
+  onShow() {
+    // 从登录页返回时刷新登录状态
+    this.checkLogin()
   },
 
   goToArticle(e) {
