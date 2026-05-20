@@ -6,6 +6,7 @@ import com.xblog.entity.PageResult;
 import com.xblog.entity.Result;
 import com.xblog.service.ArticleService;
 import com.xblog.service.CommentService;
+import com.xblog.vo.ArticlePrevNextVo;
 import com.xblog.vo.ArticleVo;
 import com.xblog.vo.CommentPublicVo;
 import com.xblog.vo.TagVo;
@@ -52,6 +53,16 @@ public class ArticleController {
     public Result<ArticleVo> getArticleDetail(@PathVariable Long id) {
         log.info("获取文章详情: {}", id);
         return Result.success(articleService.getArticleDetail(id));
+    }
+
+    /**
+     * 获取文章上一篇/下一篇
+     */
+    @Operation(summary = "获取文章上一篇/下一篇")
+    @GetMapping("/{id}/prev-next")
+    public Result<ArticlePrevNextVo> getArticlePrevNext(@PathVariable Long id) {
+        log.info("获取文章上下篇: {}", id);
+        return Result.success(articleService.getArticlePrevNext(id));
     }
 
     /**

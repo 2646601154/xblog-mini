@@ -82,25 +82,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
                 .collect(Collectors.toMap(User::getId, u -> u));
 
-        List<CommentAdminVo> voList = comments.stream().map(comment -> {
-            CommentAdminVo vo = new CommentAdminVo();
+        List<CommentPublicVo> voList = comments.stream().map(comment -> {
+            CommentPublicVo vo = new CommentPublicVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
-            vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
-
-            Article article = articleMap.get(comment.getArticleId());
-            if (article != null) {
-                vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
-            }
 
             User user = userMap.get(comment.getUserId());
             if (user != null) {
-                vo.setUser(Map.of(
-                        "id", user.getId(),
-                        "username", user.getUsername(),
-                        "nickname", user.getNickname()
-                ));
+                AuthorVo authorVo = new AuthorVo();
+                BeanUtils.copyProperties(user, authorVo);
+                vo.setUser(authorVo);
             }
             return vo;
         }).toList();
@@ -159,17 +151,24 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
                 .collect(Collectors.toMap(User::getId, u -> u));
 
-        List<CommentPublicVo> voList = comments.stream().map(comment -> {
-            CommentPublicVo vo = new CommentPublicVo();
+        Set<Long> articleIds = comments.stream()
+                .map(Comment::getArticleId)
+                .collect(Collectors.toSet());
+
+        Map<Long, Article> articleMap = articleService.listByIds(articleIds).stream()
+                .collect(Collectors.toMap(Article::getId, a -> a));
+
+        List<CommentMyVo> voList = comments.stream().map(comment -> {
+            CommentMyVo vo = new CommentMyVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
+            vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
+            vo.setUpdatedAt(comment.getUpdatedAt());
 
-            User user = userMap.get(comment.getUserId());
-            if (user != null) {
-                AuthorVo authorVo = new AuthorVo();
-                BeanUtils.copyProperties(user, authorVo);
-                vo.setUser(authorVo);
+            Article article = articleMap.get(comment.getArticleId());
+            if (article != null) {
+                vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
             }
             return vo;
         }).toList();
@@ -248,17 +247,32 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Map<Long, Article> articleMap = articleService.listByIds(articleIds).stream()
                 .collect(Collectors.toMap(Article::getId, a -> a));
 
-        List<CommentMyVo> voList = comments.stream().map(comment -> {
-            CommentMyVo vo = new CommentMyVo();
+        Set<Long> userIds = comments.stream()
+                .map(Comment::getUserId)
+                .collect(Collectors.toSet());
+
+        Map<Long, User> userMap = userMapper.selectBatchIds(userIds).stream()
+                .collect(Collectors.toMap(User::getId, u -> u));
+
+        List<CommentAdminVo> voList = comments.stream().map(comment -> {
+            CommentAdminVo vo = new CommentAdminVo();
             vo.setId(comment.getId());
             vo.setContent(comment.getContent());
             vo.setStatus(comment.getStatus());
             vo.setCreatedAt(comment.getCreatedAt());
-            vo.setUpdatedAt(comment.getUpdatedAt());
 
             Article article = articleMap.get(comment.getArticleId());
             if (article != null) {
                 vo.setArticle(Map.of("id", article.getId(), "title", article.getTitle()));
+            }
+
+            User user = userMap.get(comment.getUserId());
+            if (user != null) {
+                vo.setUser(Map.of(
+                        "id", user.getId(),
+                        "username", user.getUsername(),
+                        "nickname", user.getNickname()
+                ));
             }
             return vo;
         }).toList();

@@ -8,6 +8,7 @@ import com.xblog.dto.QueryArticleDto;
 import com.xblog.entity.Article;
 import com.xblog.entity.PageResult;
 import com.xblog.vo.ArticleCreateVo;
+import com.xblog.vo.ArticlePrevNextVo;
 import com.xblog.vo.ArticlePublishVo;
 import com.xblog.vo.ArticleStatusVo;
 import com.xblog.vo.ArticleUpdateVo;
@@ -20,6 +21,8 @@ public interface ArticleService extends IService<Article> {
     PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto);
 
     ArticleVo getArticleDetail(Long id);
+
+    ArticlePrevNextVo getArticlePrevNext(Long id);
 
     List<TagVo> getArticleTags(Long id);
 

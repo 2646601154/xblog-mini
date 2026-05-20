@@ -60,8 +60,19 @@ export interface ArticleDetailVO {
   updatedAt: string
 }
 
+export interface ArticleBriefVO {
+  id: number
+  title: string
+}
+
+export interface ArticlePrevNextVO {
+  previous: ArticleBriefVO | null
+  next: ArticleBriefVO | null
+}
+
 export type ArticleListResponse = Promise<AxiosResponse<{ code: number; message: string; data: ArticleListVO }>>
 export type ArticleDetailResponse = Promise<AxiosResponse<{ code: number; message: string; data: ArticleDetailVO }>>
+export type ArticlePrevNextResponse = Promise<AxiosResponse<{ code: number; message: string; data: ArticlePrevNextVO }>>
 export type CategoryListResponse = Promise<AxiosResponse<{ code: number; message: string; data: CategoryVO[] }>>
 export type TagListResponse = Promise<AxiosResponse<{ code: number; message: string; data: TagVO[] }>>
 
@@ -71,4 +82,8 @@ export function getArticleList(params: ArticleListDTO): ArticleListResponse {
 
 export function getArticleDetail(id: number): ArticleDetailResponse {
   return request.get(`/v1/articles/${id}`)
+}
+
+export function getArticlePrevNext(id: number): ArticlePrevNextResponse {
+  return request.get(`/v1/articles/${id}/prev-next`)
 }

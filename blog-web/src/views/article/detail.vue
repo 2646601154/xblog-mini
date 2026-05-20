@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { View } from '@element-plus/icons-vue'
-import { getArticleDetail, getArticleList, type ArticleDetailVO } from '@/api/modules/article'
+import { getArticleDetail, getArticlePrevNext, type ArticleDetailVO } from '@/api/modules/article'
 import { getCategoryList, getTagList, type CategoryVO, type TagVO } from '@/api'
 import CategoryList from '@/components/sidebar/CategoryList.vue'
 import TagCloud from '@/components/sidebar/TagCloud.vue'
@@ -17,6 +17,7 @@ const route = useRoute()
 const router = useRouter()
 
 const loading = ref(false)
+const error = ref(false)
 const article = ref<ArticleDetailVO | null>(null)
 const categories = ref<CategoryWithCount[]>([])
 const tags = ref<TagVO[]>([])
@@ -26,12 +27,13 @@ const nextArticle = ref<{ id: number; title: string } | null>(null)
 
 const commentListRef = ref<InstanceType<typeof CommentList> | null>(null)
 
-const articleId = Number(route.params.id)
+// 使用 computed 或 ref 动态获取 articleId，避免组件复用时 id 不更新
+const articleId = ref(Number(route.params.id))
 
 async function loadArticleDetail() {
   loading.value = true
   try {
-    const res = await getArticleDetail(articleId)
+    const res = await getArticleDetail(articleId.value)
     article.value = res.data.data
   } catch {
     ElMessage.error('文章不存在或已被删除')
@@ -52,28 +54,33 @@ async function loadSidebarData() {
 
 async function loadPrevNext() {
   try {
-    const res = await getArticleList({ page: 1, size: 1000 })
-    const allArticles = res.data.data.records
-    const currentIndex = allArticles.findIndex(a => a.id === articleId)
-
-    if (currentIndex > 0) {
-      const prev = allArticles[currentIndex - 1]
-      prevArticle.value = { id: prev!.id, title: prev!.title }
-    } else {
-      prevArticle.value = null
-    }
-
-    if (currentIndex < allArticles.length - 1 && currentIndex !== -1) {
-      const next = allArticles[currentIndex + 1]
-      nextArticle.value = { id: next!.id, title: next!.title }
-    } else {
-      nextArticle.value = null
-    }
+    const res = await getArticlePrevNext(articleId.value)
+    const data = res.data.data
+    prevArticle.value = data.previous
+    nextArticle.value = data.next
   } catch {
     prevArticle.value = null
     nextArticle.value = null
   }
 }
+
+async function loadAllData() {
+  await Promise.all([
+    loadArticleDetail(),
+    loadSidebarData(),
+    loadPrevNext(),
+  ])
+}
+
+// 监听路由参数变化，重新加载数据
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    articleId.value = Number(newId)
+    loadAllData()
+    // 滚动到顶部
+    window.scrollTo(0, 0)
+  }
+})
 
 function formatDate(dateStr: string) {
   if (!dateStr) return ''
@@ -109,13 +116,7 @@ function handleTagSelect(slug: string) {
   router.push(`/?tag=${slug}`)
 }
 
-onMounted(async () => {
-  await Promise.all([
-    loadArticleDetail(),
-    loadSidebarData(),
-    loadPrevNext(),
-  ])
-})
+onMounted(loadAllData)
 </script>
 
 <template>

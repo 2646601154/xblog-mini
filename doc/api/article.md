@@ -140,6 +140,54 @@ GET /api/v1/articles/{id}
 
 ---
 
+## 获取文章上一篇/下一篇
+
+### 请求
+
+```
+GET /api/v1/articles/{id}/prev-next
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| id | Long | Path | 是 | 文章 ID |
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "previous": {
+      "id": 1,
+      "title": "上一篇文章标题"
+    },
+    "next": {
+      "id": 3,
+      "title": "下一篇文章标题"
+    }
+  }
+}
+```
+
+### 响应 (无上下篇)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "previous": null,
+    "next": null
+  }
+}
+```
+
+---
+
 ## 获取文章标签
 
 ### 请求

@@ -200,6 +200,49 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return vo;
     }
 
+    @Override
+    public ArticlePrevNextVo getArticlePrevNext(Long id) {
+        // 先验证当前文章存在且已发布
+        Article current = getById(id);
+        if (current == null || !"published".equals(current.getStatus())) {
+            return new ArticlePrevNextVo();
+        }
+
+        ArticlePrevNextVo vo = new ArticlePrevNextVo();
+
+        // 上一篇：id < currentId 且 published，按 id 降序取第一条
+        Article prev = lambdaQuery()
+                .eq(Article::getStatus, "published")
+                .lt(Article::getId, id)
+                .orderByDesc(Article::getId)
+                .last("LIMIT 1")
+                .one();
+
+        if (prev != null) {
+            ArticlePrevNextVo.ArticleBriefVo prevVo = new ArticlePrevNextVo.ArticleBriefVo();
+            prevVo.setId(prev.getId());
+            prevVo.setTitle(prev.getTitle());
+            vo.setPrevious(prevVo);
+        }
+
+        // 下一篇：id > currentId 且 published，按 id 升序取第一条
+        Article next = lambdaQuery()
+                .eq(Article::getStatus, "published")
+                .gt(Article::getId, id)
+                .orderByAsc(Article::getId)
+                .last("LIMIT 1")
+                .one();
+
+        if (next != null) {
+            ArticlePrevNextVo.ArticleBriefVo nextVo = new ArticlePrevNextVo.ArticleBriefVo();
+            nextVo.setId(next.getId());
+            nextVo.setTitle(next.getTitle());
+            vo.setNext(nextVo);
+        }
+
+        return vo;
+    }
+
     /**
      * 增加文章浏览量（基于 Redis Set 防重复计数）
      */
