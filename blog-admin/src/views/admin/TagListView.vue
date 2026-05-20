@@ -16,6 +16,19 @@ const rules = {
   slug: [{ required: true, message: '请输入URL标识', trigger: 'blur' }],
 }
 
+const tagColors = [
+  '#409EFF', '#67C23A', '#E6A23C', '#F56C6C',
+  '#909399', '#C0A4F1', '#36D6C4', '#FF9F43',
+]
+
+function getTagColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return tagColors[Math.abs(hash) % tagColors.length]
+}
+
 async function fetchTags() {
   loading.value = true
   try {
@@ -77,38 +90,61 @@ onMounted(fetchTags)
 </script>
 
 <template>
-  <div>
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold">标签管理</h2>
-      <el-button type="primary" @click="openCreateDialog">创建标签</el-button>
+  <div class="tag-view">
+    <div class="header-section">
+      <div class="title-area">
+        <h2 class="text-2xl font-bold">标签管理</h2>
+        <p class="text-gray-500 text-sm mt-1">为文章添加标签，便于分类检索</p>
+      </div>
+      <el-button type="primary" @click="openCreateDialog">
+        <el-icon class="mr-1"><Plus /></el-icon>
+        创建标签
+      </el-button>
     </div>
 
-    <el-card v-loading="loading">
-      <el-table :data="tags" stripe>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="名称" min-width="150">
-          <template #default="{ row }">
-            <span class="font-medium">{{ row.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="slug" label="URL标识" width="150" />
-        <el-table-column prop="articleCount" label="文章数" width="100" />
-        <el-table-column label="操作" width="150" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" size="small" link @click="openEditDialog(row)">编辑</el-button>
-            <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-card v-loading="loading" class="tag-card">
+      <template #header>
+        <div class="card-header">
+          <span>标签列表</span>
+          <span class="text-gray-400 text-sm">共 {{ tags.length }} 个标签</span>
+        </div>
+      </template>
+
+      <div class="tag-grid">
+        <div v-for="tag in tags" :key="tag.id" class="tag-item">
+          <div class="tag-content">
+            <div class="tag-icon" :style="{ backgroundColor: getTagColor(tag.name) + '20', color: getTagColor(tag.name) }">
+              #{{ tag.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="tag-info">
+              <span class="tag-name">{{ tag.name }}</span>
+              <el-tag size="small" type="info" class="tag-slug">/{{ tag.slug }}/</el-tag>
+            </div>
+          </div>
+          <div class="tag-actions">
+            <el-tag size="small" type="success" class="article-tag">
+              {{ tag.articleCount || 0 }} 篇文章
+            </el-tag>
+            <div class="action-buttons">
+              <el-button type="primary" size="small" link @click="openEditDialog(tag)">编辑</el-button>
+              <el-button type="danger" size="small" link @click="handleDelete(tag)">删除</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <el-empty v-if="tags.length === 0 && !loading" description="暂无标签，创建一个吧" />
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="450px" class="tag-dialog">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="请输入标签名称" />
         </el-form-item>
         <el-form-item label="URL标识" prop="slug">
-          <el-input v-model="form.slug" placeholder="如: java" />
+          <el-input v-model="form.slug" placeholder="如: java">
+            <template #prepend>/tag/</template>
+          </el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -118,3 +154,110 @@ onMounted(fetchTags)
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.tag-view {
+  padding: 24px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.title-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tag-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #f0f2f5;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.tag-item:hover {
+  border-color: #409EFF;
+  box-shadow: 0 2px 12px 0 rgba(64, 158, 255, 0.1);
+}
+
+.tag-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tag-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.tag-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tag-name {
+  font-weight: 600;
+  color: #303133;
+}
+
+.tag-slug {
+  font-size: 11px;
+}
+
+.tag-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.article-tag {
+  background: rgba(103, 194, 58, 0.1);
+  border-color: rgba(103, 194, 58, 0.3);
+  color: #67C23A;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.tag-dialog :deep(.el-dialog__header) {
+  border-bottom: 1px solid #f0f2f5;
+  padding-bottom: 16px;
+}
+</style>

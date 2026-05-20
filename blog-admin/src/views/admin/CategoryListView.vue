@@ -21,6 +21,19 @@ const rules = {
   slug: [{ required: true, message: '请输入URL标识', trigger: 'blur' }],
 }
 
+const categoryColors = [
+  '#409EFF', '#67C23A', '#E6A23C', '#F56C6C',
+  '#909399', '#C0A4F1', '#36D6C4', '#FF9F43',
+]
+
+function getCategoryColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return categoryColors[Math.abs(hash) % categoryColors.length]
+}
+
 async function fetchCategories() {
   loading.value = true
   try {
@@ -87,46 +100,79 @@ onMounted(fetchCategories)
 </script>
 
 <template>
-  <div>
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold">分类管理</h2>
-      <el-button type="primary" @click="openCreateDialog">创建分类</el-button>
+  <div class="category-view">
+    <div class="header-section">
+      <div class="title-area">
+        <h2 class="text-2xl font-bold">分类管理</h2>
+        <p class="text-gray-500 text-sm mt-1">管理博客文章的分类体系</p>
+      </div>
+      <el-button type="primary" @click="openCreateDialog">+ 创建分类</el-button>
     </div>
 
-    <el-card v-loading="loading">
-      <el-table :data="categories" stripe>
-        <el-table-column prop="id" label="ID" width="80" />
+    <el-card v-loading="loading" class="category-card">
+      <template #header>
+        <div class="card-header">
+          <span>分类列表</span>
+          <span class="text-gray-400 text-sm">共 {{ categories.length }} 个分类</span>
+        </div>
+      </template>
+
+      <el-table :data="categories" stripe class="category-table">
+        <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column label="名称" min-width="150">
           <template #default="{ row }">
-            <span class="font-medium">{{ row.name }}</span>
+            <div class="category-name-cell">
+              <div class="category-icon" :style="{ backgroundColor: getCategoryColor(row.name) + '20', color: getCategoryColor(row.name) }">
+                {{ row.name.charAt(0).toUpperCase() }}
+              </div>
+              <span class="font-medium">{{ row.name }}</span>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column prop="slug" label="URL标识" width="150" />
-        <el-table-column prop="description" label="描述" min-width="200" />
-        <el-table-column prop="sortOrder" label="排序" width="80" />
-        <el-table-column prop="articleCount" label="文章数" width="100" />
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column prop="slug" label="URL标识" width="150">
+          <template #default="{ row }">
+            <el-tag size="small" type="info">{{ row.slug }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="description" label="描述" min-width="200">
+          <template #default="{ row }">
+            <span class="text-gray-500">{{ row.description || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sortOrder" label="排序" width="80" align="center">
+          <template #default="{ row }">
+            <span class="sort-badge">{{ row.sortOrder }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="articleCount" label="文章数" width="100" align="center">
+          <template #default="{ row }">
+            <span class="article-count-badge">{{ row.articleCount || 0 }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" link @click="openEditDialog(row)">编辑</el-button>
             <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <el-empty v-if="categories.length === 0 && !loading" description="暂无分类，创建一个吧" />
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" class="category-dialog">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" />
+          <el-input v-model="form.name" placeholder="请输入分类名称" />
         </el-form-item>
         <el-form-item label="URL标识" prop="slug">
           <el-input v-model="form.slug" placeholder="如: tech" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="2" />
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="可选" />
         </el-form-item>
         <el-form-item label="排序" prop="sortOrder">
-          <el-input-number v-model="form.sortOrder" :min="0" />
+          <el-input-number v-model="form.sortOrder" :min="0" :max="9999" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -136,3 +182,92 @@ onMounted(fetchCategories)
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.category-view {
+  padding: 24px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.title-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.category-table :deep(.el-table__header th) {
+  background-color: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+}
+
+.category-table :deep(.el-table__row) {
+  transition: background-color 0.2s;
+}
+
+.category-table :deep(.el-table__row:hover) {
+  background-color: #f5f7fa;
+}
+
+.category-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.sort-badge {
+  background: #f0f2f5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #606266;
+}
+
+.article-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  background: linear-gradient(135deg, #409EFF, #64b3f4);
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.category-dialog :deep(.el-dialog__header) {
+  border-bottom: 1px solid #f0f2f5;
+  padding-bottom: 16px;
+}
+</style>
