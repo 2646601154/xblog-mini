@@ -1,0 +1,68 @@
+<view class="container">
+  <!-- 搜索入口 -->
+  <view class="search-bar" bindtap="goSearch">
+    <icon type="search" size="32rpx" color="#999"></icon>
+    <text class="search-placeholder">搜索文章...</text>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-item {{!selectedCategory ? 'active' : ''}}" bindtap="clearFilter">
+      全部
+    </view>
+    <view
+      wx:for="{{categories}}"
+      wx:key="id"
+      class="filter-item {{selectedCategory === item.id ? 'active' : ''}}"
+      bindtap="selectCategory"
+      data-id="{{item.id}}"
+    >
+      {{item.name}}
+    </view>
+  </view>
+
+  <!-- 文章列表 -->
+  <view class="article-list">
+    <view
+      wx:for="{{articles}}"
+      wx:key="id"
+      class="article-card card"
+      bindtap="goToArticle"
+      data-id="{{item.id}}"
+    >
+      <image wx:if="{{item.coverImage}}" src="{{item.coverImage}}" mode="aspectFill" class="article-cover"></image>
+      <view class="article-content">
+        <view class="article-title text-ellipsis-2">{{item.title}}</view>
+        <view class="article-summary text-ellipsis-2 text-secondary">{{item.summary}}</view>
+        <view class="article-meta flex-between">
+          <view class="flex-center">
+            <image wx:if="{{item.author.avatar}}" src="{{item.author.avatar}}" class="avatar-small"></image>
+            <text class="meta-text">{{item.author.nickname}}</text>
+          </view>
+          <view class="flex-center">
+            <text class="meta-text">{{item.viewCount}} 阅读</text>
+          </view>
+        </view>
+        <view class="article-tags" wx:if="{{item.tags.length > 0}}">
+          <text wx:for="{{item.tags}}" wx:key="id" wx:for-item="tag" class="tag">{{tag.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading" wx:if="{{loading}}">
+      <text class="text-secondary">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="loading" wx:if="{{!hasMore && articles.length > 0}}">
+      <text class="text-secondary">没有更多了</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!loading && articles.length === 0}}">
+      <text class="empty-icon">📝</text>
+      <text>暂无文章</text>
+    </view>
+  </view>
+</view>

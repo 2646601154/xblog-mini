@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="login-header">
+    <text class="logo">📝</text>
+    <text class="title">博客登录</text>
+    <text class="subtitle text-secondary">欢迎回来，开始阅读吧</text>
+  </view>
+
+  <view class="form card">
+    <view class="form-item">
+      <input
+        class="input"
+        type="text"
+        placeholder="用户名"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+      />
+    </view>
+    <view class="form-item">
+      <input
+        class="input"
+        type="password"
+        placeholder="密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+      />
+    </view>
+
+    <button
+      class="btn btn-primary full {{loading ? 'disabled' : ''}}"
+      bindtap="handleLogin"
+      disabled="{{loading}}"
+    >
+      {{loading ? '登录中...' : '登录'}}
+    </button>
+
+    <view class="divider">
+      <text class="divider-text text-secondary">或</text>
+    </view>
+
+    <button class="btn btn-wechat full" bindtap="handleWechatLogin">
+      <text class="wechat-icon">微信</text>
+      微信一键登录
+    </button>
+  </view>
+
+  <view class="footer text-center">
+    <text class="text-secondary">还没有账号？</text>
+    <text class="text-primary" bindtap="goToRegister">立即注册</text>
+  </view>
+</view>

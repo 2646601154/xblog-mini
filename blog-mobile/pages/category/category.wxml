@@ -1,0 +1,56 @@
+<view class="container">
+  <!-- 分类列表 -->
+  <view class="category-section">
+    <view class="section-title">分类</view>
+    <view class="category-grid">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-item {{selectedCategory === item.id ? 'active' : ''}}"
+        bindtap="selectCategory"
+        data-id="{{item.id}}"
+      >
+        <text class="category-name">{{item.name}}</text>
+        <text class="category-count">({{item.articleCount || 0}})</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签云 -->
+  <view class="tag-section card">
+    <view class="section-title">标签</view>
+    <view class="tag-cloud">
+      <view
+        wx:for="{{tags}}"
+        wx:key="id"
+        class="tag-item"
+        bindtap="selectCategory"
+        data-id="{{item.id}}"
+      >
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章列表 -->
+  <view class="article-list" wx:if="{{selectedCategory}}">
+    <view class="section-title">文章</view>
+    <view
+      wx:for="{{articles}}"
+      wx:key="id"
+      class="article-item card"
+      bindtap="goToArticle"
+      data-id="{{item.id}}"
+    >
+      <view class="article-title text-ellipsis-2">{{item.title}}</view>
+      <view class="article-meta flex-between">
+        <text class="text-secondary">{{item.author.nickname}}</text>
+        <text class="text-secondary">{{item.viewCount}} 阅读</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{!loading && articles.length === 0}}">
+      <text>该分类暂无文章</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,67 @@
+<view class="container">
+  <view class="register-header">
+    <text class="title">注册账号</text>
+    <text class="subtitle text-secondary">加入博客，开始创作之旅</text>
+  </view>
+
+  <view class="form card">
+    <view class="form-item">
+      <input
+        class="input"
+        type="text"
+        placeholder="用户名 (3-20位，字母开头)"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+      />
+    </view>
+    <view class="form-item">
+      <input
+        class="input"
+        type="text"
+        placeholder="昵称 (2-50字符)"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+      />
+    </view>
+    <view class="form-item">
+      <input
+        class="input"
+        type="password"
+        placeholder="密码 (至少6位)"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+      />
+    </view>
+    <view class="form-item">
+      <input
+        class="input"
+        type="password"
+        placeholder="确认密码"
+        value="{{confirmPassword}}"
+        bindinput="onConfirmPasswordInput"
+      />
+    </view>
+    <view class="form-item">
+      <input
+        class="input"
+        type="text"
+        placeholder="邮箱 (选填)"
+        value="{{email}}"
+        bindinput="onEmailInput"
+      />
+    </view>
+
+    <button
+      class="btn btn-primary full {{loading ? 'disabled' : ''}}"
+      bindtap="handleRegister"
+      disabled="{{loading}}"
+    >
+      {{loading ? '注册中...' : '注册'}}
+    </button>
+  </view>
+
+  <view class="footer text-center">
+    <text class="text-secondary">已有账号？</text>
+    <text class="text-primary" bindtap="goToLogin">立即登录</text>
+  </view>
+</view>

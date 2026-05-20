@@ -1,0 +1,53 @@
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-header card">
+    <view wx:if="{{isLoggedIn && userInfo}}" class="user-info">
+      <image wx:if="{{userInfo.avatar}}" src="{{userInfo.avatar}}" class="avatar"></image>
+      <view wx:else class="avatar-placeholder">
+        <text>{{userInfo.nickname || userInfo.username}}</text>
+      </view>
+      <view class="user-text">
+        <view class="nickname">{{userInfo.nickname || userInfo.username}}</view>
+        <view class="username text-secondary">@{{userInfo.username}}</view>
+      </view>
+    </view>
+
+    <view wx:else class="not-login">
+      <view class="avatar-placeholder large">
+        <text>👤</text>
+      </view>
+      <view class="login-tips text-secondary">登录后参与评论和更多功能</view>
+      <view class="login-btns">
+        <button class="btn btn-primary" bindtap="goToLogin">登录</button>
+        <button class="btn btn-outline" bindtap="goToRegister">注册</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜单列表 -->
+  <view class="menu-list card">
+    <view
+      wx:for="{{menuItems}}"
+      wx:key="id"
+      class="menu-item"
+      bindtap="goToMenu"
+      data-url="{{item.url}}"
+    >
+      <view class="menu-left flex-center">
+        <text class="menu-icon">{{item.icon}}</text>
+        <text class="menu-title">{{item.title}}</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-btn" wx:if="{{isLoggedIn}}">
+    <button class="btn btn-outline full" bindtap="handleLogout">退出登录</button>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version-info text-center text-secondary">
+    <text>博客小程序 v1.0.0</text>
+  </view>
+</view>

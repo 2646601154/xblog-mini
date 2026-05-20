@@ -1,0 +1,45 @@
+/* 注册页样式 */
+
+.register-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0 48rpx;
+}
+
+.title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+}
+
+.form {
+  padding: 40rpx 32rpx;
+}
+
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+.btn.full {
+  width: 100%;
+  margin-top: 16rpx;
+}
+
+.btn.disabled {
+  opacity: 0.6;
+}
+
+.footer {
+  margin-top: 48rpx;
+  font-size: 28rpx;
+}
+
+.footer text {
+  margin: 0 8rpx;
+}
