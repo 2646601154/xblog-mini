@@ -29,6 +29,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/v1/configs",
                         "/v1/articles",
                         "/v1/articles/*",               // 文章详情
+                        "/v1/articles/*/prev-next",     // 文章上下篇
                         "/v1/articles/*/comments",       // 文章评论
                         "/v1/articles/*/tags",
                         "/doc.html",
