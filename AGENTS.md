@@ -1,6 +1,6 @@
 # Xblog-mini PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-05-19
+**Generated:** 2026-05-20
 **Branch:** api
 
 ## OVERVIEW
@@ -17,6 +17,7 @@ Xblog-mini/
 ├── docker/            # Docker多阶段构建（api/web/admin/nginx各自独立Dockerfile）
 ├── doc/api/           # API接口文档
 ├── sql/               # 数据库初始化脚本
+├── .github/workflows/ # GitHub Actions（空目录，待配置）
 └── AGENTS.md          # 本文件
 ```
 
@@ -30,6 +31,7 @@ Xblog-mini/
 | 前端路由 | `blog-web/src/router/` / `blog-admin/src/router/` | Vue Router + 路由守卫 |
 | 组件库 | `blog-web/src/components/` / `blog-admin/src/components/` | 复用组件 |
 | 业务错误码 | `blog-api/src/main/java/com/xblog/common/enums/ResultCode.java` | 错误码定义 |
+| 测试模式 | `blog-api/src/test/java/com/xblog/` | JUnit 5 + Spring Boot Test（覆盖率极低） |
 
 ## CODE MAP
 
@@ -48,6 +50,8 @@ Xblog-mini/
 - ❌ **不要**修改配置后忘记清理Redis缓存
 - ❌ **不要**忘记清理 ThreadLocal（`UserContext` 使用 ThreadLocal 存储用户信息，需确保在请求结束后调用 `clear()`）
 - ❌ **不要**在委托后台探索任务后自行进行相同搜索——必须结束回复等待 `<system-reminder>`，再用 `background_output` 收集结果后再行动
+- ❌ **不要**在 `.env` 中使用弱密码或默认密码（Docker部署）
+- ❌ **不要**将 `dist-web/`、`dist-admin/`、`*.jar` 提交到Git（构建产物）
 
 ## UNIQUE STYLES
 
@@ -56,7 +60,9 @@ Xblog-mini/
 - 后端无root聚合pom.xml，三模块独立构建
 - `blog-admin` 使用 Tailwind CSS v4 + `@tailwindcss/vite` 插件（`blog-web` 使用 Element Plus）
 - 前端无项目级 `.eslintrc` / `.prettierrc`（仅使用 IDE 默认规则）
-
+- 双Token机制：`accessToken` + `refreshToken` 分离存储与刷新
+- Token刷新队列：`refreshSubscribers` 数组订阅模式，多请求排队等待刷新完成
+- localStorage前缀：blog-web用 `xblog_`，blog-admin用 `admin_`
 
 ## COMMANDS
 
@@ -85,6 +91,8 @@ mysql -u root -p < sql/test-data.sql
 - `MybatisPlusFillMetaObjectHandler` 自动填充 `createdAt`/`updatedAt`
 - 逻辑删除：仅 `article` 表使用，其他表物理删除
 - 数据库变更需同步 `sql/init.sql` 和 `doc/PRD.md`
+- `.github/workflows/` 目录存在但为空，无CI/CD配置
+- 测试覆盖率极低：仅3个测试类，前端无测试框架
 
 ## 测试账号
 
