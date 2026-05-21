@@ -11,6 +11,7 @@
 | [tag.md](./tag.md) | 标签相关 |
 | [user.md](./user.md) | 用户管理 (Admin) |
 | [config.md](./config.md) | 系统配置 |
+| [upload.md](./upload.md) | 文件上传 |
 
 ---
 

@@ -7,8 +7,105 @@
 | 2000 | 用户不存在 |
 | 2001 | 用户名已存在 |
 | 2002 | 用户已被禁用 |
+| 2003 | 邮箱已存在 |
+| 2004 | 原密码错误 |
+| 2005 | 邮箱已被其他用户使用 |
 | 2009 | 无法禁用管理员账号 |
 | 2010 | 无法删除管理员账号 |
+
+---
+
+## 【前台】修改个人资料
+
+### 请求
+
+```
+PUT /api/v1/users/profile
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| nickname | String | Body | 否 | 昵称 (2-50字符) |
+| avatar | String | Body | 否 | 头像 URL |
+| email | String | Body | 否 | 邮箱 |
+
+### 请求示例
+
+```json
+{
+  "nickname": "新昵称",
+  "avatar": "https://example.com/new-avatar.png",
+  "email": "newemail@example.com"
+}
+```
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": null
+}
+```
+
+### 响应 (失败)
+
+```json
+{
+  "code": 2003,
+  "message": "邮箱已存在",
+  "data": null
+}
+```
+
+---
+
+## 【前台】修改密码
+
+### 请求
+
+```
+PUT /api/v1/users/password
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| oldPassword | String | Body | 是 | 原密码 |
+| newPassword | String | Body | 是 | 新密码 (最少6位) |
+
+### 请求示例
+
+```json
+{
+  "oldPassword": "123456",
+  "newPassword": "654321"
+}
+```
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": null
+}
+```
+
+### 响应 (失败)
+
+```json
+{
+  "code": 2004,
+  "message": "原密码错误",
+  "data": null
+}
+```
 
 ---
 
@@ -64,6 +161,68 @@ GET /api/v1/admin/users
     "page": 1,
     "size": 10
   }
+}
+```
+
+---
+
+## 【管理】创建用户
+
+### 请求
+
+```
+POST /api/v1/admin/users
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| username | String | Body | 是 | 用户名 (3-20位字母开头) |
+| password | String | Body | 是 | 密码 (最少6位) |
+| nickname | String | Body | 否 | 昵称 (最多50字符) |
+| email | String | Body | 否 | 邮箱 |
+| role | String | Body | 否 | 角色 (默认 user) |
+
+### 请求示例
+
+```json
+{
+  "username": "newuser",
+  "password": "123456",
+  "nickname": "新用户",
+  "email": "newuser@example.com",
+  "role": "user"
+}
+```
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "id": 3,
+    "username": "newuser",
+    "nickname": "新用户",
+    "avatar": null,
+    "email": "newuser@example.com",
+    "role": "user",
+    "status": "normal",
+    "createdAt": "2026-04-03T10:00:00",
+    "updatedAt": "2026-04-03T10:00:00"
+  }
+}
+```
+
+### 响应 (失败)
+
+```json
+{
+  "code": 2001,
+  "message": "用户名已存在",
+  "data": null
 }
 ```
 
@@ -150,6 +309,51 @@ PUT /api/v1/admin/users/{id}
     "status": "normal",
     "updatedAt": "2026-04-28T12:00:00"
   }
+}
+```
+
+---
+
+## 【管理】重置用户密码
+
+### 请求
+
+```
+PUT /api/v1/admin/users/{id}/reset-password
+```
+
+### 请求参数
+
+| 参数 | 类型 | 位置 | 必填 | 说明 |
+|------|------|------|------|------|
+| id | Long | Path | 是 | 用户 ID |
+| newPassword | String | Body | 是 | 新密码 (最少6位) |
+
+### 请求示例
+
+```json
+{
+  "newPassword": "654321"
+}
+```
+
+### 响应 (成功)
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": null
+}
+```
+
+### 响应 (失败)
+
+```json
+{
+  "code": 2000,
+  "message": "用户不存在",
+  "data": null
 }
 ```
 
