@@ -8,6 +8,7 @@ configStore.initConfig()
 <template>
   <footer class="footer">
     <div class="footer-container">
+      <div class="footer-decor"></div>
       <p class="footer-text">{{ configStore.copyright }}</p>
       <p class="footer-icp">{{ configStore.icpNumber }}</p>
     </div>
@@ -16,9 +17,10 @@ configStore.initConfig()
 
 <style scoped>
 .footer {
-  background: var(--bg-dark);
+  background: linear-gradient(to bottom, var(--bg-page), var(--bg-surface));
+  border-top: 1px solid var(--border-light);
   color: var(--text-secondary);
-  padding: 40px 20px;
+  padding: var(--space-3xl) var(--space-lg);
   margin-top: auto;
 }
 
@@ -28,21 +30,29 @@ configStore.initConfig()
   text-align: center;
 }
 
+.footer-decor {
+  width: 60px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  margin: 0 auto var(--space-lg);
+}
+
 .footer-text {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-sm);
   color: var(--text-secondary);
 }
 
 .footer-icp {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
   opacity: 0.7;
 }
 
 @media (max-width: 768px) {
   .footer {
-    padding: 30px 16px;
+    padding: var(--space-xl) var(--space-lg);
   }
 }
 </style>

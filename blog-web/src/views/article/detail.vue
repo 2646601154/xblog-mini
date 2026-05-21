@@ -124,40 +124,39 @@ onMounted(loadAllData)
     <el-skeleton :rows="10" animated v-if="loading" />
 
     <template v-else-if="article">
-      <el-row :gutter="20">
+      <el-row :gutter="24">
         <el-col :span="24" :md="16">
           <article class="article-main">
-            <el-card v-if="article.coverImage" class="article-cover">
+            <div v-if="article.coverImage" class="article-cover">
               <img :src="article.coverImage" :alt="article.title" />
-            </el-card>
+            </div>
 
             <header class="article-header">
               <h1 class="article-title">{{ article.title }}</h1>
               <div class="article-meta">
                 <div class="meta-author">
-                  <el-avatar :size="32" :src="article.author.avatar">
+                  <el-avatar :size="32" :src="article.author.avatar" class="author-avatar">
                     {{ article.author.nickname?.[0] || 'U' }}
                   </el-avatar>
-                  <span>{{ article.author.nickname }}</span>
+                  <span class="author-name">{{ article.author.nickname }}</span>
                 </div>
-                <span class="meta-divider">|</span>
+                <span class="meta-separator">·</span>
                 <span class="meta-date">{{ formatDate(article.publishedAt) }}</span>
-                <span class="meta-divider">|</span>
+                <span class="meta-separator">·</span>
                 <span class="meta-views">
                   <el-icon><View /></el-icon>
                   {{ formatCount(article.viewCount) }}
                 </span>
               </div>
               <div class="article-tags">
-                <el-tag
+                <span
                   v-for="tag in article.tags"
                   :key="tag.id"
-                  size="small"
-                  class="tag-clickable"
+                  class="tag-pill"
                   @click="handleTagClick(tag.slug)"
                 >
                   {{ tag.name }}
-                </el-tag>
+                </span>
               </div>
             </header>
 
@@ -165,29 +164,32 @@ onMounted(loadAllData)
 
             <footer class="article-footer">
               <div class="share-section">
-                <span class="share-label">分享文章：</span>
-                <el-button size="small" @click="handleShare">
+                <el-button type="primary" plain size="small" @click="handleShare">
                   复制链接
                 </el-button>
               </div>
 
-              <nav class="article-nav">
-                <div class="nav-item nav-prev" v-if="prevArticle">
-                  <span class="nav-hint">上一篇：</span>
-                  <router-link :to="`/article/${prevArticle.id}`" class="nav-link">
-                    {{ prevArticle.title }}
-                  </router-link>
-                </div>
-                <div class="nav-item nav-next" v-if="nextArticle">
-                  <span class="nav-hint">下一篇：</span>
-                  <router-link :to="`/article/${nextArticle.id}`" class="nav-link">
-                    {{ nextArticle.title }}
-                  </router-link>
-                </div>
-                <div v-if="!prevArticle && !nextArticle" class="nav-placeholder">
-                  没有更多文章了
-                </div>
+              <nav class="article-nav" v-if="prevArticle || nextArticle">
+                <router-link
+                  v-if="prevArticle"
+                  :to="`/article/${prevArticle.id}`"
+                  class="nav-card nav-prev"
+                >
+                  <span class="nav-label">上一篇</span>
+                  <span class="nav-title">{{ prevArticle.title }}</span>
+                </router-link>
+                <router-link
+                  v-if="nextArticle"
+                  :to="`/article/${nextArticle.id}`"
+                  class="nav-card nav-next"
+                >
+                  <span class="nav-label">下一篇</span>
+                  <span class="nav-title">{{ nextArticle.title }}</span>
+                </router-link>
               </nav>
+              <div v-else class="nav-placeholder">
+                没有更多文章了
+              </div>
             </footer>
 
             <CommentList ref="commentListRef" :article-id="articleId" />
@@ -214,25 +216,27 @@ onMounted(loadAllData)
 }
 
 .article-cover {
-  border-radius: var(--radius);
-  margin-bottom: 24px;
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-2xl);
   overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
 .article-cover img {
   width: 100%;
   display: block;
+  border-radius: var(--radius-xl);
 }
 
 .article-header {
-  margin-bottom: 30px;
+  margin-bottom: var(--space-xl);
 }
 
 .article-title {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.3;
-  margin: 0 0 16px 0;
+  margin: 0 0 var(--space-lg) 0;
   color: var(--text-primary);
 }
 
@@ -240,71 +244,96 @@ onMounted(loadAllData)
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 .meta-author {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
-.meta-divider {
-  color: var(--border);
+.author-avatar {
+  border: 2px solid var(--color-primary-100);
+  border-radius: 50%;
+}
+
+.author-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.meta-separator {
+  color: var(--text-muted);
 }
 
 .meta-views {
   display: flex;
   align-items: center;
   gap: 4px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 .article-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
 }
 
-.tag-clickable {
+.tag-pill {
+  display: inline-block;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-pill);
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.tag-clickable:hover {
-  color: var(--accent);
+.tag-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .article-content {
   line-height: 1.8;
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--text-primary);
-  margin-bottom: 40px;
+  margin-bottom: var(--space-2xl);
 }
 
 .article-content :deep(h2) {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
-  margin: 24px 0 16px 0;
+  margin: var(--space-3xl) 0 var(--space-lg) 0;
+  color: var(--text-primary);
 }
 
 .article-content :deep(h3) {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 600;
-  margin: 20px 0 12px 0;
+  margin: var(--space-2xl) 0 var(--space-md) 0;
+  color: var(--text-primary);
 }
 
 .article-content :deep(p) {
-  margin: 0 0 16px 0;
+  margin: 0 0 var(--space-lg) 0;
 }
 
 .article-content :deep(pre) {
-  background: var(--bg-secondary);
-  padding: 16px;
-  border-radius: var(--radius);
+  background: var(--color-primary-50);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
   overflow-x: auto;
-  margin: 16px 0;
+  margin: var(--space-lg) 0;
 }
 
 .article-content :deep(code) {
@@ -312,17 +341,27 @@ onMounted(loadAllData)
   font-size: 0.9em;
 }
 
+.article-content :deep(p) code,
+.article-content :deep(li) code {
+  background: var(--color-primary-50);
+  color: var(--color-primary-dark);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
 .article-content :deep(blockquote) {
-  border-left: 4px solid var(--color-primary);
-  padding: 12px 16px;
-  margin: 16px 0;
-  background: var(--bg-secondary);
+  border-left: 3px solid var(--color-primary);
+  background: var(--bg-elevated);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-lg);
+  margin: var(--space-lg) 0;
   color: var(--text-secondary);
 }
 
 .article-content :deep(img) {
   max-width: 100%;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
+  margin: var(--space-lg) 0;
 }
 
 .article-content :deep(a) {
@@ -335,69 +374,77 @@ onMounted(loadAllData)
 }
 
 .article-footer {
-  padding-top: 30px;
-  border-top: 1px solid var(--border);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-light);
 }
 
 .share-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
+  margin-bottom: var(--space-xl);
 }
 
-.share-label {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+.share-section :deep(.el-button) {
+  border-radius: var(--radius-pill);
 }
 
 .article-nav {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
-.nav-item {
+.nav-card {
+  flex: 1;
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.nav-hint {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-
-.nav-link {
-  color: var(--color-primary);
+  flex-direction: column;
+  gap: var(--space-xs);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
   text-decoration: none;
-  font-size: 0.9rem;
+  transition: background 0.2s ease;
 }
 
-.nav-link:hover {
-  text-decoration: underline;
+.nav-card:hover {
+  background: var(--color-primary-50);
+}
+
+.nav-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.nav-title {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav-placeholder {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
   text-align: center;
-  padding: 10px 0;
+  padding: var(--space-lg) 0;
 }
 
 .sidebar-col {
   display: flex;
   flex-direction: column;
+  gap: var(--space-xl);
 }
 
 @media (max-width: 768px) {
   .article-title {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
+  }
+
+  .article-nav {
+    flex-direction: column;
   }
 
   .sidebar-col {
-    margin-top: 30px;
+    margin-top: var(--space-xl);
   }
 }
 </style>

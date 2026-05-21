@@ -43,6 +43,7 @@ const passwordLoading = ref(false)
 
 function passwordError(): string {
   if (!passwordForm.value.oldPassword) return '请输入原密码'
+  if (!passwordForm.value.newPassword) return '请输入新密码'
   if (passwordForm.value.newPassword && passwordForm.value.newPassword.length < 6) return '新密码不能少于6位'
   if (passwordForm.value.confirmPassword && passwordForm.value.newPassword !== passwordForm.value.confirmPassword) return '两次输入的密码不一致'
   return ''
@@ -124,48 +125,45 @@ onMounted(() => {
 
 <template>
   <div class="profile-page">
-    <div class="profile-header">
-      <h1 class="page-title">个人中心</h1>
-    </div>
-
-    <!-- 用户信息卡片 -->
-    <el-card class="user-info-card" shadow="never">
-      <div class="user-info">
-        <el-avatar :size="72" :src="authStore.avatar">
-          {{ authStore.nickname?.[0] || 'U' }}
-        </el-avatar>
-        <div class="user-detail">
-          <h2 class="user-name">{{ authStore.nickname || authStore.userInfo?.username }}</h2>
-          <p class="user-role">{{ authStore.isAdmin ? '管理员' : '普通用户' }}</p>
-          <p class="user-joined">
-            <template v-if="authStore.userInfo?.email">邮箱：{{ authStore.userInfo.email }}</template>
-          </p>
+    <div class="profile-card">
+      <!-- Avatar Section -->
+      <div class="avatar-section">
+        <div class="avatar-wrapper">
+          <el-avatar :size="80" :src="authStore.avatar" class="avatar">
+            {{ authStore.nickname?.[0] || 'U' }}
+          </el-avatar>
+          <div class="avatar-overlay">
+            <span class="avatar-icon">✎</span>
+          </div>
         </div>
+        <p class="avatar-hint">点击更换头像</p>
       </div>
-    </el-card>
 
-    <!-- Tab 切换 -->
-    <el-card class="profile-tabs-card" shadow="never">
+      <!-- Title -->
+      <h1 class="profile-title">个人中心</h1>
+
+      <!-- Tabs -->
       <el-tabs v-model="activeTab" class="profile-tabs">
         <!-- Tab 1: 编辑资料 -->
         <el-tab-pane label="编辑资料" name="profile">
           <div class="tab-content">
-            <el-form label-width="80px" @submit.prevent="handleUpdateProfile">
-              <el-form-item label="用户名">
-                <el-input :model-value="authStore.userInfo?.username" disabled />
+            <el-form @submit.prevent="handleUpdateProfile">
+              <div class="form-group">
+                <label class="form-label">用户名</label>
+                <el-input :model-value="authStore.userInfo?.username" disabled class="pill-input" />
                 <p class="form-help">用户名不可修改</p>
-              </el-form-item>
-              <el-form-item label="昵称">
-                <el-input v-model="profileForm.nickname" placeholder="输入昵称" maxlength="50" />
-              </el-form-item>
-              <el-form-item label="邮箱">
-                <el-input v-model="profileForm.email" placeholder="输入邮箱" maxlength="100" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" :loading="profileLoading" native-type="submit">
-                  保存修改
-                </el-button>
-              </el-form-item>
+              </div>
+              <div class="form-group">
+                <label class="form-label">昵称</label>
+                <el-input v-model="profileForm.nickname" placeholder="输入昵称" maxlength="50" class="pill-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">邮箱</label>
+                <el-input v-model="profileForm.email" placeholder="输入邮箱" maxlength="100" class="pill-input" />
+              </div>
+              <el-button type="primary" :loading="profileLoading" native-type="submit" class="save-btn">
+                保存修改
+              </el-button>
             </el-form>
           </div>
         </el-tab-pane>
@@ -173,40 +171,41 @@ onMounted(() => {
         <!-- Tab 2: 修改密码 -->
         <el-tab-pane label="修改密码" name="password">
           <div class="tab-content">
-            <el-form label-width="100px" @submit.prevent="handleChangePassword">
-              <el-form-item label="原密码">
+            <el-form @submit.prevent="handleChangePassword">
+              <div class="form-group">
+                <label class="form-label">原密码</label>
                 <el-input
                   v-model="passwordForm.oldPassword"
                   type="password"
                   show-password
                   placeholder="输入原密码"
+                  class="pill-input"
                 />
                 <p class="form-help">忘记原密码，请联系管理员</p>
-              </el-form-item>
-              <el-form-item label="新密码">
+              </div>
+              <div class="form-group">
+                <label class="form-label">新密码</label>
                 <el-input
                   v-model="passwordForm.newPassword"
                   type="password"
                   show-password
                   placeholder="最少6位"
+                  class="pill-input"
                 />
-              </el-form-item>
-              <el-form-item
-                label="确认密码"
-                :error="passwordForm.confirmPassword ? passwordError() : ''"
-              >
+              </div>
+              <div class="form-group">
+                <label class="form-label">确认密码</label>
                 <el-input
                   v-model="passwordForm.confirmPassword"
                   type="password"
                   show-password
                   placeholder="再次输入新密码"
+                  class="pill-input"
                 />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" :loading="passwordLoading" native-type="submit">
-                  修改密码
-                </el-button>
-              </el-form-item>
+              </div>
+              <el-button type="primary" :loading="passwordLoading" native-type="submit" class="save-btn">
+                修改密码
+              </el-button>
             </el-form>
           </div>
         </el-tab-pane>
@@ -245,104 +244,200 @@ onMounted(() => {
         </el-tab-pane>
       </el-tabs>
 
-      <!-- 退出登录 -->
+      <!-- Logout -->
       <div class="logout-section">
-        <el-button type="danger" plain @click="handleLogout">退出登录</el-button>
+        <el-button type="danger" plain @click="handleLogout" class="logout-btn">
+          退出登录
+        </el-button>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .profile-page {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 30px 20px;
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding: var(--space-3xl) var(--space-lg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
-.profile-header {
-  margin-bottom: 24px;
+.profile-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
 }
 
-.page-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--text-primary);
+/* Avatar Section */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-xl);
 }
 
-.user-info-card {
-  margin-bottom: 20px;
-  border-radius: var(--radius);
+.avatar-wrapper {
+  position: relative;
+  cursor: pointer;
 }
 
-.user-info {
+.avatar {
+  border: 3px solid var(--color-primary-100);
+  border-radius: 50%;
+  transition: border-color 0.2s ease;
+}
+
+.avatar-wrapper:hover .avatar {
+  border-color: var(--color-primary);
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.1);
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.user-detail {
-  flex: 1;
-  min-width: 0;
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
 }
 
-.user-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 4px 0;
+.avatar-icon {
+  font-size: var(--text-lg);
+  color: var(--color-primary);
+}
+
+.avatar-hint {
+  margin: var(--space-sm) 0 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* Title */
+.profile-title {
+  text-align: center;
+  font-size: var(--text-2xl);
+  font-weight: 700;
   color: var(--text-primary);
+  margin: 0 0 var(--space-2xl) 0;
 }
 
-.user-role {
-  font-size: 0.9rem;
-  color: var(--accent);
-  margin: 0 0 4px 0;
-}
-
-.user-joined {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.profile-tabs-card {
-  border-radius: var(--radius);
-}
-
+/* Tabs */
 .profile-tabs {
-  --el-tabs-header-height: 42px;
+  margin-bottom: var(--space-xl);
 }
 
+:deep(.el-tabs__item) {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+:deep(.el-tabs__item.is-active) {
+  color: var(--color-primary);
+}
+
+:deep(.el-tabs__active-bar) {
+  background-color: var(--color-primary);
+}
+
+:deep(.el-tabs__nav-wrap::after) {
+  background-color: var(--border-light);
+}
+
+/* Tab Content */
 .tab-content {
-  padding: 20px 0;
-  min-height: 200px;
+  padding: var(--space-lg) 0;
+}
+
+/* Form */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.pill-input {
+  --el-input-border-radius: var(--radius-pill);
+  --el-input-height: 44px;
+}
+
+:deep(.pill-input .el-input__wrapper) {
+  border-radius: var(--radius-pill);
+  box-shadow: none;
+  border: 1px solid var(--border-light);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+:deep(.pill-input .el-input__wrapper:hover),
+:deep(.pill-input .el-input__wrapper:focus-within) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-50);
+}
+
+:deep(.pill-input .el-input__wrapper.is-disabled) {
+  background-color: var(--bg-elevated);
+  border-color: var(--border-light);
 }
 
 .form-help {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin: 4px 0 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: var(--space-sm) 0 0 0;
 }
 
+/* Save Button */
+.save-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: var(--text-base);
+  margin-top: var(--space-lg);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.save-btn:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  opacity: 0.9;
+}
+
+/* Loading State */
 .loading-state {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 60px 0;
+  gap: var(--space-sm);
+  padding: var(--space-3xl) 0;
   color: var(--text-secondary);
 }
 
+/* Comment List */
 .comment-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .comment-item {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .comment-item:last-child {
@@ -353,14 +448,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .comment-article {
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--accent);
+  color: var(--color-primary);
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -372,8 +467,8 @@ onMounted(() => {
 }
 
 .comment-content {
-  margin: 0 0 8px 0;
-  font-size: 0.9rem;
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--text-sm);
   color: var(--text-primary);
   line-height: 1.6;
   word-break: break-word;
@@ -381,30 +476,40 @@ onMounted(() => {
 
 .comment-meta {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 
+/* Pagination */
 .pagination-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: var(--space-xl);
 }
 
+/* Logout Section */
 .logout-section {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-xl);
   text-align: center;
 }
 
+.logout-btn {
+  border-radius: var(--radius-pill);
+  padding: var(--space-md) var(--space-2xl);
+}
+
 @media (max-width: 480px) {
-  .user-info {
-    flex-direction: column;
-    text-align: center;
+  .profile-page {
+    padding: var(--space-lg);
   }
 
-  .profile-page {
-    padding: 20px 16px;
+  .profile-card {
+    padding: var(--space-2xl);
+  }
+
+  .avatar-section {
+    margin-bottom: var(--space-lg);
   }
 }
 </style>

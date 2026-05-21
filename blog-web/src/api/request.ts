@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { storage } from '@/utils/storage'
 import { useAuthStore } from '@/stores/auth'
 import { showErrorMessage } from '@/utils/error'
@@ -18,6 +18,61 @@ const request: AxiosInstance = axios.create({
 // 刷新 Token 的状态管理
 let isRefreshing = false
 let refreshSubscribers: Array<(token: string) => void> = []
+
+// 会话过期弹窗状态，防止重复弹出
+let isSessionExpiredDialogShown = false
+
+/**
+ * 显示登录过期弹窗，让用户选择保持此页或跳转至登录
+ */
+function showSessionExpiredDialog(message: string = '登录已过期，请重新登录'): void {
+  if (isSessionExpiredDialogShown) return
+
+  // 如果当前已经在登录页，不弹出会话过期弹窗
+  if (window.location.pathname === '/login') {
+    storage.clearAuth()
+    try {
+      const authStore = useAuthStore()
+      authStore.clearAuth()
+    } catch {
+      // 忽略
+    }
+    return
+  }
+
+  isSessionExpiredDialogShown = true
+
+  // 先清除本地登录态
+  storage.clearAuth()
+  try {
+    const authStore = useAuthStore()
+    authStore.clearAuth()
+  } catch {
+    // useAuthStore 在 Pinia 未初始化时可能报错，忽略
+  }
+
+  ElMessageBox.confirm(
+    message,
+    '会话过期',
+    {
+      confirmButtonText: '跳转至登录',
+      cancelButtonText: '保持此页',
+      type: 'warning',
+      closeOnClickModal: false,
+      closeOnPressEscape: false,
+      showClose: false,
+    }
+  )
+    .then(() => {
+      window.location.href = '/login'
+    })
+    .catch(() => {
+      // 用户选择"保持此页"，不执行跳转
+    })
+    .finally(() => {
+      isSessionExpiredDialogShown = false
+    })
+}
 
 // 订阅刷新完成事件
 function subscribeTokenRefresh(callback: (token: string) => void) {
@@ -85,12 +140,12 @@ request.interceptors.response.use(
 
     // 业务错误处理
     if (code !== 200) {
-      // 401 清理登录态并跳转登录页
+      // 401 清理登录态并弹出会话过期对话框
       if (code === 1001 || code === 1002) {
-        storage.clearAuth()
-        showErrorMessage(code)
         if (!isPublicEndpoint(response.config.url)) {
-          window.location.href = '/login'
+          showSessionExpiredDialog(message || '登录已过期，请重新登录')
+        } else {
+          storage.clearAuth()
         }
         return Promise.reject(new Error(message))
       }
@@ -152,11 +207,11 @@ request.interceptors.response.use(
           isRefreshing = false
         }
 
-        // 刷新失败或没有 refreshToken，清除登录态并跳转
-        storage.clearAuth()
-        showErrorMessage(1001)
+        // 刷新失败或没有 refreshToken，显示过期弹窗
         if (!isPublicEndpoint(originalRequest.url)) {
-          window.location.href = '/login'
+          showSessionExpiredDialog('登录已过期，请重新登录')
+        } else {
+          storage.clearAuth()
         }
         return Promise.reject(error)
       }

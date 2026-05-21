@@ -79,22 +79,22 @@ async function handleSubmit() {
 
 <style scoped>
 .comment-form {
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 1px solid var(--border);
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 1px solid var(--border-light);
 }
 
 .form-title {
-  font-size: 1.2rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: 20px;
   color: var(--text-primary);
+  margin-bottom: var(--space-xl);
 }
 
 .form-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-lg);
 }
 
 .form-actions {
@@ -106,10 +106,10 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px 0;
+  gap: var(--space-xs);
+  padding: var(--space-sm) 0;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .login-link {

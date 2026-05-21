@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Menu } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useConfigStore } from '@/stores/config'
+import SearchInput from '@/components/common/SearchInput.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -11,22 +12,27 @@ const authStore = useAuthStore()
 const configStore = useConfigStore()
 const isMenuOpen = ref(false)
 
-onMounted(() => {
-  configStore.initConfig()
-})
-
-const menuItems = [
-  { label: '首页', path: '/', key: 'home' },
-  { label: '分类', path: '/categories', key: 'category' },
+const navItems = [
+  { label: '首页', path: '/' },
+  { label: '归档', path: '/archive' },
+  { label: '关于', path: '/about' },
 ]
+
+const isActive = (path: string) => {
+  if (path === '/') {
+    return route.path === '/'
+  }
+  return route.path.startsWith(path)
+}
 
 const navigateTo = (path: string) => {
   router.push(path)
   isMenuOpen.value = false
 }
 
-const handleMenuSelect = (path: string) => {
-  navigateTo(path)
+const handleSearch = (query: string) => {
+  router.push(`/?q=${encodeURIComponent(query)}`)
+  isMenuOpen.value = false
 }
 
 const handleCommand = (command: string) => {
@@ -56,21 +62,21 @@ const handleCommand = (command: string) => {
         </template>
       </div>
 
-      <el-menu
-        mode="horizontal"
-        class="header-menu"
-        :ellipsis="false"
-        :default-active="$route.path"
-        router
-      >
-        <el-menu-item
-          v-for="item in menuItems"
-          :key="item.key"
-          :index="item.path"
+      <nav class="header-nav">
+        <router-link
+          v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="nav-link"
+          :class="{ 'nav-link--active': isActive(item.path) }"
         >
           {{ item.label }}
-        </el-menu-item>
-      </el-menu>
+        </router-link>
+      </nav>
+
+      <div class="header-search">
+        <SearchInput @search="handleSearch" />
+      </div>
 
       <div class="header-auth">
         <template v-if="authStore.isLoggedIn">
@@ -90,8 +96,9 @@ const handleCommand = (command: string) => {
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button plain @click="navigateTo('/login')">登录</el-button>
-          <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+          <el-button type="primary" size="small" round @click="navigateTo('/login')">
+            登录
+          </el-button>
         </template>
       </div>
 
@@ -108,19 +115,21 @@ const handleCommand = (command: string) => {
       size="auto"
     >
       <div class="mobile-menu">
-        <el-menu
-          :default-active="$route.path"
-          router
-          @select="handleMenuSelect"
-        >
-          <el-menu-item
-            v-for="item in menuItems"
-            :key="item.key"
-            :index="item.path"
+        <div class="mobile-nav">
+          <router-link
+            v-for="item in navItems"
+            :key="item.path"
+            :to="item.path"
+            class="nav-link"
+            :class="{ 'nav-link--active': isActive(item.path) }"
+            @click="isMenuOpen = false"
           >
             {{ item.label }}
-          </el-menu-item>
-        </el-menu>
+          </router-link>
+        </div>
+        <div class="mobile-search">
+          <SearchInput @search="handleSearch" />
+        </div>
         <div class="mobile-auth">
           <template v-if="authStore.isLoggedIn">
             <div class="mobile-user-info" @click="navigateTo('/profile')">
@@ -132,8 +141,7 @@ const handleCommand = (command: string) => {
             <el-button plain @click="handleCommand('logout')">退出</el-button>
           </template>
           <template v-else>
-            <el-button plain @click="navigateTo('/login')">登录</el-button>
-            <el-button type="primary" @click="navigateTo('/register')">注册</el-button>
+            <el-button type="primary" round @click="navigateTo('/login')">登录</el-button>
           </template>
         </div>
       </div>
@@ -143,110 +151,116 @@ const handleCommand = (command: string) => {
 
 <style scoped>
 .header {
-  background: var(--bg-dark);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 20px var(--shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-container {
-  max-width: 1200px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-xl);
   display: flex;
   align-items: center;
-  height: 64px;
+  height: var(--header-height);
+  gap: var(--space-lg);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
   color: var(--text-primary);
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-weight: 600;
   cursor: pointer;
-  margin-right: 40px;
   flex-shrink: 0;
+  margin-right: var(--space-md);
 }
 
 .logo-image {
-  height: 36px;
+  height: 32px;
   object-fit: contain;
 }
 
 .logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: var(--text-base);
+  color: #fff;
 }
 
 .logo-text {
   font-family: 'Georgia', serif;
 }
 
-.header-menu {
-  flex: 1;
+.header-nav {
   display: flex;
   align-items: center;
-  background: transparent !important;
-  height: 64px;
-  overflow: hidden;
+  gap: var(--space-xs);
+  flex: 1;
 }
 
-.header-menu .el-menu-item {
-  height: 40px;
-  line-height: 40px;
-  border-radius: 8px;
-  margin: 0 4px;
-  padding: 0 12px;
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.header-menu .el-menu-item:hover {
-  background-color: rgba(58, 158, 150, 0.1) !important;
+.nav-link:hover {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
 }
 
-.header-menu .el-menu-item.is-active {
-  background-color: rgba(58, 158, 150, 0.15) !important;
-  color: var(--accent) !important;
-  border-bottom: none !important;
+.nav-link--active {
+  background: var(--color-primary-100);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.header-search {
+  flex-shrink: 0;
 }
 
 .header-auth {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: 24px;
+  gap: var(--space-md);
   flex-shrink: 0;
-}
-
-.header-auth .el-button {
-  font-size: 14px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-sm);
   cursor: pointer;
   color: var(--text-primary);
-  padding: 4px 8px;
-  border-radius: 20px;
-  transition: background-color 0.3s;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-pill);
+  transition: background-color 0.2s ease;
 }
 
 .user-info:hover {
-  background-color: rgba(58, 158, 150, 0.1);
+  background: var(--color-primary-50);
 }
 
 .nickname {
-  font-size: 14px;
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .mobile-menu-icon {
@@ -256,57 +270,59 @@ const handleCommand = (command: string) => {
 }
 
 .mobile-menu {
-  background: var(--bg-primary);
-  padding: 20px;
+  background: var(--bg-surface);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
 }
 
-.mobile-menu .el-menu {
-  background: transparent !important;
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
-.mobile-menu .el-menu-item {
-  color: var(--text-primary) !important;
-  font-size: 16px;
-  height: 44px;
-  line-height: 44px;
+.mobile-nav .nav-link {
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--text-base);
 }
 
-.mobile-menu .el-menu-item.is-active {
-  background-color: rgba(58, 158, 150, 0.1) !important;
-  color: var(--accent) !important;
+.mobile-search {
+  padding: 0 var(--space-sm);
 }
 
 .mobile-auth {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: 20px;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
 }
 
 .mobile-user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(58, 158, 150, 0.08);
-  border-radius: 8px;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-primary-50);
+  border-radius: var(--radius-pill);
   cursor: pointer;
 }
 
 .mobile-nickname {
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: var(--text-base);
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
   .header-container {
-    padding: 0 16px;
+    padding: 0 var(--space-lg);
   }
 
-  .header-menu {
-    display: none;
-  }
-
+  .header-nav,
+  .header-search,
   .header-auth {
     display: none;
   }

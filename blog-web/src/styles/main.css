@@ -1,25 +1,86 @@
-:root {
-  --bg-primary: #F8F8F8;
-  --bg-secondary: #F0F5F5;
-  --bg-dark: #F8F8F8;
-  --text-primary: #2C3838;
-  --text-secondary: #6B8080;
-  --accent: #3A9E96;
-  --accent-light: #A8D8D4;
-  --border: #CFE2E2;
-  --white: #FFFFFF;
-  --shadow: rgba(44, 56, 56, 0.06);
-  --shadow-hover: rgba(44, 56, 56, 0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --header-text: #2C3838;
+@import './element-theme.css';
 
-  --el-color-primary: #3A9E96;
-  --el-border-radius-base: 8px;
-  --el-border-color: #CFE2E2;
-  --el-fill-color-blank: #F8F8F8;
+:root {
+  /* ── Color Palette ── */
+  --color-primary: #8B5CF6;
+  --color-primary-light: #A78BFA;
+  --color-primary-dark: #7C3AED;
+  --color-primary-50: #F5F3FF;
+  --color-primary-100: #EDE9FE;
+  --color-accent: #38BDF8;
+  --color-accent-light: #7DD3FC;
+  --bg-page: #FAFAFA;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F9F9FB;
+  --text-primary: #1E1B4B;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --border-light: #E5E7EB;
+  --border-medium: #D1D5DB;
+
+  /* ── Shadows (Lavender Tint) ── */
+  --shadow-sm: 0 1px 3px rgba(139, 92, 246, 0.06);
+  --shadow-md: 0 4px 16px rgba(139, 92, 246, 0.08);
+  --shadow-lg: 0 8px 32px rgba(139, 92, 246, 0.12);
+  --shadow-hover: 0 12px 40px rgba(139, 92, 246, 0.16);
+
+  /* ── Spacing Scale ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 48px;
+  --space-5xl: 64px;
+
+  /* ── Typography ── */
+  --text-xs: 0.75rem;
+  --lh-xs: 1rem;
+  --text-sm: 0.875rem;
+  --lh-sm: 1.25rem;
+  --text-base: 1rem;
+  --lh-base: 1.5rem;
+  --text-lg: 1.125rem;
+  --lh-lg: 1.75rem;
+  --text-xl: 1.25rem;
+  --lh-xl: 1.75rem;
+  --text-2xl: 1.5rem;
+  --lh-2xl: 2rem;
+  --text-3xl: 1.875rem;
+  --lh-3xl: 2.25rem;
+  --text-4xl: 2.25rem;
+  --lh-4xl: 2.5rem;
+
+  /* ── Border Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* ── Layout ── */
+  --container-max: 1100px;
+  --header-height: 64px;
+  --sidebar-width: 340px;
+
+  /* ════════════════════════════════════════
+     Backward Compatibility Aliases
+     ════════════════════════════════════════ */
+  --bg-primary: var(--bg-page);
+  --bg-secondary: var(--bg-elevated);
+  --bg-dark: var(--bg-page);
+  --accent: var(--color-primary);
+  --accent-light: var(--color-primary-light);
+  --border: var(--border-light);
+  --white: var(--bg-surface);
+  --shadow: var(--shadow-md);
+  --radius: var(--radius-md);
+  --header-text: var(--text-primary);
 }
 
+/* ── Reset ── */
 * {
   margin: 0;
   padding: 0;
@@ -32,9 +93,10 @@ html {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-page);
   color: var(--text-primary);
-  line-height: 1.7;
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
   min-height: 100vh;
 }
 
@@ -55,65 +117,108 @@ img {
   flex-direction: column;
 }
 
+/* ── Layout ── */
 .container {
-  max-width: 1200px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-lg);
   width: 100%;
 }
 
 .main-content {
   flex: 1;
-  padding: 40px 0;
+  padding: var(--space-4xl) 0;
 }
 
-/* Utility Classes */
+/* ════════════════════════════════════════
+   Utility Classes
+   ════════════════════════════════════════ */
+/* Text */
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
-.text-accent { color: var(--accent); }
-.text-white { color: var(--white); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--color-primary); }
+.text-white { color: var(--bg-surface); }
 
-.bg-primary { background-color: var(--bg-primary); }
-.bg-secondary { background-color: var(--bg-secondary); }
-.bg-white { background-color: var(--white); }
-.bg-dark { background-color: var(--bg-dark); }
+/* Background */
+.bg-page { background-color: var(--bg-page); }
+.bg-surface { background-color: var(--bg-surface); }
+.bg-elevated { background-color: var(--bg-elevated); }
+.bg-primary-50 { background-color: var(--color-primary-50); }
+.bg-primary-100 { background-color: var(--color-primary-100); }
 
-.rounded { border-radius: var(--radius); }
+/* Border Radius */
 .rounded-sm { border-radius: var(--radius-sm); }
+.rounded { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-pill { border-radius: var(--radius-pill); }
 
-.shadow { box-shadow: 0 2px 12px var(--shadow); }
-.shadow-hover:hover { box-shadow: 0 8px 30px var(--shadow-hover); }
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-hover:hover { box-shadow: var(--shadow-hover); }
 
-/* ElMenu Custom */
+/* ── New Design Utilities ── */
+.pill {
+  border-radius: var(--radius-pill);
+}
+
+.card-base {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card-base:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+/* ════════════════════════════════════════
+   Element Plus Custom Overrides
+   (Component-level overrides that complement element-theme.css)
+   ════════════════════════════════════════ */
+
+/* ElMenu */
 .el-menu {
   border-bottom: none !important;
 }
 
 .el-menu--horizontal > .el-menu-item {
-  height: 64px;
-  line-height: 64px;
+  height: var(--header-height);
+  line-height: var(--header-height);
   color: var(--text-primary) !important;
   background: transparent !important;
 }
 
 .el-menu--horizontal > .el-menu-item:hover,
 .el-menu--horizontal > .el-menu-item.is-active {
-  background-color: rgba(58, 158, 150, 0.1) !important;
-  color: var(--accent) !important;
-  border-bottom-color: var(--accent) !important;
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-primary) !important;
 }
 
 .header-menu .el-menu {
   background-color: transparent !important;
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .container {
-    padding: 0 16px;
+    padding: 0 var(--space-md);
   }
 
   .main-content {
-    padding: 24px 0;
+    padding: var(--space-3xl) 0;
   }
 }

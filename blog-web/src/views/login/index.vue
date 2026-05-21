@@ -64,8 +64,9 @@ function loadRemember() {
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '登录失败')
+  } catch (error) {
+    const err = error as Error
+    ElMessage.error(err.message || '登录失败')
   } finally {
     loading.value = false
   }
@@ -85,10 +86,10 @@ onMounted(() => {
 
 <template>
   <div class="login-page">
-    <div class="login-bg"></div>
     <div class="login-container">
       <div class="login-card">
         <h1 class="login-title">登录</h1>
+        <p class="login-subtitle">欢迎回来</p>
 
         <el-form
           ref="loginFormRef"
@@ -103,6 +104,7 @@ onMounted(() => {
               placeholder="请输入用户名"
               size="large"
               prefix-icon="User"
+              class="pill-input"
             />
           </el-form-item>
 
@@ -114,14 +116,15 @@ onMounted(() => {
               size="large"
               prefix-icon="Lock"
               show-password
+              class="pill-input"
             />
           </el-form-item>
 
-          <el-form-item>
+          <el-form-item class="remember-item">
             <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
           </el-form-item>
 
-          <el-form-item>
+          <el-form-item class="submit-item">
             <el-button
               type="primary"
               size="large"
@@ -149,75 +152,79 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.login-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('https://images.unsplash.com/photo-1535747761923-a537e9c4b2d6?w=1920&q=80') no-repeat center center;
-  background-size: cover;
-  filter: blur(4px);
-  transform: scale(1.05);
-}
-
-.login-bg::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  background: var(--bg-page);
+  padding: var(--space-xl);
 }
 
 .login-container {
-  position: relative;
-  z-index: 1;
   width: 100%;
-  max-width: 400px;
-  padding: 0 20px;
+  max-width: 420px;
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
 }
 
 .login-title {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: var(--text-3xl);
+  font-weight: 700;
   text-align: center;
-  margin: 0 0 32px 0;
+  margin: 0 0 var(--space-xs) 0;
   color: var(--text-primary);
+}
+
+.login-subtitle {
+  font-size: var(--text-sm);
+  text-align: center;
+  margin: 0 0 var(--space-2xl) 0;
+  color: var(--text-muted);
 }
 
 .login-form {
   margin-bottom: 0;
 }
 
-.login-form :deep(.el-form-item__label) {
-  font-weight: 500;
+.login-form :deep(.el-form-item__error) {
+  font-size: var(--text-xs);
+  margin-top: var(--space-xs);
+}
+
+.login-form :deep(.el-form-item) {
+  margin-bottom: var(--space-lg);
+}
+
+.pill-input {
+  height: 48px;
+}
+
+.pill-input :deep(.el-input__wrapper) {
+  border-radius: var(--radius-pill);
+  height: 48px;
+}
+
+.remember-item :deep(.el-form-item__content) {
+  justify-content: flex-start;
+}
+
+.submit-item :deep(.el-form-item__content) {
+  justify-content: center;
 }
 
 .login-btn {
   width: 100%;
-  height: 44px;
-  font-size: 16px;
-  border-radius: 8px;
+  height: 48px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
 }
 
 .login-footer {
   text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
+  margin-top: var(--space-xl);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -234,11 +241,7 @@ onMounted(() => {
 
 @media (max-width: 480px) {
   .login-card {
-    padding: 32px 24px;
-  }
-
-  .login-title {
-    font-size: 24px;
+    padding: var(--space-2xl);
   }
 }
 </style>

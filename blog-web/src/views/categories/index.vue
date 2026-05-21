@@ -143,18 +143,17 @@ import { reactive } from 'vue'
 
 <style scoped>
 .categories-page {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: var(--space-3xl) var(--space-lg);
   min-height: 400px;
 }
 
 .page-header {
-  margin-bottom: 30px;
+  margin-bottom: var(--space-3xl);
 }
 
 .page-title {
-  font-size: 2rem;
+  font-size: var(--text-4xl);
   font-weight: 700;
   margin: 0;
   color: var(--text-primary);
@@ -162,7 +161,7 @@ import { reactive } from 'vue'
 
 .categories-layout {
   display: flex;
-  gap: 30px;
+  gap: var(--space-3xl);
 }
 
 .categories-sidebar {
@@ -171,20 +170,26 @@ import { reactive } from 'vue'
 }
 
 .sidebar-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 2px 12px var(--shadow);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-md);
   position: sticky;
-  top: 80px;
+  top: calc(var(--header-height) + var(--space-2xl));
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
 }
 
 .sidebar-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
+  margin: 0 0 var(--space-xl) 0;
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--color-primary);
   display: inline-block;
   color: var(--text-primary);
 }
@@ -199,34 +204,35 @@ import { reactive } from 'vue'
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin-bottom: 4px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-xs);
   cursor: pointer;
   transition: all 0.3s ease;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .category-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
 }
 
 .category-item.active {
-  background: var(--accent);
-  color: var(--white);
+  background: var(--color-primary);
+  color: var(--bg-surface);
 }
 
 .category-item.active .category-name {
-  color: var(--white);
+  color: var(--bg-surface);
 }
 
 .category-item.active :deep(.el-badge__content) {
   background: rgba(255, 255, 255, 0.3);
-  color: var(--white);
+  color: var(--bg-surface);
 }
 
 .category-name {
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 }
 
 .categories-main {
@@ -237,7 +243,7 @@ import { reactive } from 'vue'
 .article-loading {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-xl);
 }
 
 @media (max-width: 768px) {
@@ -254,7 +260,7 @@ import { reactive } from 'vue'
   }
 
   .page-title {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 }
 </style>

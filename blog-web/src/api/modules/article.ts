@@ -27,6 +27,7 @@ export interface ArticleListDTO {
   size?: number
   categoryId?: number
   tagId?: number
+  keyword?: string
 }
 
 export interface ArticleListItemVO {

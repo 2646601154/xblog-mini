@@ -19,58 +19,66 @@ const handleClick = (slug: string) => {
     <h3 class="sidebar-title">标签云</h3>
     <el-empty v-if="tags.length === 0" description="暂无标签" :image-size="60" />
     <div v-else class="tag-list">
-      <el-tag
+      <span
         v-for="tag in tags"
         :key="tag.id"
         class="tag-item"
-        type="info"
-        effect="plain"
         @click="handleClick(tag.slug)"
       >
         {{ tag.name }}
-      </el-tag>
+      </span>
     </div>
   </div>
 </template>
 
 <style scoped>
 .tag-cloud {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 2px 12px var(--shadow);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
 }
 
 .sidebar-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  display: inline-block;
+  margin-bottom: var(--space-xl);
   color: var(--text-primary);
 }
 
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .tag-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  background: transparent;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .tag-item:hover {
-  color: var(--accent);
-  background-color: var(--accent-light);
-  border-color: var(--accent);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.tag-item.selected {
+  border: 2px solid var(--text-primary);
+  background: var(--color-primary-100);
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
   .tag-cloud {
-    padding: 16px;
+    padding: var(--space-lg);
   }
 }
 </style>

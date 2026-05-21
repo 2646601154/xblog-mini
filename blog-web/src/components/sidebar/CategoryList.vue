@@ -41,65 +41,62 @@ const isActive = (slug: string) => {
 
 <style scoped>
 .category-list {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 2px 12px var(--shadow);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
   margin-bottom: 20px;
 }
 
 .sidebar-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  display: inline-block;
+  margin-bottom: var(--space-xl);
   color: var(--text-primary);
 }
 
 .list {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .category-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin-bottom: 4px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-xs);
+  margin-right: var(--space-sm);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: transparent;
 }
 
 .category-item:hover {
-  background: var(--bg-secondary);
-  padding-left: 16px;
+  background: var(--color-primary-50);
+  color: var(--color-primary);
 }
 
 .category-item.active {
-  background: var(--accent);
-  color: var(--white);
+  background: var(--color-primary);
+  color: white;
 }
 
 .category-item.active .category-name {
-  color: var(--white);
-}
-
-.category-item.active :deep(.el-badge__content) {
-  background: rgba(255, 255, 255, 0.3);
-  color: var(--white);
+  color: white;
 }
 
 .category-name {
-  font-size: 0.95rem;
-  color: var(--text-primary);
+  font-size: var(--text-sm);
+  color: inherit;
 }
 
 @media (max-width: 768px) {
   .category-list {
-    padding: 16px;
+    padding: var(--space-lg);
   }
 }
 </style>

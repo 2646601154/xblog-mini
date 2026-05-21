@@ -29,7 +29,7 @@ const registerForm = reactive<RegisterForm>({
   email: '',
 })
 
-const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+const validateConfirmPassword = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (value !== registerForm.password) {
     callback(new Error('确认密码与密码不一致'))
   } else {
@@ -83,8 +83,9 @@ async function handleRegister() {
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '注册失败')
+  } catch (error) {
+    const err = error as Error
+    ElMessage.error(err.message || '注册失败')
   } finally {
     loading.value = false
   }
@@ -112,10 +113,10 @@ function loadRemember() {
 
 <template>
   <div class="register-page">
-    <div class="register-bg"></div>
     <div class="register-container">
       <div class="register-card">
         <h1 class="register-title">注册</h1>
+        <p class="register-subtitle">创建你的账号</p>
 
         <el-form
           ref="registerFormRef"
@@ -127,18 +128,20 @@ function loadRemember() {
           <el-form-item prop="username">
             <el-input
               v-model="registerForm.username"
-              placeholder="请输入用户名 (3-20字符)"
+              placeholder="请输入用户名"
               size="large"
               prefix-icon="User"
+              class="pill-input"
             />
           </el-form-item>
 
           <el-form-item prop="nickname">
             <el-input
               v-model="registerForm.nickname"
-              placeholder="请输入昵称 (2-20字符)"
+              placeholder="请输入昵称"
               size="large"
               prefix-icon="UserFilled"
+              class="pill-input"
             />
           </el-form-item>
 
@@ -148,6 +151,7 @@ function loadRemember() {
               placeholder="请输入邮箱 (选填)"
               size="large"
               prefix-icon="Message"
+              class="pill-input"
             />
           </el-form-item>
 
@@ -155,10 +159,11 @@ function loadRemember() {
             <el-input
               v-model="registerForm.password"
               type="password"
-              placeholder="请输入密码 (至少6字符)"
+              placeholder="请输入密码"
               size="large"
               prefix-icon="Lock"
               show-password
+              class="pill-input"
             />
           </el-form-item>
 
@@ -170,10 +175,11 @@ function loadRemember() {
               size="large"
               prefix-icon="Lock"
               show-password
+              class="pill-input"
             />
           </el-form-item>
 
-          <el-form-item>
+          <el-form-item class="submit-item">
             <el-button
               type="primary"
               size="large"
@@ -201,75 +207,75 @@ function loadRemember() {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.register-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('https://images.unsplash.com/photo-1535747761923-a537e9c4b2d6?w=1920&q=80') no-repeat center center;
-  background-size: cover;
-  filter: blur(4px);
-  transform: scale(1.05);
-}
-
-.register-bg::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  background: var(--bg-page);
+  padding: var(--space-xl);
 }
 
 .register-container {
-  position: relative;
-  z-index: 1;
   width: 100%;
-  max-width: 400px;
-  padding: 0 20px;
+  max-width: 420px;
 }
 
 .register-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
 }
 
 .register-title {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: var(--text-3xl);
+  font-weight: 700;
   text-align: center;
-  margin: 0 0 32px 0;
+  margin: 0 0 var(--space-xs) 0;
   color: var(--text-primary);
+}
+
+.register-subtitle {
+  font-size: var(--text-sm);
+  text-align: center;
+  margin: 0 0 var(--space-2xl) 0;
+  color: var(--text-muted);
 }
 
 .register-form {
   margin-bottom: 0;
 }
 
-.register-form :deep(.el-form-item__label) {
-  font-weight: 500;
+.register-form :deep(.el-form-item__error) {
+  font-size: var(--text-xs);
+  margin-top: var(--space-xs);
+}
+
+.register-form :deep(.el-form-item) {
+  margin-bottom: var(--space-lg);
+}
+
+.pill-input {
+  height: 48px;
+}
+
+.pill-input :deep(.el-input__wrapper) {
+  border-radius: var(--radius-pill);
+  height: 48px;
+}
+
+.submit-item :deep(.el-form-item__content) {
+  justify-content: center;
 }
 
 .register-btn {
   width: 100%;
-  height: 44px;
-  font-size: 16px;
-  border-radius: 8px;
+  height: 48px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
 }
 
 .register-footer {
   text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
+  margin-top: var(--space-xl);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -286,11 +292,7 @@ function loadRemember() {
 
 @media (max-width: 480px) {
   .register-card {
-    padding: 32px 24px;
-  }
-
-  .register-title {
-    font-size: 24px;
+    padding: var(--space-2xl);
   }
 }
 </style>

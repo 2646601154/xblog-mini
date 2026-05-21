@@ -30,6 +30,16 @@ const router = createRouter({
       component: () => import('@/views/login/index.vue'),
     },
     {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/about/index.vue'),
+    },
+    {
+      path: '/archive',
+      name: 'archive',
+      component: () => import('@/views/archive/index.vue'),
+    },
+    {
       path: '/register',
       name: 'register',
       meta: { layout: 'blank' },
