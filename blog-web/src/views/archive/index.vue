@@ -43,7 +43,13 @@ const groupedArticles = computed<YearGroup[]>(() => {
     const sortedMonths = Array.from(monthMap.keys()).sort((a, b) => b - a)
     const months = new Map<number, ArticleListItemVO[]>()
     sortedMonths.forEach(month => {
-      months.set(month, monthMap.get(month)!)
+      const monthArticles = monthMap.get(month)!
+      // 按发布日期排序（新的在前）
+      monthArticles.sort((a, b) => {
+        if (!a.publishedAt || !b.publishedAt) return 0
+        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      })
+      months.set(month, monthArticles)
     })
     result.push({ year, months })
   })
