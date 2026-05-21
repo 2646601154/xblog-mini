@@ -1,6 +1,7 @@
 # blog-api 后端开发指南
 
-**Generated:** 2026-05-05
+**Generated:** 2026-05-20
+**Commit:** b9b11ed
 **父级**: `../AGENTS.md`
 
 ---
@@ -8,6 +9,18 @@
 ## API 开发指南
 
 本文档提供 Xblog-mini 后端 API 开发的详细指南。
+
+---
+
+## 技术栈
+
+- Java 17 + Spring Boot 3.5.14
+- MyBatis-Plus 3.5.15 + MySQL 8.0
+- Redis (spring-data-redis)
+- JWT (jjwt 0.12.6) + BCrypt (spring-security-crypto)
+- Lombok + fastjson2 2.0.52
+- 阿里云 OSS 3.18.5
+- Knife4j 4.4.0 + springdoc-openapi 2.8.4（API文档）
 
 ---
 
@@ -278,6 +291,15 @@ Page<Xxx> page = new Page<>(pageNum, pageSize);
 - `application.yml` 中 JWT secret 为占位值 `your-secret-key-change-in-production`，生产环境必须替换
 - `UserContext` 使用 ThreadLocal 存储当前用户信息，需在请求链路终点（如拦截器 `afterCompletion`）调用 `UserContext.clear()` 防止内存泄漏
 - 存在空的 `com.xblog.xblog` 包目录，可清理
+- `common.intercepter` 包名拼写错误（应为 `interceptor`），历史遗留
+
+## ANTI-PATTERNS（THIS PROJECT）
+
+- ❌ **不要**用 `catch (Exception e)` 吞原始异常（ArticleServiceImpl缓存/OssUtil共3处）
+- ❌ **不要**忘记分页null兜底：`int pageNum = dto.getPage() != null ? dto.getPage() : 1`
+- ❌ **不要**在循环内单独查询关联数据，用 `selectBatchIds` 批量查询
+- ❌ **不要**修改配置后忘记清理Redis缓存
+- ❌ **不要**忘记清理 ThreadLocal（`UserContext` 使用 ThreadLocal，拦截器 `afterCompletion` 中调用 `clear()`）
 
 ## 文档同步
 

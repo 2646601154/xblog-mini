@@ -69,8 +69,8 @@
 
 ```
 ┌─────────────────────────────────────┐
-│          微信小程序 / 支付宝小程序      │
-│           blog-uniapp               │
+│          微信小程序       │
+│                          │
 │                                     │
 │  ├── 文章列表 (分页加载)             │
 │  ├── 文章详情 (富文本展示)            │
@@ -483,7 +483,7 @@ CREATE TABLE config (
 
 ### 6.1 基础规范
 
-- **基础路径**：`/api/v1`
+- **基础路径**：`/v1`
 - **协议**：HTTP/HTTPS
 - **请求格式**：JSON (`Content-Type: application/json`)
 - **认证方式**：Bearer Token (JWT)
@@ -566,43 +566,43 @@ CREATE TABLE config (
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | /api/v1/articles | 文章列表（分页，仅已发布） |
-| GET | /api/v1/articles/{id} | 文章详情 |
-| GET | /api/v1/categories | 分类列表 |
-| GET | /api/v1/tags | 标签列表 |
-| GET | /api/v1/articles/{id}/comments | 评论列表（仅已审核） |
-| POST | /api/v1/auth/login | 用户登录 |
-| POST | /api/v1/auth/register | 用户注册 |
-| GET | /api/v1/configs | 获取系统配置（公开部分） |
+| GET | /v1/articles | 文章列表（分页，仅已发布） |
+| GET | /v1/articles/{id} | 文章详情 |
+| GET | /v1/categories | 分类列表 |
+| GET | /v1/tags | 标签列表 |
+| GET | /v1/articles/{id}/comments | 评论列表（仅已审核） |
+| POST | /v1/auth/login | 用户登录 |
+| POST | /v1/auth/register | 用户注册 |
+| GET | /v1/configs | 获取系统配置（公开部分） |
 
 #### 用户接口（需登录）
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | /api/v1/comments | 发表评论 |
-| GET | /api/v1/comments/my | 我的评论列表 |
-| PUT | /api/v1/comments/{id} | 编辑自己的评论 |
-| DELETE | /api/v1/comments/{id} | 删除自己的评论 |
+| POST | /v1/comments | 发表评论 |
+| GET | /v1/comments/my | 我的评论列表 |
+| PUT | /v1/comments/{id} | 编辑自己的评论 |
+| DELETE | /v1/comments/{id} | 删除自己的评论 |
 
 #### 管理接口（需管理员权限）
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| CRUD | /api/v1/admin/articles | 文章管理 |
-| PUT | /api/v1/admin/articles/{id}/publish | 发布文章 |
-| PUT | /api/v1/admin/articles/{id}/recycle | 移入回收站 |
-| PUT | /api/v1/admin/articles/{id}/restore | 恢复文章 |
-| DELETE | /api/v1/admin/articles/{id} | 彻底删除 |
-| GET | /api/v1/admin/articles/{id}/tags | 获取文章标签 |
-| POST | /api/v1/admin/articles/{id}/tags | 绑定文章标签 |
-| CRUD | /api/v1/admin/categories | 分类管理 |
-| CRUD | /api/v1/admin/tags | 标签管理 |
-| GET | /api/v1/admin/comments | 评论管理（全部） |
-| PUT | /api/v1/admin/comments/{id}/approve | 审核通过 |
-| PUT | /api/v1/admin/comments/{id}/reject | 审核驳回 |
-| CRUD | /api/v1/admin/users | 用户管理 |
-| GET | /api/v1/admin/configs | 获取所有配置 |
-| PUT | /api/v1/admin/configs | 更新配置 |
+| CRUD | /v1/admin/articles | 文章管理 |
+| PUT | /v1/admin/articles/{id}/publish | 发布文章 |
+| PUT | /v1/admin/articles/{id}/recycle | 移入回收站 |
+| PUT | /v1/admin/articles/{id}/restore | 恢复文章 |
+| DELETE | /v1/admin/articles/{id} | 彻底删除 |
+| GET | /v1/admin/articles/{id}/tags | 获取文章标签 |
+| POST | /v1/admin/articles/{id}/tags | 绑定文章标签 |
+| CRUD | /v1/admin/categories | 分类管理 |
+| CRUD | /v1/admin/tags | 标签管理 |
+| GET | /v1/admin/comments | 评论管理（全部） |
+| PUT | /v1/admin/comments/{id}/approve | 审核通过 |
+| PUT | /v1/admin/comments/{id}/reject | 审核驳回 |
+| CRUD | /v1/admin/users | 用户管理 |
+| GET | /v1/admin/configs | 获取所有配置 |
+| PUT | /v1/admin/configs | 更新配置 |
 
 ---
 

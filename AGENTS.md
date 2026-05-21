@@ -1,20 +1,22 @@
 # Xblog-mini PROJECT KNOWLEDGE BASE
 
 **Generated:** 2026-05-20
-**Branch:** api
+**Commit:** b9b11ed
+**Branch:** main
 
 ## OVERVIEW
 
-轻量级个人博客系统（MVP）。3模块：Java/Spring Boot后端 + Vue3前台 + Vue3管理后台。
+轻量级个人博客系统（MVP）。4模块：Java/Spring Boot后端 + Vue3前台 + Vue3管理后台 + uni-app微信小程序。
 
 ## STRUCTURE
 
 ```
 Xblog-mini/
-├── blog-api/          # Java 17 + Spring Boot 3.x 后端（105个Java文件，18个包）
-├── blog-web/          # Vue 3 + TypeScript + Vite 前台（Element Plus）
-├── blog-admin/        # Vue 3 + TypeScript + Vite 管理后台（Tailwind CSS v4）
-├── docker/            # Docker多阶段构建（api/web/admin/nginx各自独立Dockerfile）
+├── blog-api/          # Java 17 + Spring Boot 3.5.14 后端（117个Java文件，18个包）
+├── blog-web/          # Vue 3 + TypeScript + Vite 前台
+├── blog-admin/        # Vue 3 + TypeScript + Vite 管理后台
+├── blog-mobile/       # 微信小程序（原生App.js入口）
+├── docker/            # Docker 6服务编排（nginx-proxy/mysql/redis/api/web/admin）
 ├── doc/api/           # API接口文档
 ├── sql/               # 数据库初始化脚本
 ├── .github/workflows/ # GitHub Actions（空目录，待配置）
@@ -32,12 +34,14 @@ Xblog-mini/
 | 组件库 | `blog-web/src/components/` / `blog-admin/src/components/` | 复用组件 |
 | 业务错误码 | `blog-api/src/main/java/com/xblog/common/enums/ResultCode.java` | 错误码定义 |
 | 测试模式 | `blog-api/src/test/java/com/xblog/` | JUnit 5 + Spring Boot Test（覆盖率极低） |
+| 微信小程序 | `blog-mobile/` | 原生小程序，非Vue架构 |
+| Docker部署 | `docker/AGENTS.md` | 7服务编排 + SSL自动续期 |
 
 ## CODE MAP
 
 | Symbol | Type | Location | Hotspot |
 |--------|------|----------|---------|
-| `ArticleServiceImpl` | Service | `blog-api/.../service/impl/` | 494行，最大Service |
+| `ArticleServiceImpl` | Service | `blog-api/.../service/impl/` | 767行，最大Service |
 | `CommentServiceImpl` | Service | `blog-api/.../service/impl/` | 284行，N+1查询典范 |
 | `RedisUtil` | Util | `blog-api/.../common/util/` | 270行，Redis操作封装 |
 | `detail.vue` | Vue | `blog-web/src/views/article/` | 341行，文章详情页 |
@@ -52,17 +56,21 @@ Xblog-mini/
 - ❌ **不要**在委托后台探索任务后自行进行相同搜索——必须结束回复等待 `<system-reminder>`，再用 `background_output` 收集结果后再行动
 - ❌ **不要**在 `.env` 中使用弱密码或默认密码（Docker部署）
 - ❌ **不要**将 `dist-web/`、`dist-admin/`、`*.jar` 提交到Git（构建产物）
+- ❌ **不要**使用 `console.error` 记录生产日志（前端12+处违规）
+- ❌ **不要**用 `catch (Exception e)` 吞原始异常（OssUtil/ArticleServiceImpl共3处）
 
 ## UNIQUE STYLES
 
 - 后端入口类：`com.xblog.Main`（非典型命名）
-- 两套独立前端（blog-web/blog-admin），非workspace单仓库结构
+- 三套独立前端（blog-web/blog-admin/blog-mobile），非workspace单仓库结构
 - 后端无root聚合pom.xml，三模块独立构建
 - `blog-admin` 使用 Tailwind CSS v4 + `@tailwindcss/vite` 插件（`blog-web` 使用 Element Plus）
 - 前端无项目级 `.eslintrc` / `.prettierrc`（仅使用 IDE 默认规则）
 - 双Token机制：`accessToken` + `refreshToken` 分离存储与刷新
 - Token刷新队列：`refreshSubscribers` 数组订阅模式，多请求排队等待刷新完成
 - localStorage前缀：blog-web用 `xblog_`，blog-admin用 `admin_`
+- 包名拼写错误：`common.intercepter` 应为 `common.interceptor`（历史遗留）
+- 空包残留：`com.xblog.xblog` 和 `security/` 目录为空
 
 ## COMMANDS
 
@@ -93,6 +101,8 @@ mysql -u root -p < sql/test-data.sql
 - 数据库变更需同步 `sql/init.sql` 和 `doc/PRD.md`
 - `.github/workflows/` 目录存在但为空，无CI/CD配置
 - 测试覆盖率极低：仅3个测试类，前端无测试框架
+- SSL证书使用自定义Python脚本 `rainyun_certbot.py` + 雨云DNS API自动续期
+- `docker-compose.yml` 内嵌JWT_SECRET默认值（生产必须修改）
 
 ## 测试账号
 
