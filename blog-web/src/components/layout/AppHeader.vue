@@ -83,7 +83,7 @@ const handleCommand = (command: string) => {
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button type="primary" size="small" round @click="navigateTo('/login')">
+          <el-button type="primary" round @click="navigateTo('/login')">
             登录
           </el-button>
         </template>
