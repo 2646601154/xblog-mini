@@ -8,16 +8,19 @@ interface SocialLink {
 }
 
 withDefaults(defineProps<{
-  avatar?: string
   bio?: string
   socialLinks?: SocialLink[]
 }>(), {
-  avatar: 'https://via.placeholder.com/64',
   bio: '热爱技术与分享的全栈开发者',
   socialLinks: () => [
-    { icon: 'platform', url: 'https://github.com', label: 'GitHub' },
-    { icon: 'chat', url: 'https://twitter.com', label: 'Twitter' },
-    { icon: 'email', url: 'mailto:example@example.com', label: 'Email' }
+    // github
+    { icon: 'platform', url: 'https://home.xiaruoxin.cn', label: 'GitHub' },
+    // email
+    { icon: 'email', url: 'https://home.xiaruoxin.cn', label: 'Email' },
+    // bilibili
+    { icon: 'bilibili', url: 'https://home.xiaruoxin.cn', label: 'bilibili' }
+
+
   ]
 })
 
@@ -25,7 +28,8 @@ const getIconComponent = (icon: string) => {
   const iconMap: Record<string, unknown> = {
     platform: Platform,
     chat: ChatDotRound,
-    email: Message
+    email: Message,
+    bilibili: ChatDotRound
   }
   return iconMap[icon] || Message
 }
@@ -34,20 +38,13 @@ const getIconComponent = (icon: string) => {
 <template>
   <div class="about-me">
     <div class="avatar-wrapper">
-      <img :src="avatar" alt="Avatar" class="avatar" />
+      <img src="/avatar/LuoXiaohei.jpg" alt="Avatar" class="avatar" />
     </div>
     <h3 class="title">关于博主</h3>
     <p class="bio">{{ bio }}</p>
     <div class="social-links">
-      <a
-        v-for="link in socialLinks"
-        :key="link.label"
-        :href="link.url"
-        :title="link.label"
-        class="social-btn"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a v-for="link in socialLinks" :key="link.label" :href="link.url" :title="link.label" class="social-btn"
+        target="_blank" rel="noopener noreferrer">
         <el-icon :size="16">
           <component :is="getIconComponent(link.icon)" />
         </el-icon>

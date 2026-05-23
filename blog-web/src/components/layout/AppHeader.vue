@@ -50,26 +50,13 @@ const handleCommand = (command: string) => {
   <header class="header">
     <div class="header-container">
       <div class="logo" @click="navigateTo('/')">
-        <img
-          v-if="configStore.siteLogo"
-          :src="configStore.siteLogo"
-          :alt="configStore.siteTitle"
-          class="logo-image"
-        />
-        <template v-else>
-          <span class="logo-icon">{{ configStore.siteTitle[0] }}</span>
-          <span class="logo-text">{{ configStore.siteTitle }}</span>
-        </template>
+        <img src="/ico/xblog-mini.ico" class="logo-image" />
+        blog
       </div>
 
       <nav class="header-nav">
-        <router-link
-          v-for="item in navItems"
-          :key="item.path"
-          :to="item.path"
-          class="nav-link"
-          :class="{ 'nav-link--active': isActive(item.path) }"
-        >
+        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link"
+          :class="{ 'nav-link--active': isActive(item.path) }">
           {{ item.label }}
         </router-link>
       </nav>
@@ -107,23 +94,11 @@ const handleCommand = (command: string) => {
       </el-icon>
     </div>
 
-    <el-drawer
-      v-model="isMenuOpen"
-      direction="ttb"
-      :show-close="false"
-      :with-header="false"
-      size="auto"
-    >
+    <el-drawer v-model="isMenuOpen" direction="ttb" :show-close="false" :with-header="false" size="auto">
       <div class="mobile-menu">
         <div class="mobile-nav">
-          <router-link
-            v-for="item in navItems"
-            :key="item.path"
-            :to="item.path"
-            class="nav-link"
-            :class="{ 'nav-link--active': isActive(item.path) }"
-            @click="isMenuOpen = false"
-          >
+          <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-link"
+            :class="{ 'nav-link--active': isActive(item.path) }" @click="isMenuOpen = false">
             {{ item.label }}
           </router-link>
         </div>

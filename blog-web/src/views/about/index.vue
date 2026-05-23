@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { Platform, ChatDotRound, Message } from '@element-plus/icons-vue'
 import { useConfigStore } from '@/stores/config'
 import { getArticleList, getCategoryList, getTagList } from '@/api'
 
@@ -10,6 +11,22 @@ const stats = ref({
   categories: 0,
   tags: 0,
 })
+
+const socialLinks = [
+  { icon: 'platform', url: 'https://home.xiaruoxin.cn', label: 'GitHub' },
+  { icon: 'email', url: 'https://home.xiaruoxin.cn', label: 'Email' },
+  { icon: 'bilibili', url: 'https://home.xiaruoxin.cn', label: 'bilibili' },
+]
+
+const getIconComponent = (icon: string) => {
+  const iconMap: Record<string, unknown> = {
+    platform: Platform,
+    chat: ChatDotRound,
+    email: Message,
+    bilibili: ChatDotRound,
+  }
+  return iconMap[icon] || Message
+}
 
 async function loadStats() {
   try {
@@ -38,33 +55,23 @@ onMounted(() => {
     <div class="about-container">
       <!-- Hero Section -->
       <section class="hero">
-        <el-avatar
-          :size="120"
-          :src="configStore.siteLogo || undefined"
-          class="avatar"
-        >
-          <el-icon :size="60"><User /></el-icon>
-        </el-avatar>
+        <img
+          :src="configStore.siteLogo || '/avatar/LuoXiaohei.jpg'"
+          alt="Avatar"
+          class="hero-avatar"
+          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'"
+        />
         <h1 class="name">{{ configStore.siteTitle }}</h1>
         <p class="title">热爱技术与分享的全栈开发者</p>
         <div class="social-links">
-          <div class="social-item">
-            <el-button circle class="social-btn">
-              <el-icon><Platform /></el-icon>
-            </el-button>
-            <span class="social-label">GitHub</span>
-          </div>
-          <div class="social-item">
-            <el-button circle class="social-btn">
-              <el-icon><ChatDotRound /></el-icon>
-            </el-button>
-            <span class="social-label">Twitter</span>
-          </div>
-          <div class="social-item">
-            <el-button circle class="social-btn">
-              <el-icon><Message /></el-icon>
-            </el-button>
-            <span class="social-label">Email</span>
+          <div v-for="link in socialLinks" :key="link.label" class="social-item">
+            <a :href="link.url" :title="link.label"
+              class="social-btn" target="_blank" rel="noopener noreferrer">
+              <el-icon :size="18">
+                <component :is="getIconComponent(link.icon)" />
+              </el-icon>
+            </a>
+            <span class="social-label">{{ link.label }}</span>
           </div>
         </div>
       </section>
@@ -123,8 +130,14 @@ onMounted(() => {
   text-align: center;
 }
 
-.avatar {
+.hero-avatar {
+  display: block;
+  margin: 0 auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   border: 4px solid var(--color-primary-100);
+  object-fit: cover;
 }
 
 .name {
@@ -156,16 +169,21 @@ onMounted(() => {
 }
 
 .social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
   border-radius: var(--radius-pill);
   background: var(--bg-elevated);
-  border: none;
-  transition: background-color 0.2s;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .social-btn:hover {
   background: var(--color-primary-50);
+  color: var(--color-primary);
 }
 
 .social-label {

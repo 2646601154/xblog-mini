@@ -136,6 +136,7 @@ onMounted(() => {
             <span class="avatar-icon">✎</span>
           </div>
         </div>
+        <!-- TODO: 上传头像 -->
         <p class="avatar-hint">点击更换头像</p>
       </div>
 
@@ -174,34 +175,19 @@ onMounted(() => {
             <el-form @submit.prevent="handleChangePassword">
               <div class="form-group">
                 <label class="form-label">原密码</label>
-                <el-input
-                  v-model="passwordForm.oldPassword"
-                  type="password"
-                  show-password
-                  placeholder="输入原密码"
-                  class="pill-input"
-                />
+                <el-input v-model="passwordForm.oldPassword" type="password" show-password placeholder="输入原密码"
+                  class="pill-input" />
                 <p class="form-help">忘记原密码，请联系管理员</p>
               </div>
               <div class="form-group">
                 <label class="form-label">新密码</label>
-                <el-input
-                  v-model="passwordForm.newPassword"
-                  type="password"
-                  show-password
-                  placeholder="最少6位"
-                  class="pill-input"
-                />
+                <el-input v-model="passwordForm.newPassword" type="password" show-password placeholder="最少6位"
+                  class="pill-input" />
               </div>
               <div class="form-group">
                 <label class="form-label">确认密码</label>
-                <el-input
-                  v-model="passwordForm.confirmPassword"
-                  type="password"
-                  show-password
-                  placeholder="再次输入新密码"
-                  class="pill-input"
-                />
+                <el-input v-model="passwordForm.confirmPassword" type="password" show-password placeholder="再次输入新密码"
+                  class="pill-input" />
               </div>
               <el-button type="primary" :loading="passwordLoading" native-type="submit" class="save-btn">
                 修改密码
@@ -214,7 +200,9 @@ onMounted(() => {
         <el-tab-pane label="我的评论" name="comments">
           <div class="tab-content">
             <div v-if="commentLoading" class="loading-state">
-              <el-icon class="is-loading" :size="24"><Loading /></el-icon>
+              <el-icon class="is-loading" :size="24">
+                <Loading />
+              </el-icon>
               <span>加载中...</span>
             </div>
             <el-empty v-else-if="!comments.length" description="暂无评论" />
@@ -232,12 +220,8 @@ onMounted(() => {
                 <p class="comment-meta">{{ comment.createdAt }}</p>
               </div>
               <div class="pagination-wrapper" v-if="pagination.total > pagination.size">
-                <AppPagination
-                  v-model:current="pagination.current"
-                  :total="pagination.total"
-                  :page-size="pagination.size"
-                  @change="onPageChange"
-                />
+                <AppPagination v-model:current="pagination.current" :total="pagination.total"
+                  :page-size="pagination.size" @change="onPageChange" />
               </div>
             </div>
           </div>
