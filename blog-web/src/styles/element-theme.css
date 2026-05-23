@@ -67,6 +67,33 @@
 }
 
 /* ════════════════════════════════════════
+   Element Plus Dark Mode Overrides
+   ════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* ── Base Colors ── */
+  --el-bg-color: var(--bg-page);
+  --el-bg-color-overlay: var(--bg-surface);
+  --el-fill-color: var(--bg-elevated);
+  --el-fill-color-darker: var(--border-light);
+
+  /* ── Border ── */
+  --el-border-color-darker: var(--border-medium);
+  --el-border-color-extra-light: var(--border-light);
+
+  /* ── Disabled ── */
+  --el-text-color-disabled: #4A4A60;
+  --el-disabled-bg-color: var(--bg-elevated);
+  --el-disabled-border-color: var(--border-light);
+
+  /* ── Mask / Overlay ── */
+  --el-mask-color: rgba(0, 0, 0, 0.6);
+
+  /* ── White/Black Swap ── */
+  --el-color-white: var(--bg-surface);
+  --el-color-black: var(--text-primary);
+}
+
+/* ════════════════════════════════════════
    Component-Specific Overrides
    ════════════════════════════════════════ */
 

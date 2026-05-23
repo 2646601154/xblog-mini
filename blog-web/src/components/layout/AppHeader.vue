@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Menu } from '@element-plus/icons-vue'
+import { Menu, Sunny, Moon } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useConfigStore } from '@/stores/config'
+import { useThemeStore } from '@/stores/theme'
 import SearchInput from '@/components/common/SearchInput.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const configStore = useConfigStore()
+const themeStore = useThemeStore()
 const isMenuOpen = ref(false)
 
 const navItems = [
@@ -66,6 +68,12 @@ const handleCommand = (command: string) => {
       </div>
 
       <div class="header-auth">
+        <button class="theme-toggle" @click="themeStore.toggle()" :title="themeStore.theme === 'light' ? '切换暗色模式' : '切换亮色模式'">
+          <el-icon :size="18" class="theme-icon" :class="{ 'theme-icon--active': themeStore.theme === 'dark' }">
+            <Sunny v-if="themeStore.theme === 'light'" />
+            <Moon v-else />
+          </el-icon>
+        </button>
         <template v-if="authStore.isLoggedIn">
           <el-dropdown @command="handleCommand">
             <span class="user-info">
@@ -216,6 +224,33 @@ const handleCommand = (command: string) => {
   align-items: center;
   gap: var(--space-md);
   flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+}
+
+.theme-icon {
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.theme-icon--active {
+  transform: rotate(360deg);
 }
 
 .user-info {

@@ -9,6 +9,7 @@ import App from './App.vue'
 import router from './router'
 import { useAuthStore } from './stores/auth'
 import { useConfigStore } from './stores/config'
+import { useThemeStore } from './stores/theme'
 import '@/styles/main.css'
 
 const app = createApp(App)
@@ -26,5 +27,8 @@ authStore.initAuth()
 
 const configStore = useConfigStore()
 configStore.initConfig()
+
+const themeStore = useThemeStore()
+themeStore.init()
 
 app.mount('#app')
