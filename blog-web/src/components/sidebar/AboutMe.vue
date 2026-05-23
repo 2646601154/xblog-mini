@@ -40,7 +40,7 @@ const getIconComponent = (icon: string) => {
     <div class="avatar-wrapper">
       <img src="/avatar/LuoXiaohei.jpg" alt="Avatar" class="avatar" />
     </div>
-    <h3 class="title">关于博主</h3>
+    <h3 class="title">Xiaruoxin</h3>
     <p class="bio">{{ bio }}</p>
     <div class="social-links">
       <a v-for="link in socialLinks" :key="link.label" :href="link.url" :title="link.label" class="social-btn"

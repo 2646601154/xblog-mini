@@ -55,18 +55,13 @@ onMounted(() => {
     <div class="about-container">
       <!-- Hero Section -->
       <section class="hero">
-        <img
-          :src="configStore.siteLogo || '/avatar/LuoXiaohei.jpg'"
-          alt="Avatar"
-          class="hero-avatar"
-          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'"
-        />
-        <h1 class="name">{{ configStore.siteTitle }}</h1>
+        <img :src="configStore.siteLogo || '/avatar/LuoXiaohei.jpg'" alt="Avatar" class="hero-avatar"
+          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'" />
+        <h1 class="name">Xiaruoxin</h1>
         <p class="title">热爱技术与分享的全栈开发者</p>
         <div class="social-links">
           <div v-for="link in socialLinks" :key="link.label" class="social-item">
-            <a :href="link.url" :title="link.label"
-              class="social-btn" target="_blank" rel="noopener noreferrer">
+            <a :href="link.url" :title="link.label" class="social-btn" target="_blank" rel="noopener noreferrer">
               <el-icon :size="18">
                 <component :is="getIconComponent(link.icon)" />
               </el-icon>
