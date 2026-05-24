@@ -6,7 +6,7 @@
 
 ## OVERVIEW
 
-uni-app原生微信小程序，连接blog-api后端。非Vue架构，使用原生App.js入口。
+ir|微信小程序，连接blog-api后端。非Vue架构，使用原生App.js入口。
 
 ## STRUCTURE
 

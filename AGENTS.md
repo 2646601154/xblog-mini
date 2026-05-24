@@ -6,7 +6,7 @@
 
 ## OVERVIEW
 
-轻量级个人博客系统（MVP）。4模块：Java/Spring Boot后端 + Vue3前台 + Vue3管理后台 + uni-app微信小程序。
+wu|轻量级个人博客系统（MVP）。4模块：Java/Spring Boot后端 + Vue3前台 + Vue3管理后台 + 微信小程序。
 
 ## STRUCTURE
 
