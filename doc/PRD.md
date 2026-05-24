@@ -16,7 +16,7 @@
 |----|----------|
 | 前端展示端 | Vue 3 + TypeScript + Vite + Pinia + Vue Router |
 | 前端管理端 | Vue 3 + TypeScript + Vite + Element Plus |
-| 小程序端 | UniApp + Vue 3 |
+bv|| 小程序端 | 微信小程序 |
 | 后端服务 | Java 17 + Spring Boot 3.x + MyBatis-Plus |
 | 数据库 | MySQL 8.0 |
 | 缓存 | Redis 7.x |
@@ -655,7 +655,7 @@ CREATE TABLE config (
 | 用户管理 | `/users` | 用户列表 |
 | 系统配置 | `/settings` | 系统配置 |
 
-### 8.3 小程序端 (blog-uniapp)
+bb|### 8.3 小程序端 (blog-mobile)
 
 | 页面 | 说明 |
 |------|------|
@@ -699,7 +699,7 @@ Xblog-mini/
 │   ├── .env
 │   └── vite.config.ts
 │
-├── blog-uniapp/                   # 小程序端
+kk|├── blog-mobile/                   # 小程序端
 │   ├── src/
 │   │   ├── api/                   # API 请求封装
 │   │   ├── components/            # 公共组件
