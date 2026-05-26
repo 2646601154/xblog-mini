@@ -27,9 +27,6 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
         }
 
         PublicConfigVo vo = new PublicConfigVo();
-        vo.setSiteTitle(configMap.get("site_title"));
-        vo.setSiteLogo(configMap.get("site_logo"));
-        vo.setSiteDescription(configMap.get("site_description"));
         vo.setIcpNumber(configMap.get("icp_number"));
         vo.setCopyright(configMap.get("copyright"));
         return vo;

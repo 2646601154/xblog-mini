@@ -128,8 +128,7 @@ INSERT INTO `comment` (`article_id`, `user_id`, `content`, `status`, `created_at
 -- ============================================================
 
 INSERT INTO `config` (`config_key`, `config_value`, `description`) VALUES
-('site_title', 'Xblog - 我的技术博客', '网站标题'),
-('site_logo', 'https://picsum.photos/seed/logo/200/60', '网站 Logo'),
-('site_description', '一个分享技术、生活和感悟的个人博客', '网站描述'),
 ('icp_number', '京ICP备XXXXXXXX号', '备案号'),
-('copyright', '© 2026 Xblog. All rights reserved.', '版权信息');
+('copyright', '© 2026 Xblog. All rights reserved.', '版权信息'),
+('admin_username', 'admin', '管理员用户名'),
+('admin_password', '', '管理员密码(加密)');

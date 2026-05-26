@@ -3,14 +3,12 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Menu, Sunny, Moon } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
-import { useConfigStore } from '@/stores/config'
 import { useThemeStore } from '@/stores/theme'
 import SearchInput from '@/components/common/SearchInput.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const configStore = useConfigStore()
 const themeStore = useThemeStore()
 const isMenuOpen = ref(false)
 

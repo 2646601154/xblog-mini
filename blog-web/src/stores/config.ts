@@ -9,9 +9,6 @@ export const useConfigStore = defineStore('config', () => {
   const loaded = ref(false)
 
   // Getters
-  const siteTitle = computed(() => config.value?.siteTitle ?? 'Xblog')
-  const siteLogo = computed(() => config.value?.siteLogo ?? '')
-  const siteDescription = computed(() => config.value?.siteDescription ?? '')
   const icpNumber = computed(() => config.value?.icpNumber ?? '')
   const copyright = computed(() => config.value?.copyright ?? '')
 
@@ -36,9 +33,6 @@ export const useConfigStore = defineStore('config', () => {
     // State
     config,
     // Getters
-    siteTitle,
-    siteLogo,
-    siteDescription,
     icpNumber,
     copyright,
     // Actions

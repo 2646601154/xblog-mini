@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Platform, ChatDotRound, Message } from '@element-plus/icons-vue'
-import { useConfigStore } from '@/stores/config'
 import { getArticleList, getCategoryList, getTagList } from '@/api'
-
-const configStore = useConfigStore()
 
 const stats = ref({
   articles: 0,
@@ -55,7 +52,7 @@ onMounted(() => {
     <div class="about-container">
       <!-- Hero Section -->
       <section class="hero">
-        <img :src="configStore.siteLogo || '/avatar/LuoXiaohei.jpg'" alt="Avatar" class="hero-avatar"
+        <img src="/avatar/LuoXiaohei.jpg" alt="Avatar" class="hero-avatar"
           @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'" />
         <h1 class="name">Xiaruoxin</h1>
         <p class="title">热爱技术与分享的全栈开发者</p>
