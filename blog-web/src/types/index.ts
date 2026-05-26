@@ -71,9 +71,6 @@ export interface ApiResponse<T = any> {
 }
 
 export interface SiteConfig {
-  siteTitle: string
-  siteLogo: string
-  siteDescription: string
   icpNumber: string
   copyright: string
 }
