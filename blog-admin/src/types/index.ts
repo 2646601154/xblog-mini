@@ -169,3 +169,25 @@ export interface UserInfo {
   status: 'normal' | 'disabled'
   email?: string
 }
+
+export interface DashboardVo {
+  stats: {
+    articleCount: number
+    userCount: number
+    commentCount: number
+    categoryCount: number
+    tagCount: number
+  }
+  articleTrend: {
+    dates: string[]
+    counts: number[]
+  }
+  categoryDistribution: {
+    name: string
+    value: number
+  }[]
+  tagUsage: {
+    name: string
+    value: number
+  }[]
+}

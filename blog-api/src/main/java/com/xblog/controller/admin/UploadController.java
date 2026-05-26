@@ -21,9 +21,10 @@ public class UploadController {
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
-    public Result<String> upload(@RequestParam("file") MultipartFile file) {
-        log.info("上传文件, fileName={}", file.getOriginalFilename());
-        String url = ossUtil.uploadFile(file);
+    public Result<String> upload(@RequestParam("file") MultipartFile file,
+                                  @RequestParam(required = false, defaultValue = "common") String dir) {
+        log.info("上传文件, fileName={}, dir={}", file.getOriginalFilename(), dir);
+        String url = ossUtil.uploadFile(file, dir);
         return Result.success(url);
     }
 }
