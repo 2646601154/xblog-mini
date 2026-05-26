@@ -72,9 +72,8 @@ export interface UpdateProfileDTO {
   email?: string
 }
 
-// TODO 后端接口未实现
 export function updateProfile(data: UpdateProfileDTO): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.put('/v1/auth/me', data)
+  return request.put('/v1/users/profile', data)
 }
 
 // 修改密码
@@ -83,7 +82,6 @@ export interface ChangePasswordDTO {
   newPassword: string
 }
 
-// TODO 后端接口未实现
 export function changePassword(data: ChangePasswordDTO): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.put('/v1/auth/password', data)
+  return request.put('/v1/users/password', data)
 }

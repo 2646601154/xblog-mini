@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArticleDetail, createArticle, updateArticle, bindArticleTags, getCategoryList, getTagList } from '@/api'
+import { getArticleDetail, createArticle, updateArticle, bindArticleTags, getCategoryList, getTagList, uploadFile } from '@/api'
 import type { ArticleFormData, Category, Tag } from '@/types'
 import { ElMessage } from 'element-plus'
 import RichEditor from '@/components/rich-editor/RichEditor.vue'
@@ -18,6 +18,8 @@ const editorRef = ref()
 const isEditorFullscreen = ref(false)
 const categories = ref<Category[]>([])
 const allTags = ref<Tag[]>([])
+const coverUploading = ref(false)
+const coverPreviewUrl = computed(() => form.value.coverImage || '')
 const form = ref<ArticleFormData>({
   title: '',
   summary: '',
@@ -109,6 +111,42 @@ function handleFullscreenChange(isFullscreen: boolean) {
   isEditorFullscreen.value = isFullscreen
 }
 
+// ========== 封面图上传 ==========
+async function handleCoverUpload(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    ElMessage.error('仅支持 JPG、PNG、GIF、WebP 格式')
+    input.value = ''
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    ElMessage.error('图片大小不能超过 5MB')
+    input.value = ''
+    return
+  }
+
+  coverUploading.value = true
+  try {
+    const res = await uploadFile(file, 'article')
+    form.value.coverImage = res.data.data
+    ElMessage.success('封面上传成功')
+  } catch {
+    ElMessage.error('封面上传失败，请重试')
+  } finally {
+    coverUploading.value = false
+    input.value = ''
+  }
+}
+
+function removeCover() {
+  form.value.coverImage = ''
+}
+
 onMounted(() => {
   fetchCategories()
   fetchTags()
@@ -142,7 +180,35 @@ onMounted(() => {
               <el-input v-model="form.summary" type="textarea" :rows="2" placeholder="请输入文章摘要" />
             </el-form-item>
             <el-form-item label="封面图" prop="coverImage">
-              <el-input v-model="form.coverImage" placeholder="请输入封面图URL" />
+              <div class="space-y-2 w-full">
+                <!-- 预览图 -->
+                <div v-if="coverPreviewUrl" class="relative inline-block">
+                  <img :src="coverPreviewUrl" class="h-24 rounded object-cover" alt="封面预览" />
+                  <el-button
+                    type="danger"
+                    size="small"
+                    circle
+                    class="absolute -top-2 -right-2"
+                    @click="removeCover"
+                  >
+                    ✕
+                  </el-button>
+                </div>
+                <!-- 上传区域 -->
+                <div class="flex gap-2">
+                  <label class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-600 hover:border-blue-400 hover:text-blue-500 transition-colors">
+                    <el-icon v-if="coverUploading" class="is-loading mr-1" :size="14"><Loading /></el-icon>
+                    <span>{{ coverUploading ? '上传中...' : '选择图片' }}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      hidden
+                      @change="handleCoverUpload"
+                    />
+                  </label>
+                </div>
+                <el-input v-model="form.coverImage" placeholder="或直接输入封面图URL" />
+              </div>
             </el-form-item>
             <el-form-item label="分类" prop="categoryId">
               <el-select v-model="form.categoryId" placeholder="请选择分类" style="width: 100%">

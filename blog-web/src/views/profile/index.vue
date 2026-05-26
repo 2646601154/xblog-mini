@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { updateProfile, changePassword, getMyComments, type UpdateProfileDTO, type ChangePasswordDTO, type CommentMyVO } from '@/api'
+import { updateProfile, changePassword, getMyComments, uploadFile, type UpdateProfileDTO, type ChangePasswordDTO, type CommentMyVO } from '@/api'
 import { showSuccessMessage } from '@/utils/error'
 import { ElMessage } from 'element-plus'
 import AppPagination from '@/components/common/AppPagination.vue'
@@ -19,6 +19,8 @@ const profileForm = ref<UpdateProfileDTO>({
   email: authStore.userInfo?.email ?? '',
 })
 const profileLoading = ref(false)
+const avatarUploading = ref(false)
+const avatarInput = ref<HTMLInputElement | null>(null)
 
 async function handleUpdateProfile() {
   profileLoading.value = true
@@ -30,6 +32,46 @@ async function handleUpdateProfile() {
     ElMessage.error('更新失败，请重试')
   } finally {
     profileLoading.value = false
+  }
+}
+
+// ========== 头像上传 ==========
+function handleAvatarClick() {
+  avatarInput.value?.click()
+}
+
+async function handleAvatarFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  // 文件类型校验
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    ElMessage.error('仅支持 JPG、PNG、GIF、WebP 格式')
+    input.value = ''
+    return
+  }
+
+  // 文件大小校验（5MB）
+  if (file.size > 5 * 1024 * 1024) {
+    ElMessage.error('图片大小不能超过 5MB')
+    input.value = ''
+    return
+  }
+
+  avatarUploading.value = true
+  try {
+    const res = await uploadFile(file, 'avatar')
+    const avatarUrl = res.data.data
+    await updateProfile({ avatar: avatarUrl })
+    await authStore.fetchCurrentUser()
+    showSuccessMessage('头像更新成功')
+  } catch {
+    ElMessage.error('头像上传失败，请重试')
+  } finally {
+    avatarUploading.value = false
+    input.value = ''
   }
 }
 
@@ -128,15 +170,22 @@ onMounted(() => {
     <div class="profile-card">
       <!-- Avatar Section -->
       <div class="avatar-section">
-        <div class="avatar-wrapper">
+        <div class="avatar-wrapper" @click="handleAvatarClick">
           <el-avatar :size="80" :src="authStore.avatar" class="avatar">
             {{ authStore.nickname?.[0] || 'U' }}
           </el-avatar>
           <div class="avatar-overlay">
-            <span class="avatar-icon">✎</span>
+            <el-icon v-if="avatarUploading" class="is-loading" :size="24"><Loading /></el-icon>
+            <span v-else class="avatar-icon">✎</span>
           </div>
+          <input
+            ref="avatarInput"
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            hidden
+            @change="handleAvatarFileChange"
+          />
         </div>
-        <!-- TODO: 上传头像 -->
         <p class="avatar-hint">点击更换头像</p>
       </div>
 
