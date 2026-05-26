@@ -151,6 +151,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public ArticleVo getArticleDetail(Long id) {
+        // BUG-4: 公开详情接口每次访问会增加浏览量；管理端编辑请使用 getAdminArticleDetail
         String cacheKey = CACHE_KEY_DETAIL + id;
 
         // 1. 尝试读取缓存
@@ -373,6 +374,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         pageResult.setSize((int) resultPage.getSize());
 
         return pageResult;
+    }
+
+    @Override
+    public ArticleVo getAdminArticleDetail(Long id) {
+        Article article = getById(id);
+        if (article == null) {
+            throw new BusinessException(ResultCode.ARTICLE_NOT_FOUND);
+        }
+
+        List<ArticleVo> voList = convertToArticleVoList(Collections.singletonList(article));
+        ArticleVo vo = voList.get(0);
+        vo.setContent(article.getContent());
+        vo.setUpdatedAt(article.getUpdatedAt());
+        return vo;
     }
 
     @Override

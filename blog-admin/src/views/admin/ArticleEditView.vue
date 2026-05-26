@@ -161,18 +161,18 @@ onMounted(() => {
     </div>
 
     <el-card v-loading="loading">
-      <!-- 左栏：富文本编辑器 | 右栏：其他字段 -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" :class="{ 'fullscreen-mode': isEditorFullscreen }">
-        <!-- 左：内容编辑器 -->
-        <div class="lg:col-span-2">
-          <el-form-item label="内容" prop="content">
-            <RichEditor ref="editorRef" v-model="form.content" :height="600" @fullscreen-change="handleFullscreenChange" />
-          </el-form-item>
-        </div>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+        <!-- 左栏：富文本编辑器 | 右栏：其他字段 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" :class="{ 'fullscreen-mode': isEditorFullscreen }">
+          <!-- 左：内容编辑器 -->
+          <div class="lg:col-span-2">
+            <el-form-item label="内容" prop="content">
+              <RichEditor ref="editorRef" v-model="form.content" :height="600" @fullscreen-change="handleFullscreenChange" />
+            </el-form-item>
+          </div>
 
-        <!-- 右：其他字段 -->
-        <div v-show="!isEditorFullscreen" class="lg:col-span-1">
-          <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+          <!-- 右：其他字段 -->
+          <div v-show="!isEditorFullscreen" class="lg:col-span-1">
             <el-form-item label="标题" prop="title">
               <el-input v-model="form.title" placeholder="请输入文章标题" />
             </el-form-item>
@@ -232,9 +232,9 @@ onMounted(() => {
               </el-button>
               <el-button @click="handleCancel">取消</el-button>
             </el-form-item>
-          </el-form>
+          </div>
         </div>
-      </div>
+      </el-form>
     </el-card>
   </div>
 </template>

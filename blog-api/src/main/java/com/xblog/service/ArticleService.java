@@ -28,6 +28,8 @@ public interface ArticleService extends IService<Article> {
 
     PageResult<ArticleVo> getAdminArticlePage(AdminQueryArticleDto queryDto);
 
+    ArticleVo getAdminArticleDetail(Long id);
+
     ArticleCreateVo createArticle(ArticleCreateParam param);
 
     ArticleUpdateVo updateArticle(Long id, ArticleUpdateParam param);

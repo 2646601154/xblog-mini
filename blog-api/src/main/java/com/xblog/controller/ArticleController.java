@@ -46,7 +46,7 @@ public class ArticleController {
     }
 
     /**
-     * 获取文章详情
+     * 获取文章详情（仅已发布文章；每次访问会增加浏览量，管理端请使用 GET /v1/admin/articles/{id}）
      */
     @Operation(summary = "获取文章详情")
     @GetMapping("/{id}")

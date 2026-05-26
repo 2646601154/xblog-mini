@@ -45,6 +45,13 @@ public class ArticleController {
         return Result.success(articleService.getAdminArticlePage(queryDto));
     }
 
+    @Operation(summary = "获取文章详情（管理端）")
+    @GetMapping("/{id}")
+    public Result<ArticleVo> getAdminArticleDetail(@PathVariable Long id) {
+        log.info("获取文章详情（管理端）: {}", id);
+        return Result.success(articleService.getAdminArticleDetail(id));
+    }
+
     @Operation(summary = "创建文章")
     @PostMapping
     public Result<ArticleCreateVo> createArticle(@Valid @RequestBody ArticleCreateParam param) {

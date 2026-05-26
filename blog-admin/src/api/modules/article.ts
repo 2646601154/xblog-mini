@@ -17,7 +17,8 @@ export function getArticleList(params: ArticleQueryDTO): ArticleListResponse {
 }
 
 export function getArticleDetail(id: number): ArticleDetailResponse {
-  return request.get(`/v1/articles/${id}`)
+  // 管理端专用接口，支持 draft/recycled；勿改用公开 GET /v1/articles/{id}（BUG-4：公开接口每次请求会增加浏览量）
+  return request.get(`/v1/admin/articles/${id}`)
 }
 
 export function createArticle(data: ArticleFormData): Promise<{ data: { code: number; message: string; data: { id: number } } }> {
