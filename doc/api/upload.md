@@ -25,6 +25,8 @@ multipart/form-data
 | 参数 | 类型 | 位置 | 必填 | 说明 |
 |------|------|------|------|------|
 | file | File | Body | 是 | 文件 (支持图片等) |
+| dir  | String | Query | 否 | 存储目录，默认 `common`（如 `article`、`avatar`） |
+
 
 ### 响应 (成功)
 
@@ -32,6 +34,6 @@ multipart/form-data
 {
   "code": 200,
   "message": "success",
-  "data": "https://oss.example.com/uploads/xxx.jpg"
+  "data": "https://oss.example.com/article/2026/05/26/xxx.jpg"
 }
 ```

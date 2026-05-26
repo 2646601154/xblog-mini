@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Component
@@ -27,12 +29,23 @@ public class OssUtil {
     }
 
     /**
-     * 上传文件到 OSS
+     * 上传文件到 OSS（默认 common 目录）
      *
      * @param file 文件
      * @return 文件访问 URL
      */
     public String uploadFile(MultipartFile file) {
+        return uploadFile(file, "common");
+    }
+
+    /**
+     * 上传文件到 OSS 指定目录
+     *
+     * @param file 文件
+     * @param dir  存储目录（如 article、avatar）
+     * @return 文件访问 URL
+     */
+    public String uploadFile(MultipartFile file, String dir) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException(ResultCode.BAD_REQUEST, "文件不能为空");
         }
@@ -44,18 +57,21 @@ public class OssUtil {
         }
         String fileName = UUID.randomUUID().toString().replace("-", "") + ext;
 
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        String objectKey = dir + "/" + today + "/" + fileName;
+
         try (InputStream inputStream = file.getInputStream()) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             PutObjectRequest request = new PutObjectRequest(
-                    ossProperties.getBucketName(), fileName, inputStream, metadata);
+                    ossProperties.getBucketName(), objectKey, inputStream, metadata);
             ossClient.putObject(request);
         } catch (IOException e) {
             log.error("文件上传失败", e);
             throw new BusinessException(ResultCode.INTERNAL_ERROR, "文件上传失败");
         }
 
-        return ossProperties.getUrlPrefix() + "/" + fileName;
+        return ossProperties.getUrlPrefix() + "/" + objectKey;
     }
 
     /**

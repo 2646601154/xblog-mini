@@ -2,10 +2,6 @@ package com.xblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xblog.entity.Article;
-import com.xblog.entity.Category;
-import com.xblog.entity.Comment;
-import com.xblog.entity.Tag;
-import com.xblog.entity.User;
 import com.xblog.mapper.ArticleMapper;
 import com.xblog.mapper.CategoryMapper;
 import com.xblog.mapper.CommentMapper;
@@ -78,21 +74,31 @@ public class DashboardServiceImpl implements DashboardService {
     private ArticleTrendVo buildArticleTrend() {
         List<Map<String, Object>> rows = articleMapper.getArticleTrend();
         Map<String, Long> dateCountMap = new LinkedHashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
         for (Map<String, Object> row : rows) {
-            String date = (String) row.get("date");
+            Object dateObj = row.get("date");
+            LocalDate localDate;
+            if (dateObj instanceof java.sql.Date) {
+                localDate = ((java.sql.Date) dateObj).toLocalDate();
+            } else if (dateObj instanceof LocalDate) {
+                localDate = (LocalDate) dateObj;
+            } else {
+                continue;
+            }
             Long count = ((Number) row.get("count")).longValue();
-            dateCountMap.put(date, count);
+            String formattedDate = localDate.format(formatter);
+            dateCountMap.put(formattedDate, count);
         }
 
         // 补全最近7天的所有日期
         List<String> dates = new ArrayList<>();
         List<Long> counts = new ArrayList<>();
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
         for (int i = 6; i >= 0; i--) {
             LocalDate day = today.minusDays(i);
-            dates.add(day.format(formatter));
-            counts.add(dateCountMap.getOrDefault(day.toString(), 0L));
+            String formattedDate = day.format(formatter);
+            dates.add(formattedDate);
+            counts.add(dateCountMap.getOrDefault(formattedDate, 0L));
         }
 
         ArticleTrendVo trend = new ArticleTrendVo();
