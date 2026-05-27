@@ -6,6 +6,7 @@ import com.xblog.common.util.JwtUtil;
 import com.xblog.common.util.UserContext;
 import com.xblog.entity.Result;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,14 +35,14 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         // 1. 校验 header 格式
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            writeUnauthorized(response, "Token 无效");
+            writeUnauthorized(response, ResultCode.AUTH_TOKEN_INVALID.getCode(), "Token 无效");
             return false;
         }
 
         // 2. 提取 token
         String token = authHeader.substring(7);
         if (token.isEmpty()) {
-            writeUnauthorized(response, "Token 无效");
+            writeUnauthorized(response, ResultCode.AUTH_TOKEN_INVALID.getCode(), "Token 无效");
             return false;
         }
 
@@ -55,9 +56,13 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 4. 存入 UserContext
             UserContext.set(userId, username, role);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.warn("JWT token 已过期: {}", e.getMessage());
+            writeUnauthorized(response, ResultCode.AUTH_TOKEN_EXPIRED.getCode(), "Token 已过期");
+            return false;
         } catch (JwtException e) {
             log.warn("JWT token 校验失败: {}", e.getMessage());
-            writeUnauthorized(response, "Token 无效");
+            writeUnauthorized(response, ResultCode.AUTH_TOKEN_INVALID.getCode(), "Token 无效");
             return false;
         }
     }
@@ -69,11 +74,11 @@ public class JwtInterceptor implements HandlerInterceptor {
         UserContext.clear();
     }
 
-    private void writeUnauthorized(HttpServletResponse response, String message) throws Exception {
+    private void writeUnauthorized(HttpServletResponse response, int code, String message) throws Exception {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
         Result<Void> result = new Result<>();
-        result.setCode(ResultCode.AUTH_TOKEN_INVALID.getCode());
+        result.setCode(code);
         result.setMessage(message);
         response.getWriter().write(JSON.toJSONString(result));
     }

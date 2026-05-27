@@ -42,15 +42,6 @@ function showSessionExpiredDialog(message: string = '登录已过期，请重新
 
   isSessionExpiredDialogShown = true
 
-  // 先清除本地登录态
-  storage.clearAuth()
-  try {
-    const authStore = useAuthStore()
-    authStore.clearAuth()
-  } catch {
-    // useAuthStore 在 Pinia 未初始化时可能报错，忽略
-  }
-
   ElMessageBox.confirm(
     message,
     '会话过期',
@@ -64,10 +55,24 @@ function showSessionExpiredDialog(message: string = '登录已过期，请重新
     }
   )
     .then(() => {
+      // 用户选择跳转：清除登录态并跳转
+      storage.clearAuth()
+      try {
+        const authStore = useAuthStore()
+        authStore.clearAuth()
+      } catch {
+        // useAuthStore 在 Pinia 未初始化时可能报错，忽略
+      }
       window.location.href = '/login'
     })
     .catch(() => {
-      // 用户选择"保持此页"，不执行跳转
+      // 用户选择保持此页：仅清除内存态，保留 storage 以便后续恢复
+      try {
+        const authStore = useAuthStore()
+        authStore.clearAuth()
+      } catch {
+        // 忽略
+      }
     })
     .finally(() => {
       isSessionExpiredDialogShown = false
@@ -91,7 +96,7 @@ async function doRefreshToken(): Promise<string | null> {
   if (!refreshToken) return null
 
   try {
-    const res = await axios.post(`${baseURL}/api/v1/auth/refresh`, {
+    const res = await request.post('/v1/auth/refresh', {
       refreshToken,
     })
     if (res.data.code === 200) {
