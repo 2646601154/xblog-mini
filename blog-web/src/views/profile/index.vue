@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { updateProfile, changePassword, getMyComments, uploadFile, type UpdateProfileDTO, type ChangePasswordDTO, type CommentMyVO } from '@/api'
+import { updateProfile, changePassword, getMyComments, uploadFile, type UpdateProfileParams, type ChangePasswordParams, type CommentMyVO } from '@/api'
 import { showSuccessMessage } from '@/utils/error'
 import { ElMessage } from 'element-plus'
 import AppPagination from '@/components/common/AppPagination.vue'
@@ -14,7 +14,7 @@ const router = useRouter()
 const activeTab = ref('profile')
 
 // ========== Tab 1 - 编辑资料 ==========
-const profileForm = ref<UpdateProfileDTO>({
+const profileForm = ref<UpdateProfileParams>({
   nickname: authStore.userInfo?.nickname ?? '',
   email: authStore.userInfo?.email ?? '',
 })
@@ -99,7 +99,7 @@ async function handleChangePassword() {
   }
   passwordLoading.value = true
   try {
-    const data: ChangePasswordDTO = {
+    const data: ChangePasswordParams = {
       oldPassword: passwordForm.value.oldPassword,
       newPassword: passwordForm.value.newPassword,
     }

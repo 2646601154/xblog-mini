@@ -6,8 +6,8 @@ import {
   refreshToken as apiRefreshToken,
   logout as apiLogout,
   getCurrentUser,
-  type LoginDTO,
-  type RegisterDTO,
+  type LoginParams,
+  type RegisterParams,
   type UserInfo,
 } from '@/api'
 import { storage } from '@/utils/storage'
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
   const avatar = computed(() => userInfo.value?.avatar || '')
 
   // Actions
-  async function login(credentials: LoginDTO): Promise<boolean> {
+  async function login(credentials: LoginParams): Promise<boolean> {
     try {
       const res = await apiLogin(credentials)
       const { accessToken, refreshToken: newRefreshToken } = res.data.data
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function register(data: RegisterDTO): Promise<boolean> {
+  async function register(data: RegisterParams): Promise<boolean> {
     try {
       await apiRegister(data)
       showSuccessMessage('注册成功，请登录')
