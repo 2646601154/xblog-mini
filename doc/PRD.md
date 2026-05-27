@@ -145,16 +145,18 @@ bv|| 小程序端 | 微信小程序 |
 
 #### 4.1.3 富文本编辑器
 
-- **选型**：Tiptap 2.x
+- **选型**：wangEditor 5.x
 - **功能**：
-  - 标题 (H1-H3)
-  - 粗体、斜体、删除线
+  - 标题 (H1-H6)
+  - 粗体、斜体、下划线、删除线
   - 有序/无序列表
   - 引用块
   - 代码块 (支持语法高亮)
   - 图片上传 (直接上传至 OSS)
   - 链接
   - 水平分割线
+  - 表格插入
+  - 文字颜色/背景色
 
 ### 4.2 评论模块
 
@@ -568,11 +570,17 @@ CREATE TABLE config (
 |------|------|------|
 | GET | /v1/articles | 文章列表（分页，仅已发布） |
 | GET | /v1/articles/{id} | 文章详情 |
+| GET | /v1/articles/{id}/prev-next | 文章上下篇 |
+| GET | /v1/articles/{id}/tags | 文章标签 |
 | GET | /v1/categories | 分类列表 |
+| GET | /v1/categories/{slug} | 分类详情（按 slug） |
 | GET | /v1/tags | 标签列表 |
 | GET | /v1/articles/{id}/comments | 评论列表（仅已审核） |
 | POST | /v1/auth/login | 用户登录 |
 | POST | /v1/auth/register | 用户注册 |
+| POST | /v1/auth/logout | 用户登出 |
+| GET | /v1/auth/me | 获取当前登录用户信息 |
+| POST | /v1/auth/refresh | 刷新 Token |
 | GET | /v1/configs | 获取系统配置（公开部分） |
 
 #### 用户接口（需登录）
@@ -583,6 +591,8 @@ CREATE TABLE config (
 | GET | /v1/comments/my | 我的评论列表 |
 | PUT | /v1/comments/{id} | 编辑自己的评论 |
 | DELETE | /v1/comments/{id} | 删除自己的评论 |
+| PUT | /v1/users/profile | 修改个人资料 |
+| PUT | /v1/users/password | 修改密码 |
 
 #### 管理接口（需管理员权限）
 
@@ -599,10 +609,19 @@ CREATE TABLE config (
 | CRUD | /v1/admin/tags | 标签管理 |
 | GET | /v1/admin/comments | 评论管理（全部） |
 | PUT | /v1/admin/comments/{id}/approve | 审核通过 |
+| DELETE | /v1/admin/comments/{id} | 删除评论 |
 | PUT | /v1/admin/comments/{id}/reject | 审核驳回 |
 | CRUD | /v1/admin/users | 用户管理 |
+| PUT | /v1/admin/users/{id}/disable | 禁用用户 |
+| PUT | /v1/admin/users/{id}/enable | 启用用户 |
+| PUT | /v1/admin/users/{id}/reset-password | 重置用户密码 |
 | GET | /v1/admin/configs | 获取所有配置 |
+| GET | /v1/admin/configs/{key} | 获取单个配置 |
 | PUT | /v1/admin/configs | 更新配置 |
+| POST | /v1/admin/upload | 文件上传（OSS） |
+| GET | /v1/admin/dashboard | 仪表盘统计数据 |
+| GET | /v1/admin/media | 图片/媒体列表 |
+| DELETE | /v1/admin/media | 删除媒体文件 |
 
 ---
 
@@ -614,11 +633,11 @@ CREATE TABLE config (
 |----------|------|----------|------|
 | `article:list:{page}:{size}` | 文章列表 | 5 分钟 | 分页缓存 |
 | `article:detail:{id}` | 文章详情 | 10 分钟 | 单篇文章缓存 |
-| `category:list` | 分类列表 | 30 分钟 | 全量分类缓存 |
-| `tag:list` | 标签列表 | 30 分钟 | 全量标签缓存 |
 | `config:{key}` | 单个配置项 | 1 小时 | 配置缓存 |
 | `user:token:{userId}` | 用户登录态 | 7 天 | JWT Token 存储 |
 | `blacklist:token:{token}` | Token 黑名单 | 至 Token 过期 | 登出黑名单 |
+| `article:tags:{id}` | 文章标签 | 60 分钟 | 单篇文章的标签列表缓存 |
+| `article:view:{id}` | 浏览量去重 | 24 小时 | 基于 Redis Set 防止同一用户重复计数 |
 
 ### 7.2 缓存更新策略
 
@@ -636,10 +655,12 @@ CREATE TABLE config (
 |------|------|------|
 | 首页 | `/` | 文章列表 + 分类侧边栏 + 标签云 |
 | 文章详情 | `/article/:id` | 文章正文 + 评论区 |
-| 分类页 | `/category/:slug` | 分类下的文章列表 |
-| 标签页 | `/tag/:slug` | 标签下的文章列表 |
+| 分类页 | `/categories/:slug` | 分类下的文章列表 |
+| 归档页 | `/archive` | 按时间线归档文章 |
+| 关于页 | `/about` | 网站及博主信息 |
 | 登录页 | `/login` | 用户登录 |
 | 注册页 | `/register` | 用户注册 |
+| 个人中心 | `/profile` | 修改个人资料、修改密码（需登录） |
 
 ### 8.2 前端管理端 (blog-admin)
 
@@ -653,15 +674,20 @@ CREATE TABLE config (
 | 标签管理 | `/tags` | 标签 CRUD |
 | 评论管理 | `/comments` | 评论审核 |
 | 用户管理 | `/users` | 用户列表 |
-| 系统配置 | `/settings` | 系统配置 |
+| 系统配置 | `/config` | 系统配置 |
+| 媒体管理 | `/media` | 图片/媒体文件管理 |
 
-bb|### 8.3 小程序端 (blog-mobile)
+### 8.3 小程序端 (blog-mobile)
 
 | 页面 | 说明 |
 |------|------|
 | 首页 | 文章列表（支持下拉刷新/上拉加载） |
 | 文章详情 | 文章正文 + 评论区（仅查看） |
 | 分类列表 | 分类筛选 |
+| 标签/搜索 | 按标签筛选或关键词搜索 |
+| 我的 | 个人中心（登录态管理、个人信息） |
+| 登录页 | 用户登录 |
+| 注册页 | 用户注册 |
 | 关于页 | 网站信息 |
 
 ---
@@ -875,4 +901,4 @@ volumes:
 
 ---
 
-*最后更新：2026-04-27*
+*最后更新：2026-05-27*
