@@ -10,11 +10,11 @@ import com.xblog.entity.Tag;
 import com.xblog.mapper.ArticleTagMapper;
 import com.xblog.mapper.TagMapper;
 import com.xblog.service.TagService;
+import com.xblog.common.util.RedisUtil;
 import com.xblog.vo.TagAdminVo;
 import com.xblog.vo.TagVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
 
     @Resource
     private ArticleTagMapper articleTagMapper;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public List<TagVo> getPublicTagList() {
@@ -86,6 +88,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         tag.setName(param.getName());
         tag.setSlug(param.getSlug());
         updateById(tag);
+        // 清理文章标签缓存
+        redisUtil.deleteByPatternNonBlocking("article:tags:*");
+        redisUtil.deleteByPatternNonBlocking("article:list:*");
 
         TagVo updateVo = new TagVo();
         updateVo.setId(tag.getId());
@@ -107,5 +112,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         articleTagMapper.delete(wrapper);
 
         removeById(id);
+        // 清理文章标签缓存和文章列表缓存
+        redisUtil.deleteByPatternNonBlocking("article:tags:*");
+        redisUtil.deleteByPatternNonBlocking("article:list:*");
     }
 }

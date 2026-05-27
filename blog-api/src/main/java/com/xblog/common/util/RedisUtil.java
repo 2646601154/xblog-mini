@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -85,13 +86,68 @@ public class RedisUtil {
      *
      * @param pattern 匹配模式（如 "article:list:*"）
      * @return 删除数量
+     * @deprecated 使用 {@link #deleteByPatternNonBlocking(String)} 替代
      */
+    @Deprecated
     public long deleteByPattern(String pattern) {
         Set<String> keys = redisTemplate.keys(pattern);
+        if (keys == null || keys.isEmpty()) {
+            return 0;
+        }
+        return redisTemplate.delete(keys);
+    }
+
+    /**
+     * 按模式删除（基于 SCAN 命令匹配，非阻塞）
+     * <p>
+     * 使用 SCAN 命令迭代匹配的 key，避免 KEYS 命令的阻塞问题。
+     * 适用于高频缓存清理场景。
+     * </p>
+     *
+     * @param pattern 匹配模式（如 "article:list:*"）
+     * @return 删除数量
+     */
+    public long deleteByPatternNonBlocking(String pattern) {
+        Set<String> keys = scanForKeys(pattern);
         if (keys.isEmpty()) {
             return 0;
         }
         return redisTemplate.delete(keys);
+    }
+
+    /**
+     * 按模式查找 key（基于 SCAN 命令，非阻塞）
+     * <p>
+     * 使用 SCAN 命令迭代匹配的 key，避免 KEYS 命令的阻塞问题。
+     * </p>
+     *
+     * @param pattern 匹配模式（如 "refresh_token:123:*"）
+     * @return 匹配的 key 集合
+     */
+    public Set<String> scanKeys(String pattern) {
+        return scanForKeys(pattern);
+    }
+
+    /**
+     * 基于 SCAN 命令查找匹配的 key 集合（内部共用）
+     */
+    private Set<String> scanForKeys(String pattern) {
+        Set<String> keys = new HashSet<>();
+        redisTemplate.execute((org.springframework.data.redis.core.RedisCallback<Void>) connection -> {
+            try (org.springframework.data.redis.core.Cursor<byte[]> cursor = connection.scan(
+                    org.springframework.data.redis.core.ScanOptions.scanOptions()
+                            .match(pattern)
+                            .count(100)
+                            .build())) {
+                while (cursor.hasNext()) {
+                    keys.add(new String(cursor.next(), java.nio.charset.StandardCharsets.UTF_8));
+                }
+            } catch (Exception e) {
+                log.warn("SCAN cursor close failed", e);
+            }
+            return null;
+        });
+        return keys;
     }
 
     /**
@@ -308,6 +364,6 @@ public class RedisUtil {
                 java.util.Collections.singletonList(key),
                 value
         );
-        return result > 0;
+        return result != null && result > 0;
     }
 }

@@ -88,7 +88,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         redisUtil.set(rtKey, rtValue, 7, TimeUnit.DAYS);
         // 6.5 添加反向索引（uuid -> key），用于快速查找 RT key
         redisTemplate.opsForHash().put("rt_uuid_map", refreshTokenUuid, rtKey);
-
+        redisTemplate.expire("rt_uuid_map", 7, TimeUnit.DAYS);
         // 7. 组装响应
         TokenVo tokenVo = new TokenVo();
         tokenVo.setAccessToken(accessToken);
@@ -103,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long userId = UserContext.getUserId();
         log.info("用户登出, userId={}", userId);
         // 查找该用户所有 RT 的 key
-        Set<String> rtKeys = redisTemplate.keys("refresh_token:" + userId + ":*");
+        Set<String> rtKeys = redisUtil.scanKeys("refresh_token:" + userId + ":*");
         if (rtKeys != null && !rtKeys.isEmpty()) {
             // 删除所有 RT
             redisTemplate.delete(rtKeys);
