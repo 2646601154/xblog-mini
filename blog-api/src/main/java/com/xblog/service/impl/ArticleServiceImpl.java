@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xblog.common.enums.ResultCode;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.common.util.IpUtil;
+import com.xblog.common.util.OssUtil;
 import com.xblog.common.util.RedisUtil;
 import com.xblog.common.util.PageUtil;
 import com.xblog.common.util.UserContext;
@@ -19,6 +20,8 @@ import com.xblog.service.ArticleService;
 import com.xblog.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private final ArticleTagMapper articleTagMapper;
     private final RedisUtil redisUtil;
     private final IpUtil ipUtil;
+    private final OssUtil ossUtil;
 
     // ============================= Cache Constants ============================
 
@@ -50,13 +54,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                               TagMapper tagMapper,
                               ArticleTagMapper articleTagMapper,
                               RedisUtil redisUtil,
-                              IpUtil ipUtil) {
+                              IpUtil ipUtil,
+                              OssUtil ossUtil) {
         this.categoryMapper = categoryMapper;
         this.userMapper = userMapper;
         this.tagMapper = tagMapper;
         this.articleTagMapper = articleTagMapper;
         this.redisUtil = redisUtil;
         this.ipUtil = ipUtil;
+        this.ossUtil = ossUtil;
     }
 
     @Override
@@ -496,6 +502,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setTitle(param.getTitle());
         article.setSummary(param.getSummary());
         article.setContent(param.getContent());
+
+        // 清理旧封面图（OSS 上的旧图片）
+        String oldCoverImage = article.getCoverImage();
+        if (StringUtils.hasText(oldCoverImage) && !oldCoverImage.equals(param.getCoverImage())) {
+            deleteOssImageIfExists(oldCoverImage);
+        }
         article.setCoverImage(param.getCoverImage());
         article.setCategoryId(param.getCategoryId());
         if (param.getStatus() != null && ("draft".equals(param.getStatus()) || "published".equals(param.getStatus()))) {
@@ -684,6 +696,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     return vo;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 如果图片 URL 来自 OSS，则从 OSS 删除
+     */
+    private void deleteOssImageIfExists(String imageUrl) {
+        try {
+            ossUtil.deleteFile(imageUrl);
+            log.debug("旧 OSS 图片已删除: {}", imageUrl);
+        } catch (Exception e) {
+            log.warn("删除旧 OSS 图片失败（非 OSS 图片将忽略）: {}", imageUrl);
+        }
     }
 
     private List<ArticleVo> convertToArticleVoList(List<Article> articles) {

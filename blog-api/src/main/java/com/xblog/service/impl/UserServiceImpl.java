@@ -8,6 +8,7 @@ import com.xblog.common.properties.JwtProperties;
 import com.xblog.common.util.UserContext;
 import com.xblog.common.util.JwtUtil;
 import com.xblog.common.util.PageUtil;
+import com.xblog.common.util.OssUtil;
 import com.xblog.common.util.RedisUtil;
 import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
@@ -44,12 +45,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final RedisUtil redisUtil;
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final OssUtil ossUtil;
 
-    public UserServiceImpl(JwtUtil jwtUtil, RedisUtil redisUtil, JwtProperties jwtProperties, RedisTemplate<String, Object> redisTemplate) {
+    public UserServiceImpl(JwtUtil jwtUtil, RedisUtil redisUtil, JwtProperties jwtProperties, RedisTemplate<String, Object> redisTemplate, OssUtil ossUtil) {
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
         this.jwtProperties = jwtProperties;
         this.redisTemplate = redisTemplate;
+        this.ossUtil = ossUtil;
     }
 
     @Override
@@ -291,6 +294,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setNickname(param.getNickname());
         }
         if (StringUtils.hasText(param.getAvatar())) {
+            // 清理旧头像（OSS 上的旧图片）
+            String oldAvatar = user.getAvatar();
+            if (StringUtils.hasText(oldAvatar) && !oldAvatar.equals(param.getAvatar())) {
+                try {
+                    ossUtil.deleteFile(oldAvatar);
+                    log.debug("旧 OSS 头像已删除: {}", oldAvatar);
+                } catch (Exception e) {
+                    log.warn("删除旧 OSS 头像失败（非 OSS 图片将忽略）: {}", oldAvatar);
+                }
+            }
             user.setAvatar(param.getAvatar());
         }
         if (StringUtils.hasText(param.getEmail())) {
