@@ -1,8 +1,8 @@
 import request from "../request";
-import type { DashboardVo } from "@/types";
+import type { Dashboard } from "@/types";
 
 export type DashboardResponse = Promise<{
-  data: { code: number; message: string; data: DashboardVo };
+  data: { code: number; message: string; data: Dashboard };
 }>;
 
 export function getDashboard(): DashboardResponse {

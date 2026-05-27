@@ -1,7 +1,7 @@
 import request from "../request";
 import type { ArticleListItem, ArticleFormData, PageResult } from "@/types";
 
-export interface ArticleQueryDTO {
+export interface ArticleQuery {
   page?: number;
   size?: number;
   status?: string;
@@ -16,7 +16,7 @@ export type ArticleDetailResponse = Promise<{
   data: { code: number; message: string; data: any };
 }>;
 
-export function getArticleList(params: ArticleQueryDTO): ArticleListResponse {
+export function getArticleList(params: ArticleQuery): ArticleListResponse {
   return request.get("/v1/admin/articles", { params });
 }
 
