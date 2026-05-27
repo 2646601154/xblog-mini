@@ -72,6 +72,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/admin/ConfigView.vue'),
         meta: { title: '系统配置' },
       },
+      {
+        path: 'media',
+        name: 'Media',
+        component: () => import('@/views/admin/MediaView.vue'),
+        meta: { title: '图片管理' },
+      },
     ],
   },
 ]

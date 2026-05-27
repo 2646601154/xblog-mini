@@ -170,6 +170,14 @@ export interface UserInfo {
   email?: string
 }
 
+export interface MediaImage {
+  url: string
+  type: 'cover' | 'avatar'
+  sourceName: string
+  sourceId: number
+  oss: boolean
+}
+
 export interface DashboardVo {
   stats: {
     articleCount: number

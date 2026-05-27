@@ -1,0 +1,32 @@
+# Codemap Generation Report
+# Generated: 2026-05-27
+
+## Status: INITIAL GENERATION
+Previous codemaps: NONE (first run)
+
+## Files Scanned
+- Java source files: 83
+- Frontend (Vue) files: ~80 (blog-admin + blog-web)
+- WeChat mini-program: ~20
+
+## Generated Files
+- docs/CODEMAPS/architecture.md       (~600 tokens)
+- docs/CODEMAPS/backend.md            (~800 tokens)
+- docs/CODEMAPS/data.md               (~600 tokens)
+- docs/CODEMAPS/frontend.md           (~700 tokens)
+- docs/CODEMAPS/dependencies.md       (~300 tokens)
+
+## Architecture Summary
+- Type: Monorepo (1 API + 3 frontends)
+- Backend: Spring Boot 3.x, MyBatis-Plus, MySQL, Redis
+- Frontend: Vue 3, Element Plus, WeChat Mini Program
+- Auth: JWT (Access + Refresh Token), BCrypt
+
+## New Dependencies Detected
+- None (initial scan)
+
+## Architecture Changes
+- None (initial scan)
+
+## Staleness Warnings
+- None (initial scan)

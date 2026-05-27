@@ -15,6 +15,7 @@ const menuItems = [
   { path: '/admin/tags', icon: 'PriceTag', title: '标签管理' },
   { path: '/admin/comments', icon: 'ChatDotSquare', title: '评论管理' },
   { path: '/admin/config', icon: 'Setting', title: '系统配置' },
+  { path: '/admin/media', icon: 'Picture', title: '图片管理' },
 ]
 
 function toggleSidebar() {

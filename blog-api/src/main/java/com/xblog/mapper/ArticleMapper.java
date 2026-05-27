@@ -17,4 +17,19 @@ public interface ArticleMapper extends BaseMapper<Article> {
         ORDER BY date
     """)
     java.util.List<java.util.Map<String, Object>> getArticleTrend();
+
+    @Select("""
+        SELECT id AS sourceId, title AS sourceName, cover_image AS url
+        FROM article
+        WHERE cover_image IS NOT NULL AND cover_image != ''
+        ORDER BY id DESC
+    """)
+    java.util.List<com.xblog.vo.MediaImageVo> getCoverImages();
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM article
+        WHERE cover_image = #{url}
+    """)
+    int countByCoverImage(String url);
 }
