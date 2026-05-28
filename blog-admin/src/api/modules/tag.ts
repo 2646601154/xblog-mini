@@ -1,5 +1,5 @@
-import request from '../request'
-import type { Tag } from '@/types'
+import service from '../request'
+import type { Tag, NullResponse } from '@/types'
 
 export interface TagFormData {
   name: string
@@ -14,19 +14,17 @@ export type TagCreateResponse = Promise<{
 }>
 
 export function getTagList(): TagListResponse {
-  return request.get('/v1/admin/tags')
+  return service.get('/v1/admin/tags')
 }
 
 export function createTag(data: TagFormData): TagCreateResponse {
-  return request.post('/v1/admin/tags', data)
+  return service.post('/v1/admin/tags', data)
 }
 
 export function updateTag(id: number, data: TagFormData): TagCreateResponse {
-  return request.put(`/v1/admin/tags/${id}`, data)
+  return service.put(`/v1/admin/tags/${id}`, data)
 }
 
-export function deleteTag(
-  id: number,
-): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.delete(`/v1/admin/tags/${id}`)
+export function deleteTag(id: number): NullResponse {
+  return service.delete(`/v1/admin/tags/${id}`)
 }

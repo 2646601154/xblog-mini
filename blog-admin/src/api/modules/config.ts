@@ -1,4 +1,4 @@
-import request from '../request'
+import service from '../request'
 import type { ConfigItem } from '@/types'
 
 export interface ConfigFormData {
@@ -12,17 +12,18 @@ export type ConfigListResponse = Promise<{
 export type ConfigDetailResponse = Promise<{
   data: { code: number; message: string; data: ConfigItem }
 }>
+export type ConfigUpdateResponse = Promise<{
+  data: { code: number; message: string; data: ConfigFormData[] }
+}>
 
 export function getConfigList(): ConfigListResponse {
-  return request.get('/v1/admin/configs')
+  return service.get('/v1/admin/configs')
 }
 
 export function getConfigDetail(key: string): ConfigDetailResponse {
-  return request.get(`/v1/admin/configs/${key}`)
+  return service.get(`/v1/admin/configs/${key}`)
 }
 
-export function updateConfig(configs: ConfigFormData[]): Promise<{
-  data: { code: number; message: string; data: ConfigFormData[] }
-}> {
-  return request.put('/v1/admin/configs', { configs })
+export function updateConfig(configs: ConfigFormData[]): ConfigUpdateResponse {
+  return service.put('/v1/admin/configs', { configs })
 }

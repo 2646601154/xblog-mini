@@ -155,6 +155,8 @@ export interface ApiResponse<T = any> {
   data: T
 }
 
+export type NullResponse = Promise<{ data: ApiResponse<null> }>
+
 export interface Login {
   username: string
   password: string

@@ -1,4 +1,4 @@
-import request from '../request'
+import service from '../request'
 import type { Dashboard } from '@/types'
 
 export type DashboardResponse = Promise<{
@@ -6,5 +6,5 @@ export type DashboardResponse = Promise<{
 }>
 
 export function getDashboard(): DashboardResponse {
-  return request.get('/v1/admin/dashboard')
+  return service.get('/v1/admin/dashboard')
 }

@@ -1,4 +1,8 @@
-import request from '../request'
+import service from '../request'
+
+export type UploadResponse = Promise<{
+  data: { code: number; message: string; data: string }
+}>
 
 /**
  * 上传文件到 OSS
@@ -6,13 +10,10 @@ import request from '../request'
  * @param dir 存储目录，默认 'common'（可选：'article', 'avatar' 等）
  * @returns OSS 文件 URL
  */
-export function uploadFile(
-  file: File,
-  dir: string = 'common',
-): Promise<{ data: { code: number; message: string; data: string } }> {
+export function uploadFile(file: File, dir: string = 'common'): UploadResponse {
   const formData = new FormData()
   formData.append('file', file)
-  return request.post('/v1/admin/upload', formData, {
+  return service.post('/v1/admin/upload', formData, {
     params: { dir },
     headers: { 'Content-Type': 'multipart/form-data' },
   })

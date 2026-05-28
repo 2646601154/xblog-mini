@@ -10,7 +10,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || ''
 
-const request: AxiosInstance = axios.create({
+const service: AxiosInstance = axios.create({
   baseURL,
   timeout: 10000,
   headers: {
@@ -93,7 +93,7 @@ async function doRefreshToken(): Promise<string | null> {
   if (!refreshToken) return null
 
   try {
-    const res = await request.post('/v1/auth/refresh', {
+    const res = await service.post('/v1/auth/refresh', {
       refreshToken,
     })
     if (res.data.code === 200) {
@@ -114,7 +114,7 @@ async function doRefreshToken(): Promise<string | null> {
   return null
 }
 
-request.interceptors.request.use(
+service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = storage.getAccessToken()
     if (token && config.headers) {
@@ -129,7 +129,7 @@ request.interceptors.request.use(
 /**
  * 响应拦截器：统一处理响应状态码和错误
  */
-request.interceptors.response.use(
+service.interceptors.response.use(
   (response: AxiosResponse) => {
     const { code, message } = response.data
 
@@ -175,7 +175,7 @@ request.interceptors.response.use(
               if (newToken) {
                 originalRequest.headers = originalRequest.headers || {}
                 originalRequest.headers.Authorization = `Bearer ${newToken}`
-                resolve(request(originalRequest))
+                resolve(service(originalRequest))
               } else {
                 // 刷新失败，拒绝所有排队的请求
                 reject(error)
@@ -192,7 +192,7 @@ request.interceptors.response.use(
             onTokenRefreshed(newToken)
             originalRequest.headers = originalRequest.headers || {}
             originalRequest.headers.Authorization = `Bearer ${newToken}`
-            return request(originalRequest)
+            return service(originalRequest)
           }
           // 刷新失败，newToken 为 null
           onTokenRefreshed('') // 通知所有订阅者刷新失败
@@ -229,4 +229,4 @@ request.interceptors.response.use(
   },
 )
 
-export default request
+export default service

@@ -1,5 +1,5 @@
-import request from '../request'
-import type { Category } from '@/types'
+import service from '../request'
+import type { Category, NullResponse } from '@/types'
 
 export interface CategoryFormData {
   name: string
@@ -16,19 +16,17 @@ export type CategoryCreateResponse = Promise<{
 }>
 
 export function getCategoryList(): CategoryListResponse {
-  return request.get('/v1/admin/categories')
+  return service.get('/v1/admin/categories')
 }
 
 export function createCategory(data: CategoryFormData): CategoryCreateResponse {
-  return request.post('/v1/admin/categories', data)
+  return service.post('/v1/admin/categories', data)
 }
 
 export function updateCategory(id: number, data: CategoryFormData): CategoryCreateResponse {
-  return request.put(`/v1/admin/categories/${id}`, data)
+  return service.put(`/v1/admin/categories/${id}`, data)
 }
 
-export function deleteCategory(
-  id: number,
-): Promise<{ data: { code: number; message: string; data: null } }> {
-  return request.delete(`/v1/admin/categories/${id}`)
+export function deleteCategory(id: number): NullResponse {
+  return service.delete(`/v1/admin/categories/${id}`)
 }

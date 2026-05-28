@@ -1,14 +1,14 @@
-import request from '../request'
-import type { MediaImage, PageResult } from '@/types'
+import service from '../request'
+import type { MediaImage, PageResult, NullResponse } from '@/types'
 
-export function getMediaList(params: { page: number; size: number }) {
-  return request.get<{
-    code: number
-    message: string
-    data: PageResult<MediaImage>
-  }>('/v1/admin/media', { params })
+export type MediaListResponse = Promise<{
+  data: { code: number; message: string; data: PageResult<MediaImage> }
+}>
+
+export function getMediaList(params: { page: number; size: number }): MediaListResponse {
+  return service.get('/v1/admin/media', { params })
 }
 
-export function deleteMediaImage(url: string) {
-  return request.delete('/v1/admin/media', { params: { url } })
+export function deleteMediaImage(url: string): NullResponse {
+  return service.delete('/v1/admin/media', { params: { url } })
 }
