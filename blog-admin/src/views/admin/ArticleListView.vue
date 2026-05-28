@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getArticleList, publishArticle, recycleArticle, restoreArticle, deleteArticle } from '@/api'
+import {
+  getArticleList,
+  publishArticle,
+  recycleArticle,
+  restoreArticle,
+  deleteArticle,
+} from '@/api'
 import type { ArticleListItem } from '@/types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -91,7 +97,9 @@ async function handleRestore(article: ArticleListItem) {
 
 async function handleDelete(article: ArticleListItem) {
   try {
-    await ElMessageBox.confirm(`确定彻底删除文章「${article.title}」吗？`, '警告', { type: 'warning' })
+    await ElMessageBox.confirm(`确定彻底删除文章「${article.title}」吗？`, '警告', {
+      type: 'warning',
+    })
     await deleteArticle(article.id)
     ElMessage.success('删除成功')
     fetchArticles()
@@ -102,19 +110,27 @@ async function handleDelete(article: ArticleListItem) {
 
 function getStatusType(status: string) {
   switch (status) {
-    case 'published': return 'success'
-    case 'draft': return 'warning'
-    case 'recycled': return 'info'
-    default: return 'info'
+    case 'published':
+      return 'success'
+    case 'draft':
+      return 'warning'
+    case 'recycled':
+      return 'info'
+    default:
+      return 'info'
   }
 }
 
 function getStatusText(status: string) {
   switch (status) {
-    case 'published': return '已发布'
-    case 'draft': return '草稿'
-    case 'recycled': return '已删除'
-    default: return status
+    case 'published':
+      return '已发布'
+    case 'draft':
+      return '草稿'
+    case 'recycled':
+      return '已删除'
+    default:
+      return status
   }
 }
 
@@ -136,7 +152,13 @@ onMounted(fetchArticles)
           <el-option label="草稿" value="draft" />
           <el-option label="回收站" value="recycled" />
         </el-select>
-        <el-input v-model="filters.title" placeholder="搜索标题" clearable @change="handleFilter" style="width: 200px" />
+        <el-input
+          v-model="filters.title"
+          placeholder="搜索标题"
+          clearable
+          @change="handleFilter"
+          style="width: 200px"
+        />
       </div>
 
       <el-table :data="articles" v-loading="loading" stripe>
@@ -156,7 +178,9 @@ onMounted(fetchArticles)
             <el-tag v-for="tag in row.tags?.slice(0, 2)" :key="tag.id" size="small" class="mr-1">
               {{ tag.name }}
             </el-tag>
-            <span v-if="row.tags?.length > 2" class="text-gray-400 text-xs">+{{ row.tags.length - 2 }}</span>
+            <span v-if="row.tags?.length > 2" class="text-gray-400 text-xs"
+              >+{{ row.tags.length - 2 }}</span
+            >
           </template>
         </el-table-column>
         <el-table-column label="状态" width="100">
@@ -179,11 +203,46 @@ onMounted(fetchArticles)
         <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" link @click="handleEdit(row)">编辑</el-button>
-            <el-button v-if="row.status === 'draft'" type="success" size="small" link @click="handlePublish(row)">发布</el-button>
-            <el-button v-if="row.status === 'published'" type="warning" size="small" link @click="handleRecycle(row)">删除</el-button>
-            <el-button v-if="row.status === 'draft'" type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
-            <el-button v-if="row.status === 'recycled'" type="success" size="small" link @click="handleRestore(row)">恢复</el-button>
-            <el-button v-if="row.status === 'recycled'" type="danger" size="small" link @click="handleDelete(row)">彻底删除</el-button>
+            <el-button
+              v-if="row.status === 'draft'"
+              type="success"
+              size="small"
+              link
+              @click="handlePublish(row)"
+              >发布</el-button
+            >
+            <el-button
+              v-if="row.status === 'published'"
+              type="warning"
+              size="small"
+              link
+              @click="handleRecycle(row)"
+              >删除</el-button
+            >
+            <el-button
+              v-if="row.status === 'draft'"
+              type="danger"
+              size="small"
+              link
+              @click="handleDelete(row)"
+              >删除</el-button
+            >
+            <el-button
+              v-if="row.status === 'recycled'"
+              type="success"
+              size="small"
+              link
+              @click="handleRestore(row)"
+              >恢复</el-button
+            >
+            <el-button
+              v-if="row.status === 'recycled'"
+              type="danger"
+              size="small"
+              link
+              @click="handleDelete(row)"
+              >彻底删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>

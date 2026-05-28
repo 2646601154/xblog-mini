@@ -8,7 +8,7 @@ import request from '../request'
  */
 export function uploadFile(
   file: File,
-  dir: string = 'common'
+  dir: string = 'common',
 ): Promise<{ data: { code: number; message: string; data: string } }> {
   const formData = new FormData()
   formData.append('file', file)

@@ -8,8 +8,8 @@ const route = useRoute()
 const authStore = useAuthStore()
 
 const breadcrumbs = computed(() => {
-  const matched = route.matched.filter(item => item.meta?.title)
-  return matched.map(item => item.meta?.title || item.path)
+  const matched = route.matched.filter((item) => item.meta?.title)
+  return matched.map((item) => item.meta?.title || item.path)
 })
 
 async function handleLogout() {

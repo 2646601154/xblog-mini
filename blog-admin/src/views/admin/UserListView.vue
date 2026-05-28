@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getUserList, createUser, updateUser, disableUser, enableUser, deleteUser, resetPassword } from '@/api'
+import {
+  getUserList,
+  createUser,
+  updateUser,
+  disableUser,
+  enableUser,
+  deleteUser,
+  resetPassword,
+} from '@/api'
 import type { User, UserFormData, CreateUserFormData, ResetPasswordFormData } from '@/types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -38,15 +46,17 @@ const createForm = ref<CreateUserFormData>({
 const createRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { pattern: /^[a-zA-Z][a-zA-Z0-9]{2,19}$/, message: '用户名需3-20位，字母开头', trigger: 'blur' },
+    {
+      pattern: /^[a-zA-Z][a-zA-Z0-9]{2,19}$/,
+      message: '用户名需3-20位，字母开头',
+      trigger: 'blur',
+    },
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, message: '密码最少6位', trigger: 'blur' },
   ],
-  email: [
-    { type: 'email' as const, message: '邮箱格式不正确', trigger: 'blur' },
-  ],
+  email: [{ type: 'email' as const, message: '邮箱格式不正确', trigger: 'blur' }],
 }
 
 const resetPwdDialogVisible = ref(false)
@@ -260,10 +270,23 @@ onMounted(fetchUsers)
         </el-table-column>
         <el-table-column label="操作" width="270" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" link @click="openEditDialog(row)">编辑</el-button>
-            <el-button type="warning" size="small" link @click="openResetPasswordDialog(row)">重置密码</el-button>
-            <el-button v-if="row.status === 'normal'" type="danger" size="small" link @click="handleDisable(row)">禁用</el-button>
-            <el-button v-else type="success" size="small" link @click="handleEnable(row)">启用</el-button>
+            <el-button type="primary" size="small" link @click="openEditDialog(row)"
+              >编辑</el-button
+            >
+            <el-button type="warning" size="small" link @click="openResetPasswordDialog(row)"
+              >重置密码</el-button
+            >
+            <el-button
+              v-if="row.status === 'normal'"
+              type="danger"
+              size="small"
+              link
+              @click="handleDisable(row)"
+              >禁用</el-button
+            >
+            <el-button v-else type="success" size="small" link @click="handleEnable(row)"
+              >启用</el-button
+            >
             <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -318,7 +341,12 @@ onMounted(fetchUsers)
           <el-input v-model="createForm.username" placeholder="3-20位，字母开头" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="createForm.password" type="password" show-password placeholder="至少6位" />
+          <el-input
+            v-model="createForm.password"
+            type="password"
+            show-password
+            placeholder="至少6位"
+          />
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="createForm.nickname" placeholder="选填，默认为用户名" />
@@ -340,12 +368,22 @@ onMounted(fetchUsers)
     </el-dialog>
 
     <el-dialog v-model="resetPwdDialogVisible" title="重置密码" width="400px">
-      <el-form ref="resetPwdFormRef" :model="resetPwdForm" :rules="resetPwdRules" label-width="80px">
+      <el-form
+        ref="resetPwdFormRef"
+        :model="resetPwdForm"
+        :rules="resetPwdRules"
+        label-width="80px"
+      >
         <el-form-item label="用户名">
           <span class="text-gray-500">{{ resetPwdUser?.username }}</span>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="resetPwdForm.newPassword" type="password" show-password placeholder="至少6位" />
+          <el-input
+            v-model="resetPwdForm.newPassword"
+            type="password"
+            show-password
+            placeholder="至少6位"
+          />
         </el-form-item>
       </el-form>
       <template #footer>

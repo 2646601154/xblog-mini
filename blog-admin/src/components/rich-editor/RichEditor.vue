@@ -25,25 +25,35 @@ const props = withDefaults(defineProps<Props>(), {
   toolbarKeys: () => [
     'headerSelect',
     '|',
-    'bold', 'italic', 'underline', 'strikethrough',
+    'bold',
+    'italic',
+    'underline',
+    'strikethrough',
     '|',
-    'color', 'bgColor',
+    'color',
+    'bgColor',
     '|',
-    'fontSize', 'fontFamily',
+    'fontSize',
+    'fontFamily',
     '|',
     'lineHeight',
     '|',
-    'sup', 'sub',
+    'sup',
+    'sub',
     '|',
     'clearStyle',
     '|',
     'insertLink',
     '|',
-    'editLink', 'unlink', 'todo',
+    'editLink',
+    'unlink',
+    'todo',
     '|',
-    'insertTable', 'deleteTable',
+    'insertTable',
+    'deleteTable',
     '|',
-    'undo', 'redo',
+    'undo',
+    'redo',
     '|',
     'fullScreen',
   ],
@@ -52,9 +62,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
-  'onCreated': [editor: any]
-  'onChange': [editor: any]
-  'fullscreenChange': [isFullscreen: boolean]
+  onCreated: [editor: any]
+  onChange: [editor: any]
+  fullscreenChange: [isFullscreen: boolean]
 }>()
 
 // 编辑器实例，必须使用 shallowRef
@@ -85,7 +95,7 @@ watch(
     if (newVal !== valueHtml.value) {
       valueHtml.value = newVal
     }
-  }
+  },
 )
 
 // 编辑器创建完成

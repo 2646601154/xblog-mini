@@ -78,19 +78,27 @@ async function handleDelete(comment: Comment) {
 
 function getStatusType(status: string) {
   switch (status) {
-    case 'approved': return 'success'
-    case 'pending': return 'warning'
-    case 'rejected': return 'danger'
-    default: return 'info'
+    case 'approved':
+      return 'success'
+    case 'pending':
+      return 'warning'
+    case 'rejected':
+      return 'danger'
+    default:
+      return 'info'
   }
 }
 
 function getStatusText(status: string) {
   switch (status) {
-    case 'approved': return '已通过'
-    case 'pending': return '待审核'
-    case 'rejected': return '已驳回'
-    default: return status
+    case 'approved':
+      return '已通过'
+    case 'pending':
+      return '待审核'
+    case 'rejected':
+      return '已驳回'
+    default:
+      return status
   }
 }
 
@@ -104,7 +112,13 @@ onMounted(fetchComments)
         <h2 class="text-2xl font-bold">评论管理</h2>
         <p class="text-gray-500 text-sm mt-1">管理用户评论，审核评论内容</p>
       </div>
-      <el-select v-model="filters.status" placeholder="状态筛选" clearable @change="handleFilter" style="width: 140px">
+      <el-select
+        v-model="filters.status"
+        placeholder="状态筛选"
+        clearable
+        @change="handleFilter"
+        style="width: 140px"
+      >
         <el-option label="全部" value="" />
         <el-option label="待审核" value="pending" />
         <el-option label="已通过" value="approved" />
@@ -160,10 +174,14 @@ onMounted(fetchComments)
               <el-icon class="mr-1"><Close /></el-icon>
               驳回
             </el-button>
-            <el-button type="danger" size="small" link @click="handleDelete(comment)">删除</el-button>
+            <el-button type="danger" size="small" link @click="handleDelete(comment)"
+              >删除</el-button
+            >
           </div>
           <div class="comment-actions" v-else>
-            <el-button type="danger" size="small" link @click="handleDelete(comment)">删除</el-button>
+            <el-button type="danger" size="small" link @click="handleDelete(comment)"
+              >删除</el-button
+            >
           </div>
         </div>
       </div>
@@ -252,7 +270,7 @@ onMounted(fetchComments)
 }
 
 .user-avatar {
-  background: linear-gradient(135deg, #409EFF, #64b3f4);
+  background: linear-gradient(135deg, #409eff, #64b3f4);
   color: white;
   font-weight: 600;
   display: flex;
@@ -305,7 +323,7 @@ onMounted(fetchComments)
 }
 
 .article-title {
-  color: #409EFF;
+  color: #409eff;
   font-weight: 500;
 }
 

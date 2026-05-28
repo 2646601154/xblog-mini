@@ -22,8 +22,14 @@ const rules = {
 }
 
 const categoryColors = [
-  '#409EFF', '#67C23A', '#E6A23C', '#F56C6C',
-  '#909399', '#C0A4F1', '#36D6C4', '#FF9F43',
+  '#409EFF',
+  '#67C23A',
+  '#E6A23C',
+  '#F56C6C',
+  '#909399',
+  '#C0A4F1',
+  '#36D6C4',
+  '#FF9F43',
 ]
 
 function getCategoryColor(name: string) {
@@ -122,7 +128,13 @@ onMounted(fetchCategories)
         <el-table-column label="名称" min-width="150">
           <template #default="{ row }">
             <div class="category-name-cell">
-              <div class="category-icon" :style="{ backgroundColor: getCategoryColor(row.name) + '20', color: getCategoryColor(row.name) }">
+              <div
+                class="category-icon"
+                :style="{
+                  backgroundColor: getCategoryColor(row.name) + '20',
+                  color: getCategoryColor(row.name),
+                }"
+              >
                 {{ row.name.charAt(0).toUpperCase() }}
               </div>
               <span class="font-medium">{{ row.name }}</span>
@@ -151,7 +163,9 @@ onMounted(fetchCategories)
         </el-table-column>
         <el-table-column label="操作" width="150" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" link @click="openEditDialog(row)">编辑</el-button>
+            <el-button type="primary" size="small" link @click="openEditDialog(row)"
+              >编辑</el-button
+            >
             <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -259,7 +273,7 @@ onMounted(fetchCategories)
   min-width: 24px;
   height: 24px;
   padding: 0 8px;
-  background: linear-gradient(135deg, #409EFF, #64b3f4);
+  background: linear-gradient(135deg, #409eff, #64b3f4);
   color: white;
   border-radius: 12px;
   font-size: 12px;

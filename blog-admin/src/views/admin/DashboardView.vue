@@ -36,8 +36,8 @@ async function fetchStats() {
     articleTrend.value = dashboard.articleTrend
     categoryDistribution.value = dashboard.categoryDistribution
     tagUsage.value = {
-      tags: dashboard.tagUsage.map(t => t.name),
-      counts: dashboard.tagUsage.map(t => t.value),
+      tags: dashboard.tagUsage.map((t) => t.name),
+      counts: dashboard.tagUsage.map((t) => t.value),
     }
   } catch (e) {
     console.error('Failed to fetch dashboard', e)

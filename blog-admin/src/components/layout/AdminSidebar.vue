@@ -38,11 +38,7 @@ function handleMenuSelect(path: string) {
       <h1 v-if="!isCollapsed" class="text-lg font-bold text-blue-500">Xblog Admin</h1>
       <span v-else class="text-blue-500 font-bold">X</span>
     </div>
-    <el-menu-item
-      v-for="item in menuItems"
-      :key="item.path"
-      :index="item.path"
-    >
+    <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
       <el-icon><component :is="item.icon" /></el-icon>
       <template #title>{{ item.title }}</template>
     </el-menu-item>

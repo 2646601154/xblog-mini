@@ -17,8 +17,14 @@ const rules = {
 }
 
 const tagColors = [
-  '#409EFF', '#67C23A', '#E6A23C', '#F56C6C',
-  '#909399', '#C0A4F1', '#36D6C4', '#FF9F43',
+  '#409EFF',
+  '#67C23A',
+  '#E6A23C',
+  '#F56C6C',
+  '#909399',
+  '#C0A4F1',
+  '#36D6C4',
+  '#FF9F43',
 ]
 
 function getTagColor(name: string) {
@@ -113,7 +119,13 @@ onMounted(fetchTags)
       <div class="tag-grid">
         <div v-for="tag in tags" :key="tag.id" class="tag-item">
           <div class="tag-content">
-            <div class="tag-icon" :style="{ backgroundColor: getTagColor(tag.name) + '20', color: getTagColor(tag.name) }">
+            <div
+              class="tag-icon"
+              :style="{
+                backgroundColor: getTagColor(tag.name) + '20',
+                color: getTagColor(tag.name),
+              }"
+            >
               #{{ tag.name.charAt(0).toUpperCase() }}
             </div>
             <div class="tag-info">
@@ -126,7 +138,9 @@ onMounted(fetchTags)
               {{ tag.articleCount || 0 }} 篇文章
             </el-tag>
             <div class="action-buttons">
-              <el-button type="primary" size="small" link @click="openEditDialog(tag)">编辑</el-button>
+              <el-button type="primary" size="small" link @click="openEditDialog(tag)"
+                >编辑</el-button
+              >
               <el-button type="danger" size="small" link @click="handleDelete(tag)">删除</el-button>
             </div>
           </div>
@@ -202,7 +216,7 @@ onMounted(fetchTags)
 }
 
 .tag-item:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
   box-shadow: 0 2px 12px 0 rgba(64, 158, 255, 0.1);
 }
 
@@ -248,7 +262,7 @@ onMounted(fetchTags)
 .article-tag {
   background: rgba(103, 194, 58, 0.1);
   border-color: rgba(103, 194, 58, 0.3);
-  color: #67C23A;
+  color: #67c23a;
 }
 
 .action-buttons {

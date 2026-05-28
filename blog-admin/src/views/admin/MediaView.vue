@@ -30,20 +30,22 @@ function loadImages() {
 }
 
 function handleDelete(image: MediaImage) {
-  ElMessageBox.confirm(
-    `确定要删除图片吗？\n来源：${image.sourceName}`,
-    '删除确认',
-    { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' }
-  ).then(() => {
-    deleteMediaImage(image.url)
-      .then(() => {
-        ElMessage.success('删除成功')
-        loadImages()
-      })
-      .catch((err) => {
-        ElMessage.error(err?.response?.data?.message || '删除失败')
-      })
-  }).catch(() => {})
+  ElMessageBox.confirm(`确定要删除图片吗？\n来源：${image.sourceName}`, '删除确认', {
+    confirmButtonText: '删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      deleteMediaImage(image.url)
+        .then(() => {
+          ElMessage.success('删除成功')
+          loadImages()
+        })
+        .catch((err) => {
+          ElMessage.error(err?.response?.data?.message || '删除失败')
+        })
+    })
+    .catch(() => {})
 }
 
 function preview(image: MediaImage) {
@@ -96,13 +98,11 @@ onMounted(loadImages)
           shadow="hover"
           class="overflow-hidden cursor-pointer"
         >
-          <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden" @click="preview(img)">
-            <el-image
-              :src="img.url"
-              fit="cover"
-              class="w-full h-full"
-              lazy
-            >
+          <div
+            class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden"
+            @click="preview(img)"
+          >
+            <el-image :src="img.url" fit="cover" class="w-full h-full" lazy>
               <template #error>
                 <div class="text-gray-400 text-sm">加载失败</div>
               </template>

@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArticleDetail, createArticle, updateArticle, bindArticleTags, getCategoryList, getTagList, uploadFile } from '@/api'
+import {
+  getArticleDetail,
+  createArticle,
+  updateArticle,
+  bindArticleTags,
+  getCategoryList,
+  getTagList,
+  uploadFile,
+} from '@/api'
 import type { ArticleFormData, Category, Tag } from '@/types'
 import { ElMessage } from 'element-plus'
 import RichEditor from '@/components/rich-editor/RichEditor.vue'
@@ -163,11 +171,19 @@ onMounted(() => {
     <el-card v-loading="loading">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <!-- 左栏：富文本编辑器 | 右栏：其他字段 -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" :class="{ 'fullscreen-mode': isEditorFullscreen }">
+        <div
+          class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          :class="{ 'fullscreen-mode': isEditorFullscreen }"
+        >
           <!-- 左：内容编辑器 -->
           <div class="lg:col-span-2">
             <el-form-item label="内容" prop="content">
-              <RichEditor ref="editorRef" v-model="form.content" :height="600" @fullscreen-change="handleFullscreenChange" />
+              <RichEditor
+                ref="editorRef"
+                v-model="form.content"
+                :height="600"
+                @fullscreen-change="handleFullscreenChange"
+              />
             </el-form-item>
           </div>
 
@@ -177,7 +193,12 @@ onMounted(() => {
               <el-input v-model="form.title" placeholder="请输入文章标题" />
             </el-form-item>
             <el-form-item label="摘要" prop="summary">
-              <el-input v-model="form.summary" type="textarea" :rows="2" placeholder="请输入文章摘要" />
+              <el-input
+                v-model="form.summary"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入文章摘要"
+              />
             </el-form-item>
             <el-form-item label="封面图" prop="coverImage">
               <div class="space-y-2 w-full">
@@ -196,8 +217,12 @@ onMounted(() => {
                 </div>
                 <!-- 上传区域 -->
                 <div class="flex gap-2">
-                  <label class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-600 hover:border-blue-400 hover:text-blue-500 transition-colors">
-                    <el-icon v-if="coverUploading" class="is-loading mr-1" :size="14"><Loading /></el-icon>
+                  <label
+                    class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-600 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                  >
+                    <el-icon v-if="coverUploading" class="is-loading mr-1" :size="14"
+                      ><Loading
+                    /></el-icon>
                     <span>{{ coverUploading ? '上传中...' : '选择图片' }}</span>
                     <input
                       type="file"
@@ -212,11 +237,21 @@ onMounted(() => {
             </el-form-item>
             <el-form-item label="分类" prop="categoryId">
               <el-select v-model="form.categoryId" placeholder="请选择分类" style="width: 100%">
-                <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+                <el-option
+                  v-for="cat in categories"
+                  :key="cat.id"
+                  :label="cat.name"
+                  :value="cat.id"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="标签">
-              <el-select v-model="form.tagIds" multiple placeholder="请选择标签" style="width: 100%">
+              <el-select
+                v-model="form.tagIds"
+                multiple
+                placeholder="请选择标签"
+                style="width: 100%"
+              >
                 <el-option v-for="tag in allTags" :key="tag.id" :label="tag.name" :value="tag.id" />
               </el-select>
             </el-form-item>
