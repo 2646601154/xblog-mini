@@ -2,17 +2,20 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Search, Close } from '@element-plus/icons-vue'
 
-const props = withDefaults(defineProps<{
-  modelValue?: string
-  placeholder?: string
-}>(), {
-  modelValue: '',
-  placeholder: '搜索文章...'
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string
+    placeholder?: string
+  }>(),
+  {
+    modelValue: '',
+    placeholder: '搜索文章...',
+  },
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
-  'search': [value: string]
+  search: [value: string]
 }>()
 
 const inputRef = ref<HTMLInputElement | null>(null)

@@ -10,8 +10,7 @@ import TagCloud from '@/components/sidebar/TagCloud.vue'
 import AboutMe from '@/components/sidebar/AboutMe.vue'
 import AppPagination from '@/components/common/AppPagination.vue'
 
-interface CategoryWithCount extends CategoryVO {
-}
+interface CategoryWithCount extends CategoryVO {}
 
 const router = useRouter()
 const route = useRoute()
@@ -27,13 +26,13 @@ const searchQuery = ref('')
 
 const tagIdMap = computed(() => {
   const map = new Map<string, number>()
-  tags.value.forEach(t => map.set(t.slug, t.id))
+  tags.value.forEach((t) => map.set(t.slug, t.id))
   return map
 })
 
 const selectedTagName = computed(() => {
   if (!selectedTagSlug.value) return ''
-  return tags.value.find(t => t.slug === selectedTagSlug.value)?.name || ''
+  return tags.value.find((t) => t.slug === selectedTagSlug.value)?.name || ''
 })
 
 const pagination = reactive({
@@ -64,10 +63,7 @@ async function loadArticles() {
 }
 
 async function loadSidebarData() {
-  const [categoryRes, tagRes] = await Promise.all([
-    getCategoryList(),
-    getTagList(),
-  ])
+  const [categoryRes, tagRes] = await Promise.all([getCategoryList(), getTagList()])
   categories.value = categoryRes.data.data || []
   tags.value = tagRes.data.data || []
 }
@@ -105,7 +101,6 @@ function handlePageChange(page: number) {
   loadArticles()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
-
 
 onMounted(async () => {
   initLoading.value = true
@@ -168,11 +163,19 @@ onMounted(async () => {
         <!-- Article List -->
         <template v-else-if="hasArticles">
           <div class="article-list-section">
-            <ArticleCard v-for="article in articles" :key="article.id" :article="article"
-              @click="handleArticleClick(article.id)" />
+            <ArticleCard
+              v-for="article in articles"
+              :key="article.id"
+              :article="article"
+              @click="handleArticleClick(article.id)"
+            />
           </div>
-          <AppPagination :current="pagination.page" :page-size="pagination.size" :total="pagination.total"
-            @change="handlePageChange" />
+          <AppPagination
+            :current="pagination.page"
+            :page-size="pagination.size"
+            :total="pagination.total"
+            @change="handlePageChange"
+          />
         </template>
 
         <!-- Empty State -->

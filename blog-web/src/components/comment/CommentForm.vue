@@ -54,23 +54,21 @@ async function handleSubmit() {
         type="textarea"
         :rows="4"
         :disabled="!authStore.isLoggedIn"
-        :placeholder="authStore.isLoggedIn ? '写下你的评论... (最多1000字符)' : '登录后即可发表评论'"
+        :placeholder="
+          authStore.isLoggedIn ? '写下你的评论... (最多1000字符)' : '登录后即可发表评论'
+        "
         maxlength="1000"
         :show-word-limit="authStore.isLoggedIn"
       />
 
       <!-- Logged in: show submit button -->
       <div v-if="authStore.isLoggedIn" class="form-actions">
-        <el-button type="primary" :loading="loading" @click="handleSubmit">
-          提交评论
-        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit"> 提交评论 </el-button>
       </div>
 
       <!-- Not logged in: show login link -->
       <div v-else class="login-hint">
-        <router-link to="/login" class="login-link">
-          登录或注册
-        </router-link>
+        <router-link to="/login" class="login-link"> 登录或注册 </router-link>
         <span class="hint-text">后即可发表评论</span>
       </div>
     </div>

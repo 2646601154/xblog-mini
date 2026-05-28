@@ -2,8 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import type { CategoryVO } from '@/api'
 
-interface CategoryWithCount extends CategoryVO {
-}
+interface CategoryWithCount extends CategoryVO {}
 
 defineProps<{
   categories: CategoryWithCount[]

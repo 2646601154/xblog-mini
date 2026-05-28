@@ -7,7 +7,7 @@ defineProps<{
 
 const emit = defineEmits<{
   'update:current': [page: number]
-  'change': [page: number]
+  change: [page: number]
 }>()
 
 const handleCurrentChange = (page: number) => {

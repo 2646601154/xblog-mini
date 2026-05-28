@@ -2,7 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { updateProfile, changePassword, getMyComments, uploadFile, type UpdateProfileParams, type ChangePasswordParams, type CommentMyVO } from '@/api'
+import {
+  updateProfile,
+  changePassword,
+  getMyComments,
+  uploadFile,
+  type UpdateProfileParams,
+  type ChangePasswordParams,
+  type CommentMyVO,
+} from '@/api'
 import { showSuccessMessage } from '@/utils/error'
 import { ElMessage } from 'element-plus'
 import AppPagination from '@/components/common/AppPagination.vue'
@@ -86,8 +94,13 @@ const passwordLoading = ref(false)
 function passwordError(): string {
   if (!passwordForm.value.oldPassword) return '请输入原密码'
   if (!passwordForm.value.newPassword) return '请输入新密码'
-  if (passwordForm.value.newPassword && passwordForm.value.newPassword.length < 6) return '新密码不能少于6位'
-  if (passwordForm.value.confirmPassword && passwordForm.value.newPassword !== passwordForm.value.confirmPassword) return '两次输入的密码不一致'
+  if (passwordForm.value.newPassword && passwordForm.value.newPassword.length < 6)
+    return '新密码不能少于6位'
+  if (
+    passwordForm.value.confirmPassword &&
+    passwordForm.value.newPassword !== passwordForm.value.confirmPassword
+  )
+    return '两次输入的密码不一致'
   return ''
 }
 
@@ -205,13 +218,28 @@ onMounted(() => {
               </div>
               <div class="form-group">
                 <label class="form-label">昵称</label>
-                <el-input v-model="profileForm.nickname" placeholder="输入昵称" maxlength="50" class="pill-input" />
+                <el-input
+                  v-model="profileForm.nickname"
+                  placeholder="输入昵称"
+                  maxlength="50"
+                  class="pill-input"
+                />
               </div>
               <div class="form-group">
                 <label class="form-label">邮箱</label>
-                <el-input v-model="profileForm.email" placeholder="输入邮箱" maxlength="100" class="pill-input" />
+                <el-input
+                  v-model="profileForm.email"
+                  placeholder="输入邮箱"
+                  maxlength="100"
+                  class="pill-input"
+                />
               </div>
-              <el-button type="primary" :loading="profileLoading" native-type="submit" class="save-btn">
+              <el-button
+                type="primary"
+                :loading="profileLoading"
+                native-type="submit"
+                class="save-btn"
+              >
                 保存修改
               </el-button>
             </el-form>
@@ -224,21 +252,41 @@ onMounted(() => {
             <el-form @submit.prevent="handleChangePassword">
               <div class="form-group">
                 <label class="form-label">原密码</label>
-                <el-input v-model="passwordForm.oldPassword" type="password" show-password placeholder="输入原密码"
-                  class="pill-input" />
+                <el-input
+                  v-model="passwordForm.oldPassword"
+                  type="password"
+                  show-password
+                  placeholder="输入原密码"
+                  class="pill-input"
+                />
                 <p class="form-help">忘记原密码，请联系管理员</p>
               </div>
               <div class="form-group">
                 <label class="form-label">新密码</label>
-                <el-input v-model="passwordForm.newPassword" type="password" show-password placeholder="最少6位"
-                  class="pill-input" />
+                <el-input
+                  v-model="passwordForm.newPassword"
+                  type="password"
+                  show-password
+                  placeholder="最少6位"
+                  class="pill-input"
+                />
               </div>
               <div class="form-group">
                 <label class="form-label">确认密码</label>
-                <el-input v-model="passwordForm.confirmPassword" type="password" show-password placeholder="再次输入新密码"
-                  class="pill-input" />
+                <el-input
+                  v-model="passwordForm.confirmPassword"
+                  type="password"
+                  show-password
+                  placeholder="再次输入新密码"
+                  class="pill-input"
+                />
               </div>
-              <el-button type="primary" :loading="passwordLoading" native-type="submit" class="save-btn">
+              <el-button
+                type="primary"
+                :loading="passwordLoading"
+                native-type="submit"
+                class="save-btn"
+              >
                 修改密码
               </el-button>
             </el-form>
@@ -269,8 +317,12 @@ onMounted(() => {
                 <p class="comment-meta">{{ comment.createdAt }}</p>
               </div>
               <div class="pagination-wrapper" v-if="pagination.total > pagination.size">
-                <AppPagination v-model:current="pagination.current" :total="pagination.total"
-                  :page-size="pagination.size" @change="onPageChange" />
+                <AppPagination
+                  v-model:current="pagination.current"
+                  :total="pagination.total"
+                  :page-size="pagination.size"
+                  @change="onPageChange"
+                />
               </div>
             </div>
           </div>
@@ -414,7 +466,9 @@ onMounted(() => {
   border-radius: var(--radius-pill);
   box-shadow: none;
   border: 1px solid var(--border-light);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 :deep(.pill-input .el-input__wrapper:hover),

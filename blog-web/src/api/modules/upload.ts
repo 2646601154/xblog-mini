@@ -1,4 +1,4 @@
-import request from "../request";
+import request from '../request'
 
 /**
  * 上传文件到 OSS
@@ -8,12 +8,12 @@ import request from "../request";
  */
 export function uploadFile(
   file: File,
-  dir: string = "common",
+  dir: string = 'common',
 ): Promise<{ data: { code: number; message: string; data: string } }> {
-  const formData = new FormData();
-  formData.append("file", file);
-  return request.post("/v1/admin/upload", formData, {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/v1/admin/upload', formData, {
     params: { dir },
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
 }

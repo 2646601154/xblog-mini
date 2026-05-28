@@ -52,13 +52,23 @@ onMounted(() => {
     <div class="about-container">
       <!-- Hero Section -->
       <section class="hero">
-        <img src="/avatar/LuoXiaohei.jpg" alt="Avatar" class="hero-avatar"
-          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'" />
+        <img
+          src="/avatar/LuoXiaohei.jpg"
+          alt="Avatar"
+          class="hero-avatar"
+          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'"
+        />
         <h1 class="name">Xiaruoxin</h1>
         <p class="title">热爱技术与分享的全栈开发者</p>
         <div class="social-links">
           <div v-for="link in socialLinks" :key="link.label" class="social-item">
-            <a :href="link.url" :title="link.label" class="social-btn" target="_blank" rel="noopener noreferrer">
+            <a
+              :href="link.url"
+              :title="link.label"
+              class="social-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <el-icon :size="18">
                 <component :is="getIconComponent(link.icon)" />
               </el-icon>
@@ -73,8 +83,8 @@ onMounted(() => {
         <h2 class="section-title">关于博客</h2>
         <div class="about-content">
           <p>
-            这是一个专注于技术分享的个人博客，记录我在全栈开发道路上的探索与成长。
-            从前端的 Vue/React 到后端的 Spring Boot，从数据库设计到微服务架构，
+            这是一个专注于技术分享的个人博客，记录我在全栈开发道路上的探索与成长。 从前端的
+            Vue/React 到后端的 Spring Boot，从数据库设计到微服务架构，
             我致力于将所学所见整理成文，帮助更多开发者解决实际问题。
           </p>
           <p>
@@ -83,8 +93,8 @@ onMounted(() => {
             同时也能与社区中的同行交流切磋，共同进步。
           </p>
           <p>
-            如果你在阅读文章时有任何问题或建议，欢迎随时与我交流。
-            让 我们一起在技术的海洋中不断探索，共同成长！
+            如果你在阅读文章时有任何问题或建议，欢迎随时与我交流。 让
+            我们一起在技术的海洋中不断探索，共同成长！
           </p>
         </div>
       </section>
@@ -170,7 +180,9 @@ onMounted(() => {
   background: var(--bg-elevated);
   color: var(--text-secondary);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .social-btn:hover {

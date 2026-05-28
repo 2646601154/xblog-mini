@@ -7,8 +7,7 @@ import type { ArticleListItemVO } from '@/api/modules/article'
 import ArticleCard from '@/components/article/ArticleCard.vue'
 import AppPagination from '@/components/common/AppPagination.vue'
 
-interface CategoryWithCount extends CategoryVO {
-}
+interface CategoryWithCount extends CategoryVO {}
 
 const route = useRoute()
 const router = useRouter()
@@ -23,17 +22,17 @@ const pagination = reactive({
   total: 0,
 })
 
-const currentSlug = computed(() => route.params.slug as string || '')
+const currentSlug = computed(() => (route.params.slug as string) || '')
 
 const currentCategory = computed(() => {
   if (!currentSlug.value) return categories.value[0] || null
-  return categories.value.find(c => c.slug === currentSlug.value) || null
+  return categories.value.find((c) => c.slug === currentSlug.value) || null
 })
 
 const hasArticles = computed(() => articles.value.length > 0)
 
 function loadCategories() {
-  return getCategoryList().then(res => {
+  return getCategoryList().then((res) => {
     categories.value = res.data.data || []
   })
 }
@@ -103,7 +102,10 @@ import { reactive } from 'vue'
               v-for="category in categories"
               :key="category.id"
               class="category-item"
-              :class="{ active: category.slug === currentSlug || (!currentSlug && category === currentCategory) }"
+              :class="{
+                active:
+                  category.slug === currentSlug || (!currentSlug && category === currentCategory),
+              }"
               @click="handleCategoryClick(category.slug)"
             >
               <span class="category-name">{{ category.name }}</span>
@@ -176,7 +178,9 @@ import { reactive } from 'vue'
   box-shadow: var(--shadow-md);
   position: sticky;
   top: calc(var(--header-height) + var(--space-2xl));
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .sidebar-card:hover {

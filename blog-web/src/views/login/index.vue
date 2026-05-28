@@ -43,7 +43,7 @@ function loadRemember() {
   }
 }
 
-  async function handleLogin() {
+async function handleLogin() {
   const valid = await loginFormRef.value.validate().catch(() => false)
   if (!valid) return
 

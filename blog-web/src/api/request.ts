@@ -1,4 +1,9 @@
-import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios'
+import axios, {
+  type AxiosInstance,
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+  type AxiosResponse,
+} from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { storage } from '@/utils/storage'
 import { useAuthStore } from '@/stores/auth'
@@ -9,7 +14,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
 // 创建 Axios 实例
 const request: AxiosInstance = axios.create({
   baseURL,
-  timeout: 10000,
+  timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json',
   },
@@ -42,18 +47,14 @@ function showSessionExpiredDialog(message: string = '登录已过期，请重新
 
   isSessionExpiredDialogShown = true
 
-  ElMessageBox.confirm(
-    message,
-    '会话过期',
-    {
-      confirmButtonText: '跳转至登录',
-      cancelButtonText: '保持此页',
-      type: 'warning',
-      closeOnClickModal: false,
-      closeOnPressEscape: false,
-      showClose: false,
-    }
-  )
+  ElMessageBox.confirm(message, '会话过期', {
+    confirmButtonText: '跳转至登录',
+    cancelButtonText: '保持此页',
+    type: 'warning',
+    closeOnClickModal: false,
+    closeOnPressEscape: false,
+    showClose: false,
+  })
     .then(() => {
       // 用户选择跳转：清除登录态并跳转
       storage.clearAuth()
@@ -120,8 +121,14 @@ async function doRefreshToken(): Promise<string | null> {
 // 公开端点：这些 URL 不需要登录，401 时不应跳转登录页
 function isPublicEndpoint(url: string | undefined): boolean {
   if (!url) return false
-  const publicPatterns = ['/v1/articles', '/v1/categories', '/v1/tags', '/v1/comments', '/v1/configs']
-  return publicPatterns.some(pattern => url.startsWith(pattern))
+  const publicPatterns = [
+    '/v1/articles',
+    '/v1/categories',
+    '/v1/tags',
+    '/v1/comments',
+    '/v1/configs',
+  ]
+  return publicPatterns.some((pattern) => url.startsWith(pattern))
 }
 
 // 请求拦截器：自动带上 Authorization
@@ -135,7 +142,7 @@ request.interceptors.request.use(
   },
   (error: AxiosError) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // 响应拦截器：统一处理错误
@@ -162,7 +169,9 @@ request.interceptors.response.use(
     return response
   },
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean
+    }
 
     // 网络错误处理
     if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
@@ -240,7 +249,7 @@ request.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 
 export default request

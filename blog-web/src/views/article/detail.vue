@@ -10,8 +10,7 @@ import TagCloud from '@/components/sidebar/TagCloud.vue'
 import CommentList from '@/components/comment/CommentList.vue'
 import CommentForm from '@/components/comment/CommentForm.vue'
 
-interface CategoryWithCount extends CategoryVO {
-}
+interface CategoryWithCount extends CategoryVO {}
 
 const route = useRoute()
 const router = useRouter()
@@ -44,10 +43,7 @@ async function loadArticleDetail() {
 }
 
 async function loadSidebarData() {
-  const [categoryRes, tagRes] = await Promise.all([
-    getCategoryList(),
-    getTagList(),
-  ])
+  const [categoryRes, tagRes] = await Promise.all([getCategoryList(), getTagList()])
   categories.value = categoryRes.data.data || []
   tags.value = tagRes.data.data || []
 }
@@ -65,22 +61,21 @@ async function loadPrevNext() {
 }
 
 async function loadAllData() {
-  await Promise.all([
-    loadArticleDetail(),
-    loadSidebarData(),
-    loadPrevNext(),
-  ])
+  await Promise.all([loadArticleDetail(), loadSidebarData(), loadPrevNext()])
 }
 
 // 监听路由参数变化，重新加载数据
-watch(() => route.params.id, (newId) => {
-  if (newId) {
-    articleId.value = Number(newId)
-    loadAllData()
-    // 滚动到顶部
-    window.scrollTo(0, 0)
-  }
-})
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      articleId.value = Number(newId)
+      loadAllData()
+      // 滚动到顶部
+      window.scrollTo(0, 0)
+    }
+  },
+)
 
 function formatDate(dateStr: string) {
   if (!dateStr) return ''
@@ -187,9 +182,7 @@ onMounted(loadAllData)
                   <span class="nav-title">{{ nextArticle.title }}</span>
                 </router-link>
               </nav>
-              <div v-else class="nav-placeholder">
-                没有更多文章了
-              </div>
+              <div v-else class="nav-placeholder">没有更多文章了</div>
             </footer>
 
             <CommentList ref="commentListRef" :article-id="articleId" />

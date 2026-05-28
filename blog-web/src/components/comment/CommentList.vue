@@ -41,9 +41,7 @@ onMounted(() => {
 
     <el-skeleton :rows="2" animated v-if="loading" />
 
-    <div v-else-if="comments.length === 0" class="comment-empty">
-      暂无评论，来发表第一条评论吧
-    </div>
+    <div v-else-if="comments.length === 0" class="comment-empty">暂无评论，来发表第一条评论吧</div>
 
     <div v-else class="comment-items">
       <div v-for="comment in comments" :key="comment.id" class="comment-item">

@@ -16,7 +16,7 @@ const hasCover = computed(() => !!props.article.coverImage)
 const coverStyle = computed(() => {
   if (props.article.coverImage) {
     return {
-      backgroundImage: `url(${props.article.coverImage})`
+      backgroundImage: `url(${props.article.coverImage})`,
     }
   }
   return {}
@@ -57,11 +57,7 @@ const estimateReadTime = (summary: string) => {
       <p class="card-summary">{{ article.summary }}</p>
       <div class="card-footer">
         <div class="author-row">
-          <img
-            class="author-avatar"
-            :src="article.author.avatar"
-            :alt="article.author.nickname"
-          />
+          <img class="author-avatar" :src="article.author.avatar" :alt="article.author.nickname" />
           <span class="author-name">{{ article.author.nickname }}</span>
           <span class="separator">·</span>
           <span class="publish-date">{{ formatDate(article.publishedAt) }}</span>
@@ -94,7 +90,9 @@ const estimateReadTime = (summary: string) => {
   box-shadow: var(--shadow-md);
   overflow: hidden;
   cursor: pointer;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .card-base:hover {

@@ -19,12 +19,7 @@ const handleClick = (slug: string) => {
     <h3 class="sidebar-title">标签云</h3>
     <el-empty v-if="tags.length === 0" description="暂无标签" :image-size="60" />
     <div v-else class="tag-list">
-      <span
-        v-for="tag in tags"
-        :key="tag.id"
-        class="tag-item"
-        @click="handleClick(tag.slug)"
-      >
+      <span v-for="tag in tags" :key="tag.id" class="tag-item" @click="handleClick(tag.slug)">
         {{ tag.name }}
       </span>
     </div>

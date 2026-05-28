@@ -18,7 +18,7 @@ const articles = ref<ArticleListItemVO[]>([])
 const groupedArticles = computed<YearGroup[]>(() => {
   const yearMap = new Map<number, Map<number, ArticleListItemVO[]>>()
 
-  articles.value.forEach(article => {
+  articles.value.forEach((article) => {
     if (!article.publishedAt) return
 
     const date = new Date(article.publishedAt)
@@ -38,11 +38,11 @@ const groupedArticles = computed<YearGroup[]>(() => {
   const result: YearGroup[] = []
   const sortedYears = Array.from(yearMap.keys()).sort((a, b) => b - a)
 
-  sortedYears.forEach(year => {
+  sortedYears.forEach((year) => {
     const monthMap = yearMap.get(year)!
     const sortedMonths = Array.from(monthMap.keys()).sort((a, b) => b - a)
     const months = new Map<number, ArticleListItemVO[]>()
-    sortedMonths.forEach(month => {
+    sortedMonths.forEach((month) => {
       const monthArticles = monthMap.get(month)!
       // 按发布日期排序（新的在前）
       monthArticles.sort((a, b) => {
@@ -93,7 +93,7 @@ async function loadArticles() {
     articles.value = res.data.data.records || []
 
     // Expand all years by default
-    groupedArticles.value.forEach(group => {
+    groupedArticles.value.forEach((group) => {
       expandedYears.value.add(group.year)
     })
   } finally {
@@ -113,8 +113,8 @@ onMounted(() => {
     <template v-if="loading">
       <div class="skeleton-group">
         <el-skeleton :rows="2" animated />
-        <el-skeleton :rows="3" animated style="margin-top: 24px;" />
-        <el-skeleton :rows="2" animated style="margin-top: 24px;" />
+        <el-skeleton :rows="3" animated style="margin-top: 24px" />
+        <el-skeleton :rows="2" animated style="margin-top: 24px" />
       </div>
     </template>
 
@@ -125,10 +125,7 @@ onMounted(() => {
     <template v-else>
       <div class="archive-list">
         <div v-for="yearGroup in groupedArticles" :key="yearGroup.year" class="year-group">
-          <div
-            class="year-header"
-            @click="toggleYear(yearGroup.year)"
-          >
+          <div class="year-header" @click="toggleYear(yearGroup.year)">
             <span class="year-title">{{ yearGroup.year }}年</span>
             <span class="article-count">({{ yearGroup.months.size }}个月)</span>
             <svg
@@ -144,7 +141,11 @@ onMounted(() => {
           </div>
 
           <div v-show="isYearExpanded(yearGroup.year)" class="year-content">
-            <div v-for="[month, monthArticles] in yearGroup.months" :key="month" class="month-group">
+            <div
+              v-for="[month, monthArticles] in yearGroup.months"
+              :key="month"
+              class="month-group"
+            >
               <div class="month-title">{{ formatMonth(month) }}</div>
               <div class="article-list">
                 <div
@@ -154,10 +155,7 @@ onMounted(() => {
                   @click="navigateToArticle(article.id)"
                 >
                   <span class="article-title">{{ article.title }}</span>
-                  <span
-                    v-if="article.category"
-                    class="category-pill"
-                  >
+                  <span v-if="article.category" class="category-pill">
                     {{ article.category.name }}
                   </span>
                   <span class="article-date">{{ formatDate(article.publishedAt) }}</span>

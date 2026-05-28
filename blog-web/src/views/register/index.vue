@@ -29,7 +29,11 @@ const registerForm = reactive<RegisterForm>({
   email: '',
 })
 
-const validateConfirmPassword = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+const validateConfirmPassword = (
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
   if (value !== registerForm.password) {
     callback(new Error('确认密码与密码不一致'))
   } else {
@@ -54,9 +58,7 @@ const rules = {
     { required: true, message: '请输入昵称', trigger: 'blur' },
     { min: 2, max: 20, message: '昵称2-20字符', trigger: 'blur' },
   ],
-  email: [
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
-  ],
+  email: [{ type: 'email', message: '邮箱格式不正确', trigger: 'blur' }],
 }
 
 async function handleRegister() {
