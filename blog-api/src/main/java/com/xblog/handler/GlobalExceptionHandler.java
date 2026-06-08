@@ -22,11 +22,15 @@ public class GlobalExceptionHandler {
     public Result<Void> handleBusinessException(BusinessException e) {
         Result<Void> result = new Result<>();
         result.setCode(e.getResultCode().getCode());
-        result.setMessage(e.getMessage());
+        // sensitive=true 的错误码强制使用 ResultCode 的 generic message，
+        // 忽略 throw 处传入的自定义 message（防止开发者在 throw 时误传具体业务原因）
+        String clientMessage = e.getResultCode().isSensitive()
+                ? e.getResultCode().getMessage()
+                : e.getMessage();
+        result.setMessage(clientMessage);
         result.setErrors(e.getErrors());
         return result;
     }
-
     @ExceptionHandler(JwtException.class)
     public Result<Void> handleJwtException(JwtException e) {
         log.warn("JWT 异常: {}", e.getMessage());

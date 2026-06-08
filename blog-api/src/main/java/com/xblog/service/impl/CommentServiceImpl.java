@@ -29,6 +29,7 @@ import com.xblog.vo.CommentPublicVo;
 import com.xblog.vo.CommentStatusVo;
 import com.xblog.vo.CommentUpdateVo;
 import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
@@ -185,6 +187,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         Long userId = UserContext.getUserId();
         if (!comment.getUserId().equals(userId)) {
+            log.warn("编辑评论失败, 不能编辑他人的评论, commentId={}, commentUserId={}, currentUserId={}",
+                    id, comment.getUserId(), userId);
             throw new BusinessException(ResultCode.COMMENT_CANNOT_EDIT_OTHERS);
         }
 
@@ -206,10 +210,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         Long userId = UserContext.getUserId();
         if (!comment.getUserId().equals(userId)) {
+            log.warn("删除评论失败, 不能删除他人的评论, commentId={}, commentUserId={}, currentUserId={}",
+                    id, comment.getUserId(), userId);
             throw new BusinessException(ResultCode.COMMENT_CANNOT_DELETE_OTHERS);
         }
 
         if (CommentStatus.APPROVED.getValue().equals(comment.getStatus())) {
+            log.warn("删除评论失败, 已审核通过的评论无法删除, commentId={}", id);
             throw new BusinessException(ResultCode.COMMENT_APPROVED_CANNOT_DELETE);
         }
 

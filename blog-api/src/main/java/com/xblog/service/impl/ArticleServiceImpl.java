@@ -480,7 +480,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         // admin 可以编辑所有文章，普通用户只能编辑自己的文章
         String role = UserContext.getRole();
-        if (!"admin".equals(role) && !article.getAuthorId().equals(UserContext.getUserId())) {
+        Long currentUserId = UserContext.getUserId();
+        if (!"admin".equals(role) && !article.getAuthorId().equals(currentUserId)) {
+            log.warn("编辑文章失败, 不能编辑他人的文章, articleId={}, authorId={}, currentUserId={}, role={}",
+                    id, article.getAuthorId(), currentUserId, role);
             throw new BusinessException(ResultCode.ARTICLE_CANNOT_EDIT_OTHERS);
         }
 
@@ -630,7 +633,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
 
         String role = UserContext.getRole();
-        if (!"admin".equals(role) && !article.getAuthorId().equals(UserContext.getUserId())) {
+        Long currentUserId = UserContext.getUserId();
+        if (!"admin".equals(role) && !article.getAuthorId().equals(currentUserId)) {
+            log.warn("删除文章失败, 不能删除他人的文章, articleId={}, authorId={}, currentUserId={}, role={}",
+                    id, article.getAuthorId(), currentUserId, role);
             throw new BusinessException(ResultCode.ARTICLE_CANNOT_DELETE_OTHERS);
         }
 
