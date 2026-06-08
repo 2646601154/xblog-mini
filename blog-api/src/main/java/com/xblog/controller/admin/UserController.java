@@ -3,16 +3,26 @@ package com.xblog.controller.admin;
 import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.QueryUserDto;
 import com.xblog.dto.ResetPasswordParam;
+import com.xblog.dto.UpdateUserParam;
 import com.xblog.entity.PageResult;
-import com.xblog.vo.UserStatusVo;
 import com.xblog.entity.Result;
-import com.xblog.entity.User;
 import com.xblog.service.UserService;
-import jakarta.validation.Valid;
+import com.xblog.vo.UserDetailVo;
+import com.xblog.vo.UserListVo;
+import com.xblog.vo.UserStatusVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController("adminUserController")
@@ -27,31 +37,31 @@ public class UserController {
 
     @Operation(summary = "查询用户列表")
     @GetMapping
-    public Result<PageResult<User>> getUserList(@ModelAttribute QueryUserDto queryUserDto) {
+    public Result<PageResult<UserListVo>> getUserList(@ModelAttribute QueryUserDto queryUserDto) {
         log.info("查询用户列表, page={}, size={}", queryUserDto.getPage(), queryUserDto.getSize());
-        PageResult<User> pageresult = userService.getUserPage(queryUserDto);
+        PageResult<UserListVo> pageresult = userService.getUserPage(queryUserDto);
         return Result.success(pageresult);
     }
 
     @Operation(summary = "创建用户")
     @PostMapping
-    public Result<User> createUser(@Valid @RequestBody CreateUserParam param) {
+    public Result<UserDetailVo> createUser(@Valid @RequestBody CreateUserParam param) {
         log.info("创建用户, username={}", param.getUsername());
         return Result.success(userService.createUser(param));
     }
 
     @Operation(summary = "查询用户详情")
     @GetMapping("/{id}")
-    public Result<User> getUserDetail(@PathVariable Long id) {
+    public Result<UserDetailVo> getUserDetail(@PathVariable Long id) {
         log.info("查询用户详情, id={}", id);
-        return Result.success(userService.getById(id));
+        return Result.success(userService.getUserDetail(id));
     }
 
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
-    public Result<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public Result<UserDetailVo> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserParam param) {
         log.info("更新用户, id={}", id);
-        return Result.success(userService.updateUser(id, user));
+        return Result.success(userService.updateUser(id, param));
     }
 
     @Operation(summary = "禁用用户")

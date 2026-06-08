@@ -8,11 +8,14 @@ import com.xblog.dto.RegisterParam;
 import com.xblog.dto.ResetPasswordParam;
 import com.xblog.dto.UpdatePasswordParam;
 import com.xblog.dto.UpdateProfileParam;
+import com.xblog.dto.UpdateUserParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.User;
-
-import com.xblog.vo.TokenVo;
+import com.xblog.vo.LoginUserVo;
 import com.xblog.vo.RegisterUserVo;
+import com.xblog.vo.TokenVo;
+import com.xblog.vo.UserDetailVo;
+import com.xblog.vo.UserListVo;
 import com.xblog.vo.UserStatusVo;
 
 public interface UserService extends IService<User> {
@@ -25,13 +28,15 @@ public interface UserService extends IService<User> {
 
     RegisterUserVo register(RegisterParam registerParam);
 
-    User createUser(CreateUserParam param);
+    UserDetailVo createUser(CreateUserParam param);
 
-    User getLoginUser();
+    LoginUserVo getLoginUserInfo();
 
-    PageResult<User> getUserPage(QueryUserDto queryUserDto);
+    UserDetailVo getUserDetail(Long id);
 
-    User updateUser(Long id, User user);
+    PageResult<UserListVo> getUserPage(QueryUserDto queryUserDto);
+
+    UserDetailVo updateUser(Long id, UpdateUserParam param);
 
     void updateProfile(UpdateProfileParam param);
 

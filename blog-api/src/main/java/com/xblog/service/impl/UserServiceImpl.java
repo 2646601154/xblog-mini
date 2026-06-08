@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xblog.common.enums.ResultCode;
+import com.xblog.common.exception.BusinessException;
 import com.xblog.common.properties.JwtProperties;
-import com.xblog.common.util.UserContext;
 import com.xblog.common.util.JwtUtil;
-import com.xblog.common.util.PageUtil;
 import com.xblog.common.util.OssUtil;
+import com.xblog.common.util.PageUtil;
 import com.xblog.common.util.RedisUtil;
+import com.xblog.common.util.UserContext;
 import com.xblog.dto.CreateUserParam;
 import com.xblog.dto.LoginParam;
 import com.xblog.dto.QueryUserDto;
@@ -17,14 +18,17 @@ import com.xblog.dto.RegisterParam;
 import com.xblog.dto.ResetPasswordParam;
 import com.xblog.dto.UpdatePasswordParam;
 import com.xblog.dto.UpdateProfileParam;
+import com.xblog.dto.UpdateUserParam;
 import com.xblog.entity.PageResult;
 import com.xblog.entity.RefreshToken;
 import com.xblog.entity.User;
-import com.xblog.common.exception.BusinessException;
 import com.xblog.mapper.UserMapper;
 import com.xblog.service.UserService;
+import com.xblog.vo.LoginUserVo;
 import com.xblog.vo.RegisterUserVo;
 import com.xblog.vo.TokenVo;
+import com.xblog.vo.UserDetailVo;
+import com.xblog.vo.UserListVo;
 import com.xblog.vo.UserStatusVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,9 +37,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 用户服务实现。
+ *
+ * <h3>响应字段白名单约定（重要）</h3>
+ * <p>本类所有返回 {@code *Vo} 的方法均采用"手写 set"内联转换，
+ * <strong>不直接返回 {@code User} 实体</strong>，防止敏感字段（{@code password} 等）外泄。</p>
+ *
+ * <p>{@code User} 实体包含 {@code password/createdAt/updatedAt} 等不应外泄的字段。
+ * 任何新增的对外读接口必须：</p>
+ * <ol>
+ *   <li>自行 {@code new} 对应 VO</li>
+ *   <li>逐个 {@code vo.setXxx(user.getXxx())} 拷贝白名单字段</li>
+ *   <li>不得调用 {@code vo.setPassword(...)}（即使 User 实体有该字段）</li>
+ * </ol>
+ *
+ * <p>安全审计可通过 {@code grep "vo\\.set" UserServiceImpl.java} 快速核查暴露字段集。</p>
+ */
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -210,7 +232,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User createUser(CreateUserParam param) {
+    public UserDetailVo createUser(CreateUserParam param) {
         log.info("管理员创建用户, username={}, role={}", param.getUsername(), param.getRole());
         // 1. 校验用户名是否已存在
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
@@ -242,22 +264,61 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 4. 保存到数据库
         this.save(user);
 
+        // 字段白名单内联转换（见类级 Javadoc 约定）
+        UserDetailVo vo = new UserDetailVo();
+        vo.setId(user.getId());
+        vo.setUsername(user.getUsername());
+        vo.setNickname(user.getNickname());
+        vo.setAvatar(user.getAvatar());
+        vo.setEmail(user.getEmail());
+        vo.setRole(user.getRole());
+        vo.setStatus(user.getStatus());
+        vo.setCreatedAt(user.getCreatedAt());
+        vo.setUpdatedAt(user.getUpdatedAt());
         log.info("创建用户成功, userId={}, username={}", user.getId(), user.getUsername());
-        return user;
+        return vo;
     }
-
     @Override
-    public User getLoginUser() {
+    public LoginUserVo getLoginUserInfo() {
         Long userId = UserContext.getUserId();
         User user = this.getById(userId);
         if (user == null) {
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
-        return user;
+        // 字段白名单内联转换
+        LoginUserVo vo = new LoginUserVo();
+        vo.setId(user.getId());
+        vo.setUsername(user.getUsername());
+        vo.setNickname(user.getNickname());
+        vo.setAvatar(user.getAvatar());
+        vo.setRole(user.getRole());
+        vo.setStatus(user.getStatus());
+        vo.setEmail(user.getEmail());
+        return vo;
     }
 
     @Override
-    public PageResult<User> getUserPage(QueryUserDto dto) {
+    public UserDetailVo getUserDetail(Long id) {
+        User user = this.getById(id);
+        if (user == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
+        // 字段白名单内联转换
+        UserDetailVo vo = new UserDetailVo();
+        vo.setId(user.getId());
+        vo.setUsername(user.getUsername());
+        vo.setNickname(user.getNickname());
+        vo.setAvatar(user.getAvatar());
+        vo.setEmail(user.getEmail());
+        vo.setRole(user.getRole());
+        vo.setStatus(user.getStatus());
+        vo.setCreatedAt(user.getCreatedAt());
+        vo.setUpdatedAt(user.getUpdatedAt());
+        return vo;
+    }
+
+    @Override
+    public PageResult<UserListVo> getUserPage(QueryUserDto dto) {
         int pageNum = PageUtil.pageNum(dto.getPage());
         int pageSize = PageUtil.pageSize(dto.getSize());
         Page<User> page = new Page<>(pageNum, pageSize);
@@ -267,7 +328,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(StringUtils.hasText(dto.getStatus()), User::getStatus, dto.getStatus());
 
         this.page(page, wrapper);
-        return PageUtil.build(page);
+        // 字段白名单内联转换（password/username/updatedAt 故意不拷贝）
+        List<UserListVo> records = page.getRecords().stream()
+                .map(user -> {
+                    UserListVo vo = new UserListVo();
+                    vo.setId(user.getId());
+                    vo.setNickname(user.getNickname());
+                    vo.setAvatar(user.getAvatar());
+                    vo.setEmail(user.getEmail());
+                    vo.setRole(user.getRole());
+                    vo.setStatus(user.getStatus());
+                    vo.setCreatedAt(user.getCreatedAt());
+                    return vo;
+                })
+                .toList();
+        return PageUtil.build(page, records);
     }
 
     @Override
@@ -352,14 +427,80 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User updateUser(Long id, User user) {
+    public UserDetailVo updateUser(Long id, UpdateUserParam param) {
+        Long currentUserId = UserContext.getUserId();
+        log.info("管理员更新用户, targetUserId={}, currentUserId={}", id, currentUserId);
+
         User existing = this.getById(id);
         if (existing == null) {
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
-        user.setId(id);
-        this.updateById(user);
-        return this.getById(id);
+
+        // 业务规则 1：禁止修改自己（防管理员降级/禁用自己）
+        if (id.equals(currentUserId)) {
+            log.warn("管理员更新用户失败, 不能修改自己, userId={}", id);
+            throw new BusinessException(ResultCode.USER_MODIFY_SELF_FORBIDDEN);
+        }
+
+        // 业务规则 2：禁止修改其他管理员
+        if ("admin".equals(existing.getRole())) {
+            log.warn("管理员更新用户失败, 不能修改管理员账号, targetUserId={}", id);
+            throw new BusinessException(ResultCode.USER_MODIFY_ADMIN_FORBIDDEN);
+        }
+
+        // 字段白名单更新：仅当请求中明确传了非空值才覆盖
+        if (StringUtils.hasText(param.getNickname())) {
+            existing.setNickname(param.getNickname());
+        }
+        if (StringUtils.hasText(param.getEmail())) {
+            if (!param.getEmail().equals(existing.getEmail())) {
+                // 邮箱变更需校验唯一性
+                LambdaQueryWrapper<User> emailWrapper = new LambdaQueryWrapper<>();
+                emailWrapper.eq(User::getEmail, param.getEmail());
+                if (this.count(emailWrapper) > 0) {
+                    log.warn("管理员更新用户失败, 邮箱已被其他用户使用: {}", param.getEmail());
+                    throw new BusinessException(ResultCode.EMAIL_ALREADY_USED_BY_OTHERS);
+                }
+            }
+            existing.setEmail(param.getEmail());
+        }
+        if (StringUtils.hasText(param.getAvatar())) {
+            // 清理旧头像（OSS 上的旧图片）
+            String oldAvatar = existing.getAvatar();
+            if (StringUtils.hasText(oldAvatar) && !oldAvatar.equals(param.getAvatar())) {
+                try {
+                    ossUtil.deleteFile(oldAvatar);
+                } catch (Exception e) {
+                    log.warn("删除旧 OSS 头像失败（非 OSS 图片将忽略）: {}", oldAvatar);
+                }
+            }
+            existing.setAvatar(param.getAvatar());
+        }
+        if (StringUtils.hasText(param.getRole())) {
+            existing.setRole(param.getRole());
+        }
+        if (StringUtils.hasText(param.getStatus())) {
+            existing.setStatus(param.getStatus());
+        }
+
+        // username/password/createdAt/updatedAt 不接受通过此 DTO 写入
+        // MyBatis-Plus 的 updateById 仅更新非 null 字段，但已通过 DTO 字段白名单隔离
+
+        this.updateById(existing);
+        log.info("管理员更新用户成功, targetUserId={}", id);
+        // 字段白名单内联转换
+        User updated = this.getById(id);
+        UserDetailVo vo = new UserDetailVo();
+        vo.setId(updated.getId());
+        vo.setUsername(updated.getUsername());
+        vo.setNickname(updated.getNickname());
+        vo.setAvatar(updated.getAvatar());
+        vo.setEmail(updated.getEmail());
+        vo.setRole(updated.getRole());
+        vo.setStatus(updated.getStatus());
+        vo.setCreatedAt(updated.getCreatedAt());
+        vo.setUpdatedAt(updated.getUpdatedAt());
+        return vo;
     }
 
     @Override
