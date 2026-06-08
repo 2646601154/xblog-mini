@@ -5,8 +5,8 @@ import com.xblog.dto.LoginParam;
 import com.xblog.dto.RefreshTokenParam;
 import com.xblog.dto.RegisterParam;
 import com.xblog.entity.Result;
-import com.xblog.entity.User;
 import com.xblog.service.UserService;
+import com.xblog.vo.LoginUserVo;
 import com.xblog.vo.RegisterUserVo;
 import com.xblog.vo.TokenVo;
 import com.xblog.common.properties.JwtProperties;
@@ -71,8 +71,8 @@ public class AuthController {
 
     @Operation(summary = "获取当前登录用户信息")
     @GetMapping("/me")
-    public Result<User> me() {
-        log.info("获取当前用户信息, userId: {}", UserContext.getUserId());
-        return Result.success(userService.getLoginUser());
+    public Result<LoginUserVo> me() {
+        log.info("获取当前用户信息, userId={}", UserContext.getUserId());
+        return Result.success(userService.getLoginUserInfo());
     }
 }
