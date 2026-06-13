@@ -53,10 +53,10 @@ onMounted(() => {
       <!-- Hero Section -->
       <section class="hero">
         <img
-          src="/avatar/LuoXiaohei.jpg"
+          src="/avatar/kipfel.png"
           alt="Avatar"
           class="hero-avatar"
-          @error="($event.target as HTMLImageElement).src = '/avatar/LuoXiaohei.jpg'"
+          @error="($event.target as HTMLImageElement).src = '/avatar/kipfel.png'"
         />
         <h1 class="name">Xiaruoxin</h1>
         <p class="title">热爱技术与分享的全栈开发者</p>

@@ -39,7 +39,7 @@ const getIconComponent = (icon: string) => {
 <template>
   <div class="about-me">
     <div class="avatar-wrapper">
-      <img src="/avatar/LuoXiaohei.jpg" alt="Avatar" class="avatar" />
+      <img src="/avatar/kipfel.png" alt="Avatar" class="avatar" />
     </div>
     <h3 class="title">Xiaruoxin</h3>
     <p class="bio">{{ bio }}</p>
