@@ -1,4 +1,4 @@
-package com.xblog.common.intercepter;
+package com.xblog.common.interceptor;
 
 import com.alibaba.fastjson2.JSON;
 import com.xblog.common.enums.ResultCode;
