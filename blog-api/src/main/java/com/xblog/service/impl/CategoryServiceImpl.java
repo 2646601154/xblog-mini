@@ -56,7 +56,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         vo.setSlug(category.getSlug());
         vo.setDescription(category.getDescription());
         vo.setSortOrder(category.getSortOrder());
-
         return vo;
     }
 

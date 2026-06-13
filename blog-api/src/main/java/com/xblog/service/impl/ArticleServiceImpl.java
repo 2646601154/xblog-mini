@@ -39,16 +39,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private final IpUtil ipUtil;
     private final OssUtil ossUtil;
 
-    // ============================= Cache Constants ============================
-
-    private static final String CACHE_KEY_PUBLIC_LIST = "article:list:";
-    private static final String CACHE_KEY_DETAIL = "article:detail:";
-    private static final String CACHE_KEY_TAGS = "article:tags:";
-
-    private static final long TTL_PUBLIC_LIST_MINUTES = 5;
-    private static final long TTL_DETAIL_MINUTES = 30;
-    private static final long TTL_TAGS_MINUTES = 60;
-
     public ArticleServiceImpl(CategoryMapper categoryMapper,
                               UserMapper userMapper,
                               TagMapper tagMapper,
@@ -64,11 +54,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         this.ipUtil = ipUtil;
         this.ossUtil = ossUtil;
     }
+    // ============================= Cache Constants ============================
+
+    private static final String CACHE_KEY_PUBLIC_LIST = "article:list:";
+    private static final String CACHE_KEY_DETAIL = "article:detail:";
+    private static final String CACHE_KEY_TAGS = "article:tags:";
+
+    private static final long TTL_PUBLIC_LIST_MINUTES = 5; //文章公开列表ttl 5min
+    private static final long TTL_DETAIL_MINUTES = 30; //文章详情ttl 30 min
+    private static final long TTL_TAGS_MINUTES = 60; //标签列表ttl 60 min
 
     @Override
     public PageResult<ArticleVo> getPublicArticlePage(QueryArticleDto queryDto) {
         String cacheKey = buildPublicListKey(queryDto);
-
         // 1. 尝试读取缓存
         try {
             PageResult<ArticleVo> cached = redisUtil.get(cacheKey);
@@ -79,10 +77,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         } catch (Exception e) {
             log.warn("缓存读取失败，回退到数据库: {}", cacheKey, e);
         }
-
         // 2. 缓存未命中，查询数据库
         PageResult<ArticleVo> result = queryPublicArticlePage(queryDto);
-
         // 3. 写入缓存
         try {
             redisUtil.set(cacheKey, result, TTL_PUBLIC_LIST_MINUTES, TimeUnit.MINUTES);
@@ -100,7 +96,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         // 1. 构建分页对象
         int pageNum = PageUtil.pageNum(queryDto.getPage());
         int pageSize = PageUtil.pageSize(queryDto.getSize());
-        Page<Article> page = new Page<>(pageNum, pageSize);
+        Page<Article> pageParam = new Page<>(pageNum, pageSize);
 
         // 2. 构建查询条件
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
@@ -129,7 +125,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.orderByDesc(Article::getCreatedAt);
 
         // 3. 执行分页查询
-        Page<Article> resultPage = page(page, wrapper);
+        Page<Article> resultPage = page(pageParam, wrapper);
 
         // 4. 转换为 VO 并构建分页结果
         PageResult<ArticleVo> pageResult = new PageResult<>();

@@ -13,29 +13,17 @@ import java.time.LocalDateTime;
 public class Article {
     @TableId(type = IdType.AUTO)
     private Long id;
-
     private String title;
-
     private String summary;
-
     private String content;
-
     private String coverImage;
-
     private Long categoryId;
-
     private Long authorId;
-
     private String status;
-
     private Integer viewCount;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime publishedAt;
-
     @TableLogic
     private Boolean deleted;
 }
