@@ -9,8 +9,13 @@ export interface CategoryFormData {
 }
 
 export type CategoryListResponse = Promise<{
-  data: { code: number; message: string; data: Category[] }
+  data: {
+    code: number
+    message: string
+    data: Category[]
+  }
 }>
+
 export type CategoryCreateResponse = Promise<{
   data: { code: number; message: string; data: Category }
 }>
