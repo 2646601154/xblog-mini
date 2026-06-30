@@ -40,13 +40,8 @@ async function handleSubmit() {
 
 function getDescription(key: string) {
   const descriptions: Record<string, string> = {
-    site_title: '网站标题',
-    site_logo: '网站 Logo',
-    site_description: '网站描述',
     icp_number: '备案号',
     copyright: '版权信息',
-    admin_username: '管理员用户名',
-    admin_password: '管理员密码',
   }
   return descriptions[key] || key
 }

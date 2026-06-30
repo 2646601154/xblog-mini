@@ -129,6 +129,4 @@ INSERT INTO `comment` (`article_id`, `user_id`, `content`, `status`, `created_at
 
 INSERT INTO `config` (`config_key`, `config_value`, `description`) VALUES
 ('icp_number', '京ICP备XXXXXXXX号', '备案号'),
-('copyright', '© 2026 Xblog. All rights reserved.', '版权信息'),
-('admin_username', 'admin', '管理员用户名'),
-('admin_password', '', '管理员密码(加密)');
+('copyright', '© 2026 Xblog. All rights reserved.', '版权信息');
