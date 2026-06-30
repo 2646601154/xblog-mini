@@ -18,9 +18,6 @@ export interface UserQuery {
 export type UserListResponse = Promise<{
   data: { code: number; message: string; data: PageResult<User> }
 }>
-export type UserDetailResponse = Promise<{
-  data: { code: number; message: string; data: User }
-}>
 export type UserUpdateResponse = Promise<{
   data: { code: number; message: string; data: User }
 }>
@@ -33,10 +30,6 @@ export type UserStatusResponse = Promise<{
 
 export function getUserList(params: UserQuery): UserListResponse {
   return service.get('/v1/admin/users', { params })
-}
-
-export function getUserDetail(id: number): UserDetailResponse {
-  return service.get(`/v1/admin/users/${id}`)
 }
 
 export function createUser(data: CreateUserFormData): UserCreateResponse {

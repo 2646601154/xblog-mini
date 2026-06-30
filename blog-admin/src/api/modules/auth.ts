@@ -4,7 +4,7 @@ import type { Login, UserInfo, NullResponse } from '@/types'
 /**
  * 双 Token 响应
  */
-export interface Token {
+interface Token {
   accessToken: string
   refreshToken: string
   expiresIn: number

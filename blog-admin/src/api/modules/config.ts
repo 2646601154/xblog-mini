@@ -9,19 +9,12 @@ export interface ConfigFormData {
 export type ConfigListResponse = Promise<{
   data: { code: number; message: string; data: ConfigItem[] }
 }>
-export type ConfigDetailResponse = Promise<{
-  data: { code: number; message: string; data: ConfigItem }
-}>
 export type ConfigUpdateResponse = Promise<{
   data: { code: number; message: string; data: ConfigFormData[] }
 }>
 
 export function getConfigList(): ConfigListResponse {
   return service.get('/v1/admin/configs')
-}
-
-export function getConfigDetail(key: string): ConfigDetailResponse {
-  return service.get(`/v1/admin/configs/${key}`)
 }
 
 export function updateConfig(configs: ConfigFormData[]): ConfigUpdateResponse {

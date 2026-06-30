@@ -1,19 +1,3 @@
-export interface Article {
-  id: number
-  title: string
-  summary: string
-  content: string
-  coverImage: string
-  category: CategorySimple
-  author: AuthorSimple
-  tags: TagSimple[]
-  status: 'draft' | 'published' | 'recycled'
-  viewCount: number
-  publishedAt: string
-  createdAt: string
-  updatedAt: string
-}
-
 export interface ArticleListItem {
   id: number
   title: string
