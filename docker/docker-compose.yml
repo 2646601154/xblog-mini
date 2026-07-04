@@ -1,0 +1,167 @@
+# Docker Compose for Xblog-mini
+# SSL证书手动管理（certbot在宿主机申请，nginx读取）
+
+services:
+  # ============================================================
+  # Nginx Reverse Proxy (SSL termination + subdomain routing)
+  # ============================================================
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-proxy/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-redirect", "-qO", "/dev/null", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ============================================================
+  # MySQL 8.0 - 数据库服务
+  # ============================================================
+  blog-mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    container_name: blog-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-xblog}
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./sql/test-data.sql:/docker-entrypoint-initdb.d/02-test-data.sql:ro
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+
+  # ============================================================
+  # Redis 7.x - 缓存服务
+  # ============================================================
+  blog-redis:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: blog-redis
+    restart: unless-stopped
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    command: >
+      sh -c "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$${REDIS_PASSWORD}\""
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # Spring Boot Backend API
+  # ============================================================
+  blog-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: blog-api
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:mysql://blog-mysql:3306/xblog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+      REDIS_HOST: ${REDIS_HOST:-blog-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set in .env}
+      REDIS_DB: ${REDIS_DB:-1}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-604800000}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-900000}
+      JAVA_OPTS: ${JAVA_OPTS:--Xms256m -Xmx512m -XX:+UseG1GC}
+      # 阿里云 OSS 配置
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:-}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:-}
+      OSS_BUCKET_NAME: ${OSS_BUCKET_NAME:-}
+      OSS_URL_PREFIX: ${OSS_URL_PREFIX:-}
+    networks:
+      - blog-network
+    depends_on:
+      blog-mysql:
+        condition: service_healthy
+      blog-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  # ============================================================
+  # Admin Frontend (blog-admin) - 静态文件服务器
+  # ============================================================
+  blog-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: blog-admin
+    restart: unless-stopped
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-redirect", "-qO", "/dev/null", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ============================================================
+  # Web Frontend (blog-web) - 静态文件服务器
+  # ============================================================
+  blog-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: blog-web
+    restart: unless-stopped
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-redirect", "-qO", "/dev/null", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+# ============================================================
+# 网络配置
+# ============================================================
+networks:
+  blog-network:
+    driver: bridge
+
+# ============================================================
+# 数据卷配置（数据持久化）
+# ============================================================
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local

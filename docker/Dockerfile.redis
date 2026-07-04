@@ -1,0 +1,11 @@
+# Redis 7.x for Xblog-mini
+
+FROM redis:7-alpine
+
+# 复制自定义配置
+COPY redis.conf /usr/local/etc/redis/redis.conf
+
+EXPOSE 6379
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 \
+    CMD redis-cli ping || exit 1

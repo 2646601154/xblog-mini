@@ -1,0 +1,23 @@
+# Blog Admin Frontend - 静态文件服务器
+# 不再包含nginx代理，由外部nginx-proxy处理
+
+FROM nginx:alpine
+
+# 安装wget（用于健康检查）
+RUN apk add --no-cache wget
+
+# 复制构建产物
+COPY dist-admin/ /usr/share/nginx/html/
+
+# 复制nginx配置
+COPY nginx/admin.conf /etc/nginx/conf.d/default.conf
+
+# 暴露端口（内部容器通信）
+EXPOSE 80
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 \
+    CMD wget --no-redirect -qO /dev/null http://localhost/health || exit 1
+
+# 不后台运行
+CMD ["nginx", "-g", "daemon off;"]

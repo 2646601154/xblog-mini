@@ -1,0 +1,10 @@
+{
+  "api_key": "YOUR_RAINYUN_API_KEY_HERE",
+  "api_base_url": "https://api.v2.rainyun.com",
+  "domain_name": "xiaruoxin.cn",
+  "cert_domains": "*.xiaruoxin.cn,xiaruoxin.cn",
+  "verify_method": "dns",
+  "cert_dir": "/etc/letsencrypt/live/xiaruoxin.cn",
+  "nginx_container": "nginx-proxy",
+  "log_file": "/var/log/ssl_renew.log"
+}

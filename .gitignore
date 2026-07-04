@@ -29,12 +29,12 @@ node_modules/
 *.egg-info/
 __pycache__/
 
-# Maven
-.mvn/
-.mvnw
-
-# Docker
-docker/
+# Maven build output
+*.class
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
 
 # Temporary files
 *.tmp

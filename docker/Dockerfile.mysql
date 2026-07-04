@@ -1,0 +1,18 @@
+# MySQL 8.0 for Xblog-mini
+# 包含初始化脚本：init.sql + test-data.sql
+
+FROM mysql:8.0
+
+# 设置MySQL配置
+COPY my.cnf /etc/mysql/conf.d/my.cnf
+
+# 复制初始化脚本
+COPY sql/init.sql /docker-entrypoint-initdb.d/01-init.sql
+COPY sql/test-data.sql /docker-entrypoint-initdb.d/02-test-data.sql
+
+# 暴露端口
+EXPOSE 3306
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 \
+    CMD mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD} || exit 1
