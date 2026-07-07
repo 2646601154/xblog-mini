@@ -9,6 +9,7 @@ import com.xblog.mapper.ArticleMapper;
 import com.xblog.mapper.UserMapper;
 import com.xblog.service.MediaService;
 import com.xblog.vo.MediaImageVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class MediaServiceImpl implements MediaService {
 
     public MediaServiceImpl(ArticleMapper articleMapper,
                             UserMapper userMapper,
-                            OssUtil ossUtil,
+                            @Autowired(required = false) OssUtil ossUtil,
                             OssProperties ossProperties) {
         this.articleMapper = articleMapper;
         this.userMapper = userMapper;
@@ -79,6 +80,9 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public void deleteImage(String url) {
+        if (ossUtil == null) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "OSS 未配置，无法删除图片");
+        }
         if (!isOssUrl(url)) {
             throw new BusinessException(ResultCode.BAD_REQUEST, "仅支持删除 OSS 图片");
         }

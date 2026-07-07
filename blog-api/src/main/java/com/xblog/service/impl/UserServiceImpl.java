@@ -31,6 +31,7 @@ import com.xblog.vo.UserDetailVo;
 import com.xblog.vo.UserListVo;
 import com.xblog.vo.UserStatusVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final RedisTemplate<String, Object> redisTemplate;
     private final OssUtil ossUtil;
 
-    public UserServiceImpl(JwtUtil jwtUtil, RedisUtil redisUtil, JwtProperties jwtProperties, RedisTemplate<String, Object> redisTemplate, OssUtil ossUtil) {
+    public UserServiceImpl(JwtUtil jwtUtil, RedisUtil redisUtil, JwtProperties jwtProperties, RedisTemplate<String, Object> redisTemplate, @Autowired(required = false) OssUtil ossUtil) {
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
         this.jwtProperties = jwtProperties;

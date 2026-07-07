@@ -7,6 +7,7 @@ import com.xblog.common.enums.ResultCode;
 import com.xblog.common.exception.BusinessException;
 import com.xblog.common.properties.OssProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,8 +16,8 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
 @Component
+@ConditionalOnExpression("!'${oss.access-key-id}'.isEmpty()")
 @Slf4j
 public class OssUtil {
 

@@ -19,6 +19,7 @@ import com.xblog.mapper.*;
 import com.xblog.service.ArticleService;
 import com.xblog.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.util.StringUtils;
@@ -45,7 +46,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                               ArticleTagMapper articleTagMapper,
                               RedisUtil redisUtil,
                               IpUtil ipUtil,
-                              OssUtil ossUtil) {
+                              @Autowired(required = false) OssUtil ossUtil) {
         this.categoryMapper = categoryMapper;
         this.userMapper = userMapper;
         this.tagMapper = tagMapper;
