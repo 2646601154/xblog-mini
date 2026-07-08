@@ -2,8 +2,7 @@
 .idea/
 *.iml
 .vscode/
-*.swp
-*.swo
+*.sw?
 
 # OS
 .DS_Store
@@ -18,6 +17,7 @@ target/
 # Logs
 *.log
 logs/
+npm-debug.log*
 
 # Environment
 .env
@@ -58,3 +58,30 @@ desktop.ini
 application-local.yml
 .learnings/
 .workbuddy/
+
+# === blog-api (Spring Boot / Maven / IDE templates) ===
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+*.iws
+*.ipr
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# === blog-admin (Vue3) ===
+.reasonix/
+
+# === blog-mobile (微信小程序) ===
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+miniprogram_npm/
