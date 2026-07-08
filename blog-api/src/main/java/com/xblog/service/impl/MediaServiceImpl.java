@@ -96,6 +96,7 @@ public class MediaServiceImpl implements MediaService {
 
     private boolean isOssUrl(String url) {
         return url != null && ossProperties.getUrlPrefix() != null
+                && !ossProperties.getUrlPrefix().isEmpty()
                 && url.startsWith(ossProperties.getUrlPrefix());
     }
 }
