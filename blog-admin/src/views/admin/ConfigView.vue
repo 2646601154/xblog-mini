@@ -56,8 +56,8 @@ onMounted(fetchConfigs)
       <el-button type="primary" :loading="submitting" @click="handleSubmit">保存配置</el-button>
     </div>
 
-    <el-card v-loading="loading">
-      <el-form label-width="140px">
+    <el-card v-loading="loading" shadow="never">
+      <el-form label-width="80px">
         <el-form-item
           v-for="(item, index) in form"
           :key="item.configKey"
@@ -75,3 +75,9 @@ onMounted(fetchConfigs)
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.el-form :deep(.el-form-item:last-child) {
+  margin-bottom: 0;
+}
+</style>

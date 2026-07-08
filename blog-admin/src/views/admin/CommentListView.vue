@@ -106,11 +106,10 @@ onMounted(fetchComments)
 </script>
 
 <template>
-  <div class="comment-view">
+  <div>
     <div class="header-section">
       <div class="title-area">
         <h2 class="text-2xl font-bold">评论管理</h2>
-        <p class="text-gray-500 text-sm mt-1">管理用户评论，审核评论内容</p>
       </div>
       <el-select
         v-model="filters.status"
@@ -126,7 +125,7 @@ onMounted(fetchComments)
       </el-select>
     </div>
 
-    <el-card v-loading="loading" class="comment-card">
+    <el-card v-loading="loading" class="comment-card" shadow="never">
       <template #header>
         <div class="card-header">
           <span>评论列表</span>
@@ -204,26 +203,16 @@ onMounted(fetchComments)
 </template>
 
 <style scoped>
-.comment-view {
-  padding: 24px;
-}
-
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .title-area {
   display: flex;
   flex-direction: column;
-}
-
-.comment-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -248,7 +237,6 @@ onMounted(fetchComments)
 
 .comment-item:hover {
   border-color: #e8e8e8;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
 }
 
 .comment-main {

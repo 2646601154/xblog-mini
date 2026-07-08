@@ -96,11 +96,10 @@ onMounted(fetchTags)
 </script>
 
 <template>
-  <div class="tag-view">
+  <div>
     <div class="header-section">
       <div class="title-area">
         <h2 class="text-2xl font-bold">标签管理</h2>
-        <p class="text-gray-500 text-sm mt-1">为文章添加标签，便于分类检索</p>
       </div>
       <el-button type="primary" @click="openCreateDialog">
         <el-icon class="mr-1"><Plus /></el-icon>
@@ -108,7 +107,7 @@ onMounted(fetchTags)
       </el-button>
     </div>
 
-    <el-card v-loading="loading" class="tag-card">
+    <el-card v-loading="loading" class="tag-card" shadow="never">
       <template #header>
         <div class="card-header">
           <span>标签列表</span>
@@ -170,26 +169,16 @@ onMounted(fetchTags)
 </template>
 
 <style scoped>
-.tag-view {
-  padding: 24px;
-}
-
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .title-area {
   display: flex;
   flex-direction: column;
-}
-
-.tag-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -217,7 +206,6 @@ onMounted(fetchTags)
 
 .tag-item:hover {
   border-color: #409eff;
-  box-shadow: 0 2px 12px 0 rgba(64, 158, 255, 0.1);
 }
 
 .tag-content {

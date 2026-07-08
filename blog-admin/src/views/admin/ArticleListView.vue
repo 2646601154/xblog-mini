@@ -144,7 +144,7 @@ onMounted(fetchArticles)
       <el-button type="primary" @click="handleCreate">创建文章</el-button>
     </div>
 
-    <el-card>
+    <el-card shadow="never">
       <div class="flex gap-4 mb-4">
         <el-select v-model="filters.status" placeholder="状态筛选" clearable @change="handleFilter">
           <el-option label="全部" value="" />

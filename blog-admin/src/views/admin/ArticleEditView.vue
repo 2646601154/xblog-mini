@@ -168,7 +168,7 @@ onMounted(() => {
       <h2 class="text-2xl font-bold">{{ isEdit ? '编辑文章' : '创建文章' }}</h2>
     </div>
 
-    <el-card v-loading="loading">
+    <el-card v-loading="loading" shadow="never">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <!-- 左栏：富文本编辑器 | 右栏：其他字段 -->
         <div

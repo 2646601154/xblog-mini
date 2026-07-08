@@ -51,12 +51,12 @@ onMounted(fetchStats)
 
 <template>
   <div>
-    <h2 class="text-2xl font-bold mb-6">仪表盘</h2>
+    <h2 class="text-2xl font-bold mb-4">仪表盘</h2>
 
     <!-- 统计卡片 -->
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-card shadow="hover" class="cursor-pointer" @click="router.push('/admin/articles')">
+        <el-card shadow="never" class="cursor-pointer" @click="router.push('/admin/articles')">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-blue-100 rounded-lg">
               <el-icon size="32" class="text-blue-500"><Document /></el-icon>
@@ -69,7 +69,7 @@ onMounted(fetchStats)
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="hover" class="cursor-pointer" @click="router.push('/admin/users')">
+        <el-card shadow="never" class="cursor-pointer" @click="router.push('/admin/users')">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-green-100 rounded-lg">
               <el-icon size="32" class="text-green-500"><User /></el-icon>
@@ -82,7 +82,7 @@ onMounted(fetchStats)
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="hover" class="cursor-pointer" @click="router.push('/admin/comments')">
+        <el-card shadow="never" class="cursor-pointer" @click="router.push('/admin/comments')">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-orange-100 rounded-lg">
               <el-icon size="32" class="text-orange-500"><ChatDotSquare /></el-icon>
@@ -95,7 +95,7 @@ onMounted(fetchStats)
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="hover" class="cursor-pointer" @click="router.push('/admin/categories')">
+        <el-card shadow="never" class="cursor-pointer" @click="router.push('/admin/categories')">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-purple-100 rounded-lg">
               <el-icon size="32" class="text-purple-500"><FolderOpened /></el-icon>

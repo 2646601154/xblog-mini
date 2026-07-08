@@ -163,17 +163,17 @@ const tagUsageOption = computed<EChartsOption>(() => ({
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
     <!-- 文章趋势图 -->
-    <el-card shadow="hover" class="col-span-1 lg:col-span-2">
+    <el-card shadow="never" class="col-span-1 lg:col-span-2">
       <v-chart class="h-80" :option="articleTrendOption" autoresize />
     </el-card>
 
     <!-- 分类分布图 -->
-    <el-card shadow="hover" class="col-span-1">
+    <el-card shadow="never" class="col-span-1">
       <v-chart class="h-80" :option="categoryOption" autoresize />
     </el-card>
 
     <!-- 标签使用图 -->
-    <el-card shadow="hover" class="col-span-1">
+    <el-card shadow="never" class="col-span-1">
       <v-chart class="h-80" :option="tagUsageOption" autoresize />
     </el-card>
   </div>

@@ -106,16 +106,15 @@ onMounted(fetchCategories)
 </script>
 
 <template>
-  <div class="category-view">
+  <div>
     <div class="header-section">
       <div class="title-area">
         <h2 class="text-2xl font-bold">分类管理</h2>
-        <p class="text-gray-500 text-sm mt-1">管理博客文章的分类体系</p>
       </div>
       <el-button type="primary" @click="openCreateDialog">+ 创建分类</el-button>
     </div>
 
-    <el-card v-loading="loading" class="category-card">
+    <el-card v-loading="loading" class="category-card" shadow="never">
       <template #header>
         <div class="card-header">
           <span>分类列表</span>
@@ -198,26 +197,16 @@ onMounted(fetchCategories)
 </template>
 
 <style scoped>
-.category-view {
-  padding: 24px;
-}
-
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .title-area {
   display: flex;
   flex-direction: column;
-}
-
-.category-card {
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04);
 }
 
 .card-header {

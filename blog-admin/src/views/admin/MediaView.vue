@@ -71,19 +71,21 @@ onMounted(loadImages)
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="mb-4 flex gap-3 items-center">
-      <h2 class="text-xl font-bold">图片管理</h2>
-      <el-select v-model="typeFilter" style="width: 120px" size="small">
-        <el-option label="全部类型" value="all" />
-        <el-option label="封面图" value="cover" />
-        <el-option label="头像" value="avatar" />
-      </el-select>
-      <el-select v-model="ossFilter" style="width: 120px" size="small">
-        <el-option label="全部来源" value="all" />
-        <el-option label="OSS" value="oss" />
-        <el-option label="外部URL" value="url" />
-      </el-select>
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold">图片管理</h2>
+      <div class="flex gap-3 items-center">
+        <el-select v-model="typeFilter" style="width: 140px">
+          <el-option label="全部类型" value="all" />
+          <el-option label="封面图" value="cover" />
+          <el-option label="头像" value="avatar" />
+        </el-select>
+        <el-select v-model="ossFilter" style="width: 140px">
+          <el-option label="全部来源" value="all" />
+          <el-option label="OSS" value="oss" />
+          <el-option label="外部URL" value="url" />
+        </el-select>
+      </div>
     </div>
 
     <div v-loading="loading" class="min-h-[400px]">
@@ -95,7 +97,7 @@ onMounted(loadImages)
           v-for="img in filteredImages"
           :key="img.url"
           :body-style="{ padding: '0' }"
-          shadow="hover"
+          shadow="never"
           class="overflow-hidden cursor-pointer"
         >
           <div

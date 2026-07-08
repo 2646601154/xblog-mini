@@ -218,23 +218,22 @@ onMounted(fetchUsers)
   <div>
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold">用户管理</h2>
-      <el-button type="primary" @click="openCreateDialog">添加用户</el-button>
-    </div>
-
-    <el-card>
-      <div class="flex gap-4 mb-4">
-        <el-select v-model="filters.role" placeholder="角色筛选" clearable @change="handleFilter">
+      <div class="flex gap-3 items-center">
+        <el-select v-model="filters.role" placeholder="角色筛选" clearable @change="handleFilter" style="width: 140px">
           <el-option label="全部" value="" />
           <el-option label="管理员" value="admin" />
           <el-option label="普通用户" value="user" />
         </el-select>
-        <el-select v-model="filters.status" placeholder="状态筛选" clearable @change="handleFilter">
+        <el-select v-model="filters.status" placeholder="状态筛选" clearable @change="handleFilter" style="width: 140px">
           <el-option label="全部" value="" />
           <el-option label="正常" value="normal" />
           <el-option label="禁用" value="disabled" />
         </el-select>
+        <el-button type="primary" @click="openCreateDialog">添加用户</el-button>
       </div>
+    </div>
 
+    <el-card shadow="never">
       <el-table :data="users" v-loading="loading" stripe>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="用户" min-width="200">
