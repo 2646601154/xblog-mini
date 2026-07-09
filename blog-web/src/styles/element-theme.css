@@ -42,24 +42,24 @@
   --el-box-shadow-lighter: var(--shadow-sm);
 
   /* ── Button ── */
-  --el-button-border-radius: var(--radius-pill);
+  --el-button-border-radius: var(--radius-sm);
   --el-button-hover-bg-color: var(--color-primary-50);
   --el-button-hover-border-color: var(--color-primary-light);
 
   /* ── Input ── */
-  --el-input-border-radius: var(--radius-pill);
+  --el-input-border-radius: var(--radius-sm);
   --el-input-hover-border-color: var(--color-primary-light);
   --el-input-focus-border-color: var(--color-primary);
   --el-input-bg-color: var(--bg-surface);
 
   /* ── Tag ── */
-  --el-tag-border-radius: var(--radius-pill);
+  --el-tag-border-radius: var(--radius-sm);
 
   /* ── Card ── */
-  --el-card-border-radius: var(--radius-lg);
+  --el-card-border-radius: var(--radius-md);
 
   /* ── Pagination ── */
-  --el-pagination-button-border-radius: var(--radius-pill);
+  --el-pagination-button-border-radius: var(--radius-sm);
 
   /* ── Menu ── */
   --el-menu-hover-bg-color: var(--color-primary-50);
@@ -97,9 +97,9 @@
    Component-Specific Overrides
    ════════════════════════════════════════ */
 
-/* Buttons: Pill Shape */
+/* Buttons */
 .el-button {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
   transition: all 0.2s ease;
 }
 
@@ -117,21 +117,20 @@
   --el-button-text-color: var(--color-primary);
 }
 
-/* Tags: Pill Shape */
+/* Tags */
 .el-tag {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
-/* Cards: Rounded + Soft Shadow */
+/* Cards */
 .el-card {
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius-md) !important;
   border: none !important;
 }
 
-/* Inputs: Pill Shape */
+/* Inputs */
 .el-input__wrapper {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
   box-shadow: 0 0 0 1px var(--border-light) inset !important;
   transition: box-shadow 0.2s ease !important;
 }
@@ -148,13 +147,13 @@
   color: var(--text-muted);
 }
 
-/* Pagination: Pill-Shaped Active Button */
+/* Pagination */
 .el-pagination button {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 .el-pager li {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
   transition: all 0.2s ease;
 }
 
@@ -163,9 +162,9 @@
   color: white !important;
 }
 
-/* Menu Items: Pill-Shaped Hover */
+/* Menu Items */
 .el-menu-item {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
   margin: 2px 0;
 }
 
@@ -175,17 +174,17 @@
   color: var(--color-primary) !important;
 }
 
-/* Dialog: Rounded */
+/* Dialog */
 .el-dialog {
-  border-radius: var(--radius-xl) !important;
+  border-radius: var(--radius-lg) !important;
 }
 
-/* Select: Pill-Shaped */
+/* Select */
 .el-select .el-input__wrapper {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 /* Message Box */
 .el-message-box {
-  border-radius: var(--radius-xl) !important;
+  border-radius: var(--radius-lg) !important;
 }

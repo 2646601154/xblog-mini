@@ -126,8 +126,8 @@ onMounted(async () => {
 
 <template>
   <div class="home-page">
-    <!-- Gradient Banner -->
-    <div class="gradient-banner">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
       <h1 class="banner-title">欢迎来到我的博客</h1>
       <p class="banner-subtitle">分享技术心得与生活感悟</p>
     </div>
@@ -207,8 +207,8 @@ onMounted(async () => {
 }
 
 /* Banner */
-.gradient-banner {
-  border-radius: var(--radius-xl);
+.hero-banner {
+  border-radius: var(--radius-lg);
   padding: var(--space-3xl);
   margin-bottom: var(--space-3xl);
   text-align: center;
@@ -254,7 +254,7 @@ onMounted(async () => {
   align-items: center;
   gap: var(--space-sm);
   background: var(--bg-elevated);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: var(--space-sm) var(--space-lg);
   margin-bottom: var(--space-xl);
 }
@@ -305,7 +305,7 @@ onMounted(async () => {
 }
 
 .skeleton-card :deep(.el-card) {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
 }
 
 /* Sidebar */
@@ -331,7 +331,7 @@ onMounted(async () => {
     padding: var(--space-lg) var(--space-md);
   }
 
-  .gradient-banner {
+  .hero-banner {
     padding: var(--space-2xl) var(--space-xl);
     margin-bottom: var(--space-2xl);
   }

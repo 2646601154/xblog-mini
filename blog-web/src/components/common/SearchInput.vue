@@ -118,7 +118,7 @@ const showClearButton = computed(() => props.modelValue.length > 0)
   height: 40px;
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
   overflow: hidden;
 }
@@ -129,7 +129,7 @@ const showClearButton = computed(() => props.modelValue.length > 0)
 
 .search-container.is-focused {
   border: 2px solid var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
   width: 260px;
 }
 
@@ -191,7 +191,7 @@ const showClearButton = computed(() => props.modelValue.length > 0)
   height: 40px;
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }

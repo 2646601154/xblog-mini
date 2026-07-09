@@ -86,7 +86,7 @@ const estimateReadTime = (summary: string) => {
 <style scoped>
 .card-base {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   overflow: hidden;
   cursor: pointer;
@@ -106,14 +106,14 @@ const estimateReadTime = (summary: string) => {
   background-color: var(--bg-elevated);
   background-size: cover;
   background-position: center;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   overflow: hidden;
 }
 
 .cover-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-accent) 100%);
+  background: var(--bg-elevated);
 }
 
 .card-body {
@@ -127,7 +127,7 @@ const estimateReadTime = (summary: string) => {
   font-size: var(--text-xs);
   font-weight: 500;
   padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-md);
 }
 

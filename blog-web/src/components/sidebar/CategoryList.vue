@@ -41,7 +41,7 @@ const isActive = (slug: string) => {
 <style scoped>
 .category-list {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-md);
   margin-bottom: 20px;
@@ -64,7 +64,7 @@ const isActive = (slug: string) => {
   display: inline-flex;
   align-items: center;
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-xs);
   margin-right: var(--space-sm);
   cursor: pointer;

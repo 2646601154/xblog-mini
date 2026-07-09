@@ -290,7 +290,7 @@ onMounted(() => {
   font-size: var(--text-xs);
   background: var(--color-primary-100);
   color: var(--color-primary-dark);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: var(--space-xs) var(--space-md);
   margin: 0 var(--space-lg);
   white-space: nowrap;

@@ -64,7 +64,7 @@ const getIconComponent = (icon: string) => {
 <style scoped>
 .about-me {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-md);
   margin-bottom: 20px;
@@ -112,7 +112,7 @@ const getIconComponent = (icon: string) => {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.2s ease;

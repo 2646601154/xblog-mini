@@ -170,7 +170,7 @@ const handleCommand = (command: string) => {
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: var(--color-primary);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -194,7 +194,7 @@ const handleCommand = (command: string) => {
   display: inline-flex;
   align-items: center;
   padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
   text-decoration: none;
   font-size: var(--text-sm);
@@ -258,7 +258,7 @@ const handleCommand = (command: string) => {
   cursor: pointer;
   color: var(--text-primary);
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   transition: background-color 0.2s ease;
 }
 
@@ -314,7 +314,7 @@ const handleCommand = (command: string) => {
   gap: var(--space-md);
   padding: var(--space-md);
   background: var(--color-primary-50);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 

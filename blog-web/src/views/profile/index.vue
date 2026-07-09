@@ -353,7 +353,7 @@ onMounted(() => {
   width: 100%;
   max-width: 560px;
   background: var(--bg-surface);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: var(--space-3xl);
 }
@@ -458,12 +458,12 @@ onMounted(() => {
 }
 
 .pill-input {
-  --el-input-border-radius: var(--radius-pill);
+  --el-input-border-radius: var(--radius-sm);
   --el-input-height: 44px;
 }
 
 :deep(.pill-input .el-input__wrapper) {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   box-shadow: none;
   border: 1px solid var(--border-light);
   transition:
@@ -492,7 +492,7 @@ onMounted(() => {
 .save-btn {
   width: 100%;
   height: 48px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: var(--text-base);
   margin-top: var(--space-lg);
@@ -582,7 +582,7 @@ onMounted(() => {
 }
 
 .logout-btn {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: var(--space-md) var(--space-2xl);
 }
 

@@ -29,7 +29,7 @@ const handleClick = (slug: string) => {
 <style scoped>
 .tag-cloud {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-md);
 }
@@ -51,7 +51,7 @@ const handleClick = (slug: string) => {
   display: inline-flex;
   align-items: center;
   padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-medium);
   background: transparent;
   font-size: var(--text-xs);

@@ -258,7 +258,7 @@ onMounted(fetchComments)
 }
 
 .user-avatar {
-  background: linear-gradient(135deg, #409eff, #64b3f4);
+  background: #409eff;
   color: white;
   font-weight: 600;
   display: flex;

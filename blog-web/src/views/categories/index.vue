@@ -173,7 +173,7 @@ import { reactive } from 'vue'
 
 .sidebar-card {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-2xl);
   box-shadow: var(--shadow-md);
   position: sticky;
@@ -209,7 +209,7 @@ import { reactive } from 'vue'
   align-items: center;
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-xs);
   cursor: pointer;
   transition: all 0.3s ease;

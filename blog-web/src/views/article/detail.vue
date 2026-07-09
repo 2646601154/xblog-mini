@@ -209,7 +209,7 @@ onMounted(loadAllData)
 }
 
 .article-cover {
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   margin-bottom: var(--space-2xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -218,7 +218,7 @@ onMounted(loadAllData)
 .article-cover img {
   width: 100%;
   display: block;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
 }
 
 .article-header {
@@ -282,7 +282,7 @@ onMounted(loadAllData)
 .tag-pill {
   display: inline-block;
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: var(--space-xs) var(--space-md);
   font-size: var(--text-xs);
   color: var(--text-secondary);
@@ -376,7 +376,7 @@ onMounted(loadAllData)
 }
 
 .share-section :deep(.el-button) {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .article-nav {
@@ -391,7 +391,7 @@ onMounted(loadAllData)
   flex-direction: column;
   gap: var(--space-xs);
   background: var(--bg-elevated);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-lg);
   text-decoration: none;
   transition: background 0.2s ease;

@@ -17,7 +17,7 @@ configStore.initConfig()
 
 <style scoped>
 .footer {
-  background: linear-gradient(to bottom, var(--bg-page), var(--bg-surface));
+  background: var(--bg-surface);
   border-top: 1px solid var(--border-light);
   color: var(--text-secondary);
   padding: var(--space-3xl) var(--space-lg);
@@ -34,7 +34,7 @@ configStore.initConfig()
   width: 60px;
   height: 2px;
   background: var(--color-primary);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   margin: 0 auto var(--space-lg);
 }
 

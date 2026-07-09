@@ -262,7 +262,7 @@ onMounted(fetchCategories)
   min-width: 24px;
   height: 24px;
   padding: 0 8px;
-  background: linear-gradient(135deg, #409eff, #64b3f4);
+  background: #409eff;
   color: white;
   border-radius: 12px;
   font-size: 12px;

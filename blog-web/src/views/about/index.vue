@@ -176,7 +176,7 @@ onMounted(() => {
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background: var(--bg-elevated);
   color: var(--text-secondary);
   text-decoration: none;
@@ -225,7 +225,7 @@ onMounted(() => {
 .stat-card {
   flex: 1;
   background: var(--bg-elevated);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
   text-align: center;
 }

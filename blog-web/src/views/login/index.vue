@@ -163,7 +163,7 @@ onMounted(() => {
 
 .login-card {
   background: var(--bg-surface);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: var(--space-3xl);
 }
@@ -201,7 +201,7 @@ onMounted(() => {
 }
 
 .pill-input :deep(.el-input__wrapper) {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   height: 48px;
 }
 
@@ -218,7 +218,7 @@ onMounted(() => {
   height: 48px;
   font-size: var(--text-base);
   font-weight: 600;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .login-footer {
