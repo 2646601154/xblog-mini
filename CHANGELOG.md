@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/jnMetaCode/xblog-mini/compare/v0.2.0...v0.2.1) (2026-07-09)
+
+
+### 🔧 杂项
+
+* 初始化根目录 package.json 和 standard-version 配置 ([0c4306f](https://github.com/jnMetaCode/xblog-mini/commits/0c4306fe0a8e3ac97c55c6adc2a036d147466d30))
+
+
+### ✨ 新功能
+
+* **admin:** 新增个人中心页，支持管理员修改自己的资料和密码 ([d3c7d36](https://github.com/jnMetaCode/xblog-mini/commits/d3c7d36689705faf46dfba2e812e9f8a0c6c5595))
+
 ## [0.2.0](https://github.com/jnMetaCode/xblog-mini/compare/v0.1.0...v0.2.0) (2026-07-09)
 
 
