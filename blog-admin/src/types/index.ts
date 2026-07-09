@@ -185,3 +185,16 @@ export interface Dashboard {
     value: number
   }[]
 }
+
+// 个人中心 - 修改资料
+export interface UpdateProfileParams {
+  nickname?: string
+  avatar?: string
+  email?: string
+}
+
+// 个人中心 - 修改密码
+export interface ChangePasswordParams {
+  oldPassword: string
+  newPassword: string
+}

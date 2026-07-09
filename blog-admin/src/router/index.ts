@@ -78,6 +78,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/admin/MediaView.vue'),
         meta: { title: '图片管理' },
       },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/admin/ProfileView.vue'),
+        meta: { title: '个人中心' },
+      },
     ],
   },
 ]

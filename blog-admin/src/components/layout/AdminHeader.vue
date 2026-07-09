@@ -16,6 +16,14 @@ async function handleLogout() {
   await authStore.logout()
   router.push('/login')
 }
+
+function handleCommand(command: string) {
+  if (command === 'profile') {
+    router.push('/admin/profile')
+  } else if (command === 'logout') {
+    handleLogout()
+  }
+}
 </script>
 
 <template>
@@ -26,7 +34,7 @@ async function handleLogout() {
     </el-breadcrumb>
 
     <div class="flex items-center gap-4">
-      <el-dropdown @command="handleLogout">
+      <el-dropdown @command="handleCommand">
         <div class="flex items-center gap-2 cursor-pointer">
           <el-avatar :size="32" :src="authStore.avatar">
             {{ authStore.nickname?.charAt(0) }}
@@ -35,7 +43,11 @@ async function handleLogout() {
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="logout">
+            <el-dropdown-item command="profile">
+              <el-icon><User /></el-icon>
+              个人中心
+            </el-dropdown-item>
+            <el-dropdown-item command="logout" divided>
               <el-icon><SwitchButton /></el-icon>
               退出登录
             </el-dropdown-item>

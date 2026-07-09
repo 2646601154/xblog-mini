@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   getUserList,
   createUser,
@@ -10,7 +11,12 @@ import {
   resetPassword,
 } from '@/api'
 import type { User, UserFormData, CreateUserFormData, ResetPasswordFormData } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+const router = useRouter()
+const authStore = useAuthStore()
+const currentUserId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)
 const users = ref<User[]>([])
@@ -267,26 +273,31 @@ onMounted(fetchUsers)
             {{ new Date(row.createdAt).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="270" fixed="right">
+        <el-table-column label="操作" width="290" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" link @click="openEditDialog(row)"
-              >编辑</el-button
+            <template v-if="row.id !== currentUserId">
+              <el-button type="primary" size="small" link @click="openEditDialog(row)"
+                >编辑</el-button
+              >
+              <el-button type="warning" size="small" link @click="openResetPasswordDialog(row)"
+                >重置密码</el-button
+              >
+              <el-button
+                v-if="row.status === 'normal'"
+                type="danger"
+                size="small"
+                link
+                @click="handleDisable(row)"
+                >禁用</el-button
+              >
+              <el-button v-else type="success" size="small" link @click="handleEnable(row)"
+                >启用</el-button
+              >
+              <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
+            </template>
+            <el-button v-else type="primary" size="small" link @click="router.push('/admin/profile')"
+              >编辑自己请前往个人中心</el-button
             >
-            <el-button type="warning" size="small" link @click="openResetPasswordDialog(row)"
-              >重置密码</el-button
-            >
-            <el-button
-              v-if="row.status === 'normal'"
-              type="danger"
-              size="small"
-              link
-              @click="handleDisable(row)"
-              >禁用</el-button
-            >
-            <el-button v-else type="success" size="small" link @click="handleEnable(row)"
-              >启用</el-button
-            >
-            <el-button type="danger" size="small" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
