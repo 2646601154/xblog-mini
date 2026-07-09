@@ -1,0 +1,14 @@
+{
+  "name": "xblog-mini",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "release": "standard-version"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}
