@@ -58,6 +58,7 @@ desktop.ini
 application-local.yml
 .learnings/
 .workbuddy/
+.codex/
 
 # === blog-api (Spring Boot / Maven / IDE templates) ===
 HELP.md
